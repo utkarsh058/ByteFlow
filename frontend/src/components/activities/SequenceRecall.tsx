@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { Button } from '../common/Button';
+import { useHardwareControls } from '../../hooks/useHardwareControls';
 
 interface SequenceRecallProps {
   onComplete: (accuracy: number, attempts: number, responseTimeMs: number) => void;
@@ -233,6 +234,19 @@ export const SequenceRecall: React.FC<SequenceRecallProps> = ({ onComplete, onBa
       }, 2200);
     }
   };
+
+  // Physical ESP32 Hardware & Keyboard Button Controls Integration (Step 8)
+  // RED -> 'red', GREEN -> 'green', BLUE -> 'blue', YELLOW -> 'gold'
+  useHardwareControls({
+    enabled: !isFinished && !isShowingSequence,
+    onButtonPress: (button) => {
+      if (isShowingSequence || isFinished) return;
+      if (button === 'RED') handleColorClick('red');
+      else if (button === 'GREEN') handleColorClick('green');
+      else if (button === 'BLUE') handleColorClick('blue');
+      else if (button === 'YELLOW') handleColorClick('gold');
+    },
+  });
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto animate-fadeIn">
