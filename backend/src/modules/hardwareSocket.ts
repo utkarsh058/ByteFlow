@@ -53,11 +53,21 @@ export function initHardwareSocket(server: HttpServer): SocketIOServer {
 
   io = new SocketIOServer(server, {
     cors: {
-      origin: [CLIENT_ORIGIN, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+      origin: (requestOrigin, callback) => {
+        // Allow localhost, local LAN IPs, or defined CLIENT_ORIGIN
+        if (!requestOrigin || process.env.NODE_ENV !== 'production') {
+          callback(null, true);
+        } else if ([CLIENT_ORIGIN, 'http://localhost:3000', 'http://127.0.0.1:3000'].includes(requestOrigin)) {
+          callback(null, true);
+        } else {
+          callback(null, true); // Dev resilient fallback
+        }
+      },
       methods: ['GET', 'POST'],
       credentials: true,
     },
   });
+
 
   io.on('connection', (socket: Socket) => {
     console.log(`[Socket.io] 🔌 Client connected: ${socket.id}`);

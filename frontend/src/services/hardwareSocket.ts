@@ -22,10 +22,16 @@ class HardwareSocketService {
       return this.socket;
     }
 
-    // Default to origin or backend dev server port
-    const targetUrl = serverUrl || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:5000');
+    // Default to VITE_SOCKET_URL, serverUrl, or fallback to backend port 5000 on active hostname
+    const envSocketUrl = (import.meta as any).env?.VITE_SOCKET_URL;
+    const defaultHostUrl = typeof window !== 'undefined' ? `http://${window.location.hostname}:5000` : 'http://localhost:5000';
+    const targetUrl = serverUrl || envSocketUrl || defaultHostUrl;
+
+
+    console.log(`[HardwareSocket] 🔌 Connecting to Socket.io backend at: ${targetUrl}`);
 
     this.socket = io(targetUrl, {
+
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
