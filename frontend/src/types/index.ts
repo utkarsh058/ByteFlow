@@ -48,11 +48,15 @@ export interface MemoryEntry {
   id: string;
   patientId: string;
   title: string;
+  titleHi?: string;
+  titleEn?: string;
   year: number;
   person?: string;
   location?: string;
   category: MemoryCategory;
   story: string;
+  storyHi?: string;
+  storyEn?: string;
   imageUrl?: string;
   audioUrl?: string;
   createdAt: string;

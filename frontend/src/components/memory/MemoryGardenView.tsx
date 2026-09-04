@@ -10,6 +10,7 @@ import {
   Volume2,
   Camera,
   Upload,
+  Languages,
   X
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,9 @@ export const MemoryGardenView: React.FC = () => {
   const { memories, selectedCategory, setCategory, addMemory } = useMemoryStore();
   const { selectedPatient } = useAuthStore();
   
+  // 2-Language State for Memory Stories (English / Hindi)
+  const [storyLang, setStoryLang] = useState<'hi' | 'en'>('hi');
+
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeSelectedMemory, setActiveSelectedMemory] = useState<MemoryEntry | null>(null);
@@ -60,6 +64,16 @@ export const MemoryGardenView: React.FC = () => {
     'Important Events': { en: 'Important Events', hi: 'महत्वपूर्ण घटनाएँ' },
   };
 
+  const getMemoryTitle = (mem: MemoryEntry) => {
+    if (storyLang === 'hi') return mem.titleHi || mem.title;
+    return mem.titleEn || mem.title;
+  };
+
+  const getMemoryStory = (mem: MemoryEntry) => {
+    if (storyLang === 'hi') return mem.storyHi || mem.story;
+    return mem.storyEn || mem.story;
+  };
+
   const filteredMemories = selectedCategory === 'All'
     ? memories
     : memories.filter((m) => m.category === selectedCategory);
@@ -85,9 +99,13 @@ export const MemoryGardenView: React.FC = () => {
     addMemory({
       patientId: selectedPatient.id,
       title,
+      titleHi: title,
+      titleEn: title,
       year: parseInt(year) || 1980,
       category,
       story,
+      storyHi: story,
+      storyEn: story,
       person,
       location,
       imageUrl:
@@ -110,23 +128,54 @@ export const MemoryGardenView: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-ivory-200 pb-6">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-forest-800 flex items-center gap-1.5">
-            <Heart className="w-3.5 h-3.5 fill-gold-500 stroke-forest-800" /> स्मृति उद्यान (Personalized Family Timeline)
+            <Heart className="w-3.5 h-3.5 fill-gold-500 stroke-forest-800" /> {storyLang === 'hi' ? 'स्मृति उद्यान (Personalized Family Timeline)' : 'Memory Garden & Family Timeline'}
           </span>
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-charcoal-900 mt-1">
-            जीवन की अनमोल यादें और कहानियाँ
+            {storyLang === 'hi' ? 'जीवन की अनमोल यादें और कहानियाँ' : 'Cherished Memories & Lifelong Stories'}
           </h2>
           <p className="text-charcoal-600 text-base mt-2 max-w-2xl font-medium">
-            {selectedPatient.name} के परिवार और जीवन के 7 प्रमुख अध्यायों (परिवार, बचपन, विद्यालय, करियर, विवाह, पोते-पोतियाँ, महत्वपूर्ण घटनाएँ) की वास्तविक स्मृतियाँ।
+            {storyLang === 'hi'
+              ? `${selectedPatient.name} के परिवार और जीवन के 7 प्रमुख अध्यायों (परिवार, बचपन, विद्यालय, करियर, विवाह, पोते-पोतियाँ, महत्वपूर्ण घटनाएँ) की वास्तविक स्मृतियाँ।`
+              : `A realistic visual memory album across 7 life chapters (Family, Childhood, School, Career, Marriage, Grandchildren, Important Events) for ${selectedPatient.name}.`}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
+          {/* 2-Language Switcher (English & Hindi) */}
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-300 shadow-xs">
+            <span className="text-xs font-black text-slate-700 px-2 flex items-center gap-1">
+              <Languages className="w-4 h-4 text-[#004085]" /> {storyLang === 'hi' ? 'कहानी भाषा:' : 'Language:'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setStoryLang('hi')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
+                storyLang === 'hi'
+                  ? 'bg-amber-400 text-slate-900 shadow-md ring-2 ring-amber-300'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <span>🇮🇳 हिंदी (Hindi)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setStoryLang('en')}
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
+                storyLang === 'en'
+                  ? 'bg-[#004085] text-amber-300 shadow-md ring-2 ring-blue-300'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <span>🇬🇧 English</span>
+            </button>
+          </div>
+
           <Button
             variant="primary"
             icon={<Camera className="w-5 h-5" />}
             onClick={() => setIsAddModalOpen(true)}
           >
-            नई याद जोड़ें (Add Memory)
+            {storyLang === 'hi' ? 'नई याद जोड़ें (Add Memory)' : 'Add Photo Memory'}
           </Button>
         </div>
       </div>
@@ -146,8 +195,10 @@ export const MemoryGardenView: React.FC = () => {
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
               }`}
             >
-              <span>{label.hi}</span>
-              <span className="text-[10px] opacity-70">({label.en})</span>
+              <span>{storyLang === 'hi' ? label.hi : label.en}</span>
+              <span className="text-[10px] opacity-70">
+                ({storyLang === 'hi' ? label.en : label.hi})
+              </span>
             </button>
           );
         })}
@@ -161,7 +212,7 @@ export const MemoryGardenView: React.FC = () => {
         >
           <img
             src={featuredMemory.imageUrl}
-            alt={featuredMemory.title}
+            alt={getMemoryTitle(featuredMemory)}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
           />
           
@@ -170,7 +221,7 @@ export const MemoryGardenView: React.FC = () => {
           <div className="relative z-10 p-6 md:p-12 text-white space-y-4 max-w-3xl">
             <div className="flex flex-wrap items-center gap-3">
               <span className="px-3.5 py-1 rounded-full bg-gold-500 text-charcoal-950 font-black text-xs">
-                ⭐ प्रमुख स्मृति (Featured) · {featuredMemory.year}
+                ⭐ {storyLang === 'hi' ? 'प्रमुख स्मृति (Featured)' : 'Featured Memory'} · {featuredMemory.year}
               </span>
               <span className="text-xs font-bold text-ivory-200 bg-black/40 px-3 py-1 rounded-full backdrop-blur-xs">
                 {featuredMemory.category}
@@ -183,21 +234,21 @@ export const MemoryGardenView: React.FC = () => {
             </div>
 
             <h3 className="text-2xl md:text-4xl font-serif font-bold text-ivory-50 leading-tight">
-              {featuredMemory.title}
+              {getMemoryTitle(featuredMemory)}
             </h3>
 
             <p className="text-ivory-200 text-sm md:text-base line-clamp-3 leading-relaxed">
-              {featuredMemory.story}
+              {getMemoryStory(featuredMemory)}
             </p>
 
             <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
               <VoiceButton
-                textToSpeak={`${featuredMemory.title}। ${featuredMemory.story}`}
-                label="कहानी सुनें (Listen Story)"
+                textToSpeak={`${getMemoryTitle(featuredMemory)}। ${getMemoryStory(featuredMemory)}`}
+                label={storyLang === 'hi' ? 'कहानी सुनें (Listen in Hindi)' : 'Listen to Story (English)'}
                 size="md"
               />
               <span className="text-xs font-bold text-amber-300 group-hover:underline">
-                पूरी कहानी और तस्वीर देखें (View Details) →
+                {storyLang === 'hi' ? 'पूरी कहानी और तस्वीर देखें →' : 'View Full Memory & Photo →'}
               </span>
             </div>
           </div>
@@ -217,7 +268,7 @@ export const MemoryGardenView: React.FC = () => {
               <div className="relative h-60 overflow-hidden bg-slate-100">
                 <img
                   src={mem.imageUrl}
-                  alt={mem.title}
+                  alt={getMemoryTitle(mem)}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3 bg-[#004085]/90 backdrop-blur-md text-amber-300 text-xs font-black px-3 py-1 rounded-full shadow-sm">
@@ -233,10 +284,10 @@ export const MemoryGardenView: React.FC = () => {
             <div className="p-6 space-y-3.5 flex-1 flex flex-col justify-between">
               <div className="space-y-2">
                 <h4 className="font-serif font-bold text-xl text-slate-900 group-hover:text-[#004085] transition-colors leading-snug">
-                  {mem.title}
+                  {getMemoryTitle(mem)}
                 </h4>
                 <p className="text-slate-700 text-sm line-clamp-3 leading-relaxed font-medium">
-                  {mem.story}
+                  {getMemoryStory(mem)}
                 </p>
               </div>
 
@@ -258,12 +309,12 @@ export const MemoryGardenView: React.FC = () => {
 
                 <div className="pt-1 flex items-center justify-between">
                   <VoiceButton
-                    textToSpeak={`${mem.title}। ${mem.story}`}
-                    label="कहानी सुनें"
+                    textToSpeak={`${getMemoryTitle(mem)}। ${getMemoryStory(mem)}`}
+                    label={storyLang === 'hi' ? 'कहानी सुनें' : 'Listen Story'}
                     size="sm"
                   />
                   <span className="text-xs font-extrabold text-blue-800 group-hover:underline">
-                    विवरण देखें →
+                    {storyLang === 'hi' ? 'विवरण देखें →' : 'View Details →'}
                   </span>
                 </div>
               </div>
@@ -277,13 +328,13 @@ export const MemoryGardenView: React.FC = () => {
         <Modal
           isOpen={!!activeSelectedMemory}
           onClose={() => setActiveSelectedMemory(null)}
-          title={activeSelectedMemory.title}
+          title={getMemoryTitle(activeSelectedMemory)}
         >
           <div className="space-y-6">
             {activeSelectedMemory.imageUrl && (
               <img
                 src={activeSelectedMemory.imageUrl}
-                alt={activeSelectedMemory.title}
+                alt={getMemoryTitle(activeSelectedMemory)}
                 className="w-full h-80 object-cover rounded-3xl shadow-photo border-2 border-ivory-200"
               />
             )}
@@ -301,17 +352,17 @@ export const MemoryGardenView: React.FC = () => {
             </div>
 
             <p className="text-charcoal-800 text-lg leading-relaxed font-sans">
-              {activeSelectedMemory.story}
+              {getMemoryStory(activeSelectedMemory)}
             </p>
 
             <div className="pt-2 flex justify-between items-center">
               <VoiceButton
-                textToSpeak={`${activeSelectedMemory.title}. ${activeSelectedMemory.story}`}
-                label="Listen to Memory Story"
+                textToSpeak={`${getMemoryTitle(activeSelectedMemory)}। ${getMemoryStory(activeSelectedMemory)}`}
+                label={storyLang === 'hi' ? 'स्मृति कहानी सुनें' : 'Listen to Memory Story'}
                 size="md"
               />
               <Button variant="outline" size="sm" onClick={() => setActiveSelectedMemory(null)}>
-                Close
+                {storyLang === 'hi' ? 'बंद करें' : 'Close'}
               </Button>
             </div>
           </div>
