@@ -5,11 +5,19 @@ import { Header } from './Header';
 import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
 
 interface AppShellProps {
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
   children: (activeTab: string, setActiveTab: (tab: string) => void) => React.ReactNode;
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ children }) => {
-  const [activeTab, setActiveTab] = useState('home');
+export const AppShell: React.FC<AppShellProps> = ({
+  activeTab: controlledTab,
+  setActiveTab: controlledSetTab,
+  children,
+}) => {
+  const [internalTab, setInternalTab] = useState('home');
+  const activeTab = controlledTab !== undefined ? controlledTab : internalTab;
+  const setActiveTab = controlledSetTab !== undefined ? controlledSetTab : setInternalTab;
   const { reducedMotion } = useAccessibilityStore();
 
   return (

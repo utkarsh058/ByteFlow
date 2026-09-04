@@ -20,6 +20,7 @@ import routineRoutes from '../modules/routine-recall/routineRoutes';
 import voiceMessageRoutes from '../modules/voice-connect/voiceMessageRoutes';
 import voiceCloneRoutes from '../modules/voice-clone/voiceCloneRoutes';
 import systemRoutes from '../modules/system/systemRoutes';
+import assistantRoutes from '../modules/assistant/assistantRoutes';
 
 const apiRouter = Router();
 
@@ -42,6 +43,7 @@ apiRouter.use('/routine', routineRoutes);
 apiRouter.use('/voice-messages', voiceMessageRoutes);
 apiRouter.use('/voice-clone', voiceCloneRoutes);
 apiRouter.use('/system', systemRoutes);
+apiRouter.use('/assistant', assistantRoutes);
 
 // Root level API routes (matching frontend services/api.ts)
 apiRouter.use('/', gameRoutes);      // /results, /sessions, /questions

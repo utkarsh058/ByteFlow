@@ -11,12 +11,14 @@ import { ActivityContainer } from './components/activities/ActivityContainer';
 import { ActivityType } from './types';
 import { MemoryGardenView } from './components/memory/MemoryGardenView';
 import { RemindersManagerView } from './components/reminders/RemindersManagerView';
+import { AiVoiceCompanion } from './components/common/AiVoiceCompanion';
 import { ArrowLeft } from 'lucide-react';
 
 export const App: React.FC = () => {
   const { role, setRole } = useAuthStore();
   const [viewMode, setViewMode] = useState<'public_portal' | 'authenticated_app'>('public_portal');
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('home');
 
   const handleStartActivity = (type: ActivityType) => {
     setSelectedActivity(type);
@@ -26,6 +28,11 @@ export const App: React.FC = () => {
     setSelectedActivity(null);
   };
 
+  const handleNavigateTab = (tab: string) => {
+    setSelectedActivity(null);
+    setActiveTab(tab);
+  };
+
   const handleOpenAppAuth = (selectedRole?: UserRole) => {
     if (selectedRole) setRole(selectedRole);
     setViewMode('authenticated_app');
@@ -33,7 +40,23 @@ export const App: React.FC = () => {
 
   // If viewing the Public NER Government Healthcare Portal:
   if (viewMode === 'public_portal') {
-    return <PublicPortalPage onOpenAppAuth={handleOpenAppAuth} />;
+    return (
+      <>
+        <PublicPortalPage onOpenAppAuth={handleOpenAppAuth} />
+        <AiVoiceCompanion
+          onStartActivity={(type) => {
+            setViewMode('authenticated_app');
+            handleStartActivity(type);
+          }}
+          onNavigateTab={(tab) => {
+            setViewMode('authenticated_app');
+            handleNavigateTab(tab);
+          }}
+          onOpenPortal={() => setViewMode('public_portal')}
+          currentTab="public_portal"
+        />
+      </>
+    );
   }
 
   // If inside the Authenticated Smriti-Setu Application:
@@ -54,8 +77,8 @@ export const App: React.FC = () => {
         </div>
       </div>
 
-      <AppShell>
-        {(activeTab, setActiveTab) => {
+      <AppShell activeTab={activeTab} setActiveTab={setActiveTab}>
+        {(currentActiveTab, changeActiveTab) => {
           if (selectedActivity) {
             return (
               <ActivityContainer
@@ -108,6 +131,13 @@ export const App: React.FC = () => {
           return <PatientDashboard onStartActivity={handleStartActivity} />;
         }}
       </AppShell>
+
+      <AiVoiceCompanion
+        onStartActivity={handleStartActivity}
+        onNavigateTab={handleNavigateTab}
+        onOpenPortal={() => setViewMode('public_portal')}
+        currentTab={activeTab}
+      />
     </div>
   );
 };

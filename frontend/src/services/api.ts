@@ -214,5 +214,26 @@ export const voiceCloneApi = {
     apiClient.post('/voice-clone/generate', data).then((res) => res.data),
 };
 
+export const assistantApi = {
+  chat: async (data: {
+    message: string;
+    language?: string;
+    patientId?: string;
+    currentTab?: string;
+  }): Promise<{
+    reply: string;
+    spokenText: string;
+    detectedLanguage: string;
+    action: {
+      type: 'OPEN_ACTIVITY' | 'OPEN_TAB' | 'TOGGLE_ELDERLY' | 'CHANGE_LANGUAGE' | 'OPEN_PORTAL' | 'NONE';
+      payload?: string;
+    };
+    quickSuggestions: string[];
+  }> => {
+    return apiClient.post('/assistant/chat', data).then((res) => res.data);
+  },
+};
+
 export default apiClient;
+
 
