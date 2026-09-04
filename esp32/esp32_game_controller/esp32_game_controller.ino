@@ -26,14 +26,25 @@
 // =========================================================================
 // CONFIGURATION (UPDATE THESE FOR YOUR NETWORK SETUP)
 // =========================================================================
-const char* WIFI_SSID     = "YOUR_WIFI_SSID";       // Your 2.4GHz Wi-Fi SSID
-const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";   // Your Wi-Fi Password
-const char* SERVER_HOST   = "192.168.1.100";        // Backend Server IP Address (e.g. PC local IP)
+const char* WIFI_SSID     = "realme P3 5G";       // Your 2.4GHz Wi-Fi SSID
+const char* WIFI_PASSWORD = "1234567890-";   // Your Wi-Fi Password
+const char* SERVER_HOST   = "10.187.123.2";        // Backend Server IP Address (e.g. PC local IP)
 const int   SERVER_PORT   = 5000;                   // Backend Server Port
 const char* DEVICE_ID     = "ESP32-NER-GW-001";     // Unique Controller Device ID
 
 // Endpoint path on Smriti-Setu Backend
 const char* ACTION_ENDPOINT = "/api/devices/emit-test-button";
+
+// =========================================================================
+// WI-FI RECONNECT & TIMEOUT CONFIGURATION
+// =========================================================================
+const unsigned long WIFI_CONNECT_TIMEOUT_MS    = 12000; // 12s allowed for connection handshake
+const unsigned long WIFI_RECONNECT_INTERVAL_MS  = 6000;  // 6s wait between reconnect attempts
+
+// Wi-Fi connection state tracking
+bool isWiFiConnecting = false;
+unsigned long connectStartMs = 0;
+unsigned long lastAttemptMs = 0;
 
 // =========================================================================
 // HARDWARE PIN DEFINITIONS
@@ -64,27 +75,49 @@ PhysicalButton buttons[] = {
 
 const int NUM_BUTTONS = sizeof(buttons) / sizeof(buttons[0]);
 
-// Helper: Ensure Wi-Fi is connected
+// Non-blocking Wi-Fi Connection Manager
 void checkWiFiConnection() {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.print("Connecting to Wi-Fi: ");
-    Serial.println(WIFI_SSID);
-    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-    
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-      delay(500);
-      Serial.print(".");
-      attempts++;
-    }
-    
-    if (WiFi.status() == WL_CONNECTED) {
+  unsigned long now = millis();
+
+  // 1. If already connected, reset connecting status & log if freshly connected
+  if (WiFi.status() == WL_CONNECTED) {
+    if (isWiFiConnecting || lastAttemptMs == 0) {
+      isWiFiConnecting = false;
       Serial.println("\n[Wi-Fi] 🟢 Connected successfully!");
       Serial.print("[Wi-Fi] IP Address: ");
       Serial.println(WiFi.localIP());
-    } else {
-      Serial.println("\n[Wi-Fi] ❌ Connection failed. Will retry...");
     }
+    return;
+  }
+
+  // 2. If currently attempting a connection, evaluate non-blocking timeout
+  if (isWiFiConnecting) {
+    if (now - connectStartMs > WIFI_CONNECT_TIMEOUT_MS) {
+      isWiFiConnecting = false;
+      lastAttemptMs = now;
+      Serial.println("\n[Wi-Fi] ❌ Connection attempt failed (timed out).");
+      Serial.printf("[Wi-Fi] Retrying in %lu seconds...\n", WIFI_RECONNECT_INTERVAL_MS / 1000);
+      
+      // Explicitly disconnect ESP32 station driver to clear stuck connection state
+      WiFi.disconnect(true);
+    }
+    return; // Allow main loop & button scanner to run without blocking
+  }
+
+  // 3. If disconnected and retry cooldown interval has elapsed, trigger new attempt
+  if (lastAttemptMs == 0 || (now - lastAttemptMs >= WIFI_RECONNECT_INTERVAL_MS)) {
+    isWiFiConnecting = true;
+    connectStartMs = now;
+    lastAttemptMs = now;
+
+    Serial.print("[Wi-Fi] Connecting to: ");
+    Serial.println(WIFI_SSID);
+
+    // Reset Station driver before issuing new begin call to prevent "sta is connecting" error
+    WiFi.disconnect(true);
+    delay(50);
+    WiFi.mode(WIFI_STA);
+    WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
   }
 }
 
@@ -141,12 +174,18 @@ void setup() {
     Serial.printf("[HW] Pin D%d initialized for %s button (INPUT_PULLUP)\n", buttons[i].pin, buttons[i].name);
   }
 
-  // Connect to Wi-Fi network
+  // Initialize Wi-Fi Station stack cleanly
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect(true);
+  delay(100);
+
+  // Trigger initial Wi-Fi connection
   checkWiFiConnection();
 }
 
 void loop() {
-  // Maintain Wi-Fi Connection
+  // Maintain Wi-Fi Connection asynchronously
   checkWiFiConnection();
 
   unsigned long now = millis();
