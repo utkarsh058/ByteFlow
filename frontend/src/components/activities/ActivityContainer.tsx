@@ -17,7 +17,7 @@ export const ActivityContainer: React.FC<ActivityContainerProps> = ({
   initialActivityType = 'memory_match',
   onBack,
 }) => {
-  const [activeType] = useState<ActivityType>(initialActivityType);
+  const activeType = initialActivityType;
   const { completeSession } = useActivityStore();
 
   const handleSessionComplete = (accuracy: number, attempts: number, responseTimeMs: number) => {

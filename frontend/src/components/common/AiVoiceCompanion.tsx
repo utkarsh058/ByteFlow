@@ -193,7 +193,9 @@ export const AiVoiceCompanion: React.FC<AiVoiceCompanionProps> = ({
         const actType = (action.payload as ActivityType) || 'memory_match';
         if (onStartActivity) {
           onStartActivity(actType);
-          alertDesc = `🎮 Opening Game (${actType.replace('_', ' ')})`;
+          alertDesc = `🎮 Opening Cognitive Game (${actType.replace('_', ' ')})`;
+          // Auto close/minimize chat after short feedback so user sees the game screen
+          setTimeout(() => setIsOpen(false), 2200);
         }
         break;
       }
@@ -201,7 +203,8 @@ export const AiVoiceCompanion: React.FC<AiVoiceCompanionProps> = ({
         const tab = action.payload || 'home';
         if (onNavigateTab) {
           onNavigateTab(tab);
-          alertDesc = `📂 Navigating to ${tab.toUpperCase()}`;
+          alertDesc = `📂 Opened ${tab.toUpperCase()} Section`;
+          setTimeout(() => setIsOpen(false), 2200);
         }
         break;
       }
@@ -221,6 +224,7 @@ export const AiVoiceCompanion: React.FC<AiVoiceCompanionProps> = ({
         if (onOpenPortal) {
           onOpenPortal();
           alertDesc = `🏛️ Opening Public Government Health Portal`;
+          setTimeout(() => setIsOpen(false), 2200);
         }
         break;
       }
@@ -228,7 +232,7 @@ export const AiVoiceCompanion: React.FC<AiVoiceCompanionProps> = ({
 
     if (alertDesc) {
       setActionAlert(alertDesc);
-      setTimeout(() => setActionAlert(null), 4000);
+      setTimeout(() => setActionAlert(null), 5000);
     }
 
     return alertDesc;
@@ -283,21 +287,58 @@ export const AiVoiceCompanion: React.FC<AiVoiceCompanionProps> = ({
       let spoken = '';
       let executedDesc = '';
 
-      if (norm.includes('game') || norm.includes('play') || norm.includes('खेल') || norm.includes('गेम') || norm.includes('খেল')) {
-        if (onStartActivity) onStartActivity('memory_match');
-        reply = 'ज़रूर! मैं आपके लिए स्मृति मिलान (Memory Match) गेम खोल रही हूँ। चलिए खेलते हैं! 🎮';
-        spoken = 'ज़रूर! मैं आपके लिए खेल शुरू कर रही हूँ।';
-        executedDesc = '🎮 Opened Memory Match Game';
+      const isGameIntent =
+        norm.includes('game') ||
+        norm.includes('gane') ||
+        norm.includes('cognitive') ||
+        norm.includes('cognative') ||
+        norm.includes('activity') ||
+        norm.includes('activities') ||
+        norm.includes('play') ||
+        norm.includes('brain') ||
+        norm.includes('match') ||
+        norm.includes('puzzle') ||
+        norm.includes('sound') ||
+        norm.includes('sequence') ||
+        norm.includes('routine') ||
+        norm.includes('खेल') ||
+        norm.includes('गेम') ||
+        norm.includes('मानसिक') ||
+        norm.includes('दिमाग') ||
+        norm.includes('খেল') ||
+        norm.includes('খেলা');
+
+      if (isGameIntent) {
+        let actType: ActivityType = 'memory_match';
+        if (norm.includes('picture') || norm.includes('तस्वीर') || norm.includes('ছবি') || norm.includes('photo')) {
+          actType = 'picture_recognition';
+        } else if (norm.includes('puzzle') || norm.includes('पहेली')) {
+          actType = 'photo_puzzle';
+        } else if (norm.includes('sound') || norm.includes('आवाज') || norm.includes('শব্দ')) {
+          actType = 'familiar_sound';
+        } else if (norm.includes('routine') || norm.includes('दिनचर्या')) {
+          actType = 'routine_recall';
+        } else if (norm.includes('sequence') || norm.includes('क्रम')) {
+          actType = 'sequence_recall';
+        }
+
+        if (onStartActivity) onStartActivity(actType);
+        reply = `ज़रूर! मैं आपके लिए मानसिक गतिविधि (${actType.replace('_', ' ')}) गेम खोल रही हूँ। चलिए खेलते हैं! 🎮`;
+        spoken = 'ज़रूर! मैं आपके लिए खेल शुरू कर रही हूँ। चलिए खेलते हैं!';
+        executedDesc = `🎮 Opened Cognitive Game (${actType})`;
+        setTimeout(() => setIsOpen(false), 2200);
       } else if (norm.includes('reminder') || norm.includes('दवाई') || norm.includes('दवा') || norm.includes('रिमाइंडर')) {
         if (onNavigateTab) onNavigateTab('reminders');
         reply = 'यहाँ आपके आज के दैनिक स्मरण और दवाइयाँ हैं। ⏰';
         spoken = 'यहाँ आपके आज के दैनिक स्मरण और दवाइयाँ हैं।';
         executedDesc = '⏰ Navigated to Daily Reminders';
+        setTimeout(() => setIsOpen(false), 2200);
       } else if (norm.includes('memory') || norm.includes('याद') || norm.includes('स्मृति')) {
         if (onNavigateTab) onNavigateTab('memories');
         reply = 'स्मृति उद्यान खोला गया है! यहाँ आपकी पारिवारिक यादें हैं। 🌸';
         spoken = 'स्मृति उद्यान खोला गया है।';
         executedDesc = '🌸 Navigated to Memory Garden';
+        setTimeout(() => setIsOpen(false), 2200);
       } else {
         reply = `मैंने आपकी बात समझ ली: "${query}". आप "गेम खोलो", "दवाई दिखाओ" या "यादें दिखाओ" बोल सकते हैं!`;
         spoken = 'मैंने आपकी बात समझ ली। आप गेम खेलने या दवाई देखने के लिए कह सकते हैं।';

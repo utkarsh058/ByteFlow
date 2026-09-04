@@ -14,7 +14,6 @@ import { ResourcesSection } from '../components/portal/ResourcesSection';
 import { GovFooter } from '../components/portal/GovFooter';
 import { AccessibilityControls } from '../components/portal/AccessibilityControls';
 import { AuthModal } from '../components/portal/AuthModal';
-import { AIVoiceAssistant } from '../components/common/AIVoiceAssistant';
 import { CognitiveStreakWidget } from '../components/common/CognitiveStreakWidget';
 import { useAccessibilityStore } from '../stores/useAccessibilityStore';
 import { UserRole } from '../types';
@@ -145,10 +144,7 @@ export const PublicPortalPage: React.FC<PublicPortalPageProps> = ({ onOpenAppAut
       {/* 7. Official Government Footer */}
       <GovFooter />
 
-      {/* 8. Floating AI Voice Assistant */}
-      <AIVoiceAssistant onSearchQuery={handleSearchSubmit} />
-
-      {/* 9. Role Auth Modal */}
+      {/* 8. Role Auth Modal */}
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}

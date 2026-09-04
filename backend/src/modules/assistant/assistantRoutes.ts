@@ -87,33 +87,44 @@ function detectIntentAndRespond(input: string, userLang: string = 'hi'): ChatRes
     };
   }
 
-  // 2. Direct Access: Open Games / Activities
+  // 2. Direct Access: Open Games / Cognitive Activities
   const isGameIntent =
     norm.includes('game') ||
+    norm.includes('gane') ||
+    norm.includes('cognitive') ||
+    norm.includes('cognative') ||
+    norm.includes('activity') ||
+    norm.includes('activities') ||
     norm.includes('play') ||
-    norm.includes('open game') ||
-    norm.includes('start game') ||
+    norm.includes('brain') ||
+    norm.includes('exercise') ||
+    norm.includes('match') ||
+    norm.includes('puzzle') ||
+    norm.includes('recall') ||
+    norm.includes('sound') ||
+    norm.includes('sequence') ||
+    norm.includes('routine') ||
     norm.includes('खेल') ||
     norm.includes('गेम') ||
     norm.includes('खेले') ||
     norm.includes('खेलेंगे') ||
-    norm.includes('খেল') ||
-    norm.includes('খেলা') ||
-    norm.includes('match') ||
-    norm.includes('puzzle') ||
-    norm.includes('पहेली');
+    norm.includes('मानसिक') ||
+    norm.includes('दिमाग') ||
+    norm.includes('पहेली') ||
+    norm.includes('खেল') ||
+    norm.includes('খেলা');
 
   if (isGameIntent) {
     let activity: string = 'memory_match';
-    if (norm.includes('picture') || norm.includes('तस्वीर') || norm.includes('ছবি') || norm.includes('photo')) {
+    if (norm.includes('picture') || norm.includes('तस्वीर') || norm.includes('ছবি') || norm.includes('photo') || norm.includes('चित्र')) {
       activity = 'picture_recognition';
-    } else if (norm.includes('puzzle') || norm.includes('पहेली')) {
+    } else if (norm.includes('puzzle') || norm.includes('पहेली') || norm.includes('पज़ल')) {
       activity = 'photo_puzzle';
-    } else if (norm.includes('sound') || norm.includes('आवाज') || norm.includes('শব্দ') || norm.includes('ध्वनि')) {
+    } else if (norm.includes('sound') || norm.includes('आवाज') || norm.includes('শব্দ') || norm.includes('ध्वनि') || norm.includes('audio')) {
       activity = 'familiar_sound';
     } else if (norm.includes('routine') || norm.includes('दिनचर्या') || norm.includes('রুটিন')) {
       activity = 'routine_recall';
-    } else if (norm.includes('sequence') || norm.includes('क्रम')) {
+    } else if (norm.includes('sequence') || norm.includes('क्रम') || norm.includes('अनुक्रम')) {
       activity = 'sequence_recall';
     }
 
