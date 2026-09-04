@@ -104,15 +104,43 @@ export const speakText = (text: string, lang: string = 'en', onEnd?: () => void,
       // 3. Special Fallbacks for Indian Regional Languages
       if (!matchedVoice) {
         if (lang === 'as' || targetLang === 'as-IN') {
-          // Assamese falls back to Bengali (same script/phonetics) or Hindi voice
-          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
+          // Assamese falls back to Bengali (same Eastern Nagari script/phonetics) or Hindi voice
+          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('as'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
             || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
-            || voices.find((v) => v.lang.toLowerCase().includes('india') || v.lang.toLowerCase().includes('in'));
+            || voices.find((v) => v.lang.toLowerCase().includes('in'));
+          if (matchedVoice) {
+            utterance.lang = matchedVoice.lang;
+          }
+        } else if (lang === 'bn' || targetLang === 'bn-IN' || targetLang === 'bn-BD') {
+          // Bengali
+          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('as'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
+            || voices.find((v) => v.lang.toLowerCase().includes('in'));
+          if (matchedVoice) {
+            utterance.lang = matchedVoice.lang;
+          }
+        } else if (lang === 'ne' || targetLang === 'ne-NP' || targetLang === 'ne-IN') {
+          // Nepali (Devanagari script) falls back to Hindi if no dedicated Nepali voice
+          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('ne'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('mr'))
+            || voices.find((v) => v.lang.toLowerCase().includes('in'));
+          if (matchedVoice) {
+            utterance.lang = matchedVoice.lang;
+          }
+        } else if (lang === 'brx' || targetLang === 'brx-IN') {
+          // Bodo (Devanagari/Assamese script) falls back to Hindi or Assamese
+          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('as'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
+            || voices.find((v) => v.lang.toLowerCase().includes('in'));
           if (matchedVoice) {
             utterance.lang = matchedVoice.lang;
           }
         } else if (lang === 'hi' || targetLang === 'hi-IN') {
-          // Hindi falls back to any Indic or Indian English voice that supports Devanagari
+          // Hindi falls back to any Indic voice that supports Devanagari
           matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
             || voices.find((v) => v.lang.toLowerCase().startsWith('mr'))
             || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))

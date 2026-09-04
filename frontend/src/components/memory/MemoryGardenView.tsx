@@ -21,13 +21,15 @@ import { VoiceButton } from '../common/VoiceButton';
 import { Modal } from '../common/Modal';
 import { MemoryEntry, MemoryCategory } from '../../types';
 
+export type StoryLanguage = 'en' | 'hi' | 'as' | 'bn' | 'ne' | 'brx';
+
 export const MemoryGardenView: React.FC = () => {
   const { t } = useTranslation();
   const { memories, selectedCategory, setCategory, addMemory } = useMemoryStore();
   const { selectedPatient } = useAuthStore();
   
-  // Multi-Language State for Memory Stories (English / Hindi / Assamese)
-  const [storyLang, setStoryLang] = useState<'hi' | 'en' | 'as'>('hi');
+  // 6-Language State for Memory Stories
+  const [storyLang, setStoryLang] = useState<StoryLanguage>('hi');
 
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -42,6 +44,15 @@ export const MemoryGardenView: React.FC = () => {
   const [story, setStory] = useState('');
   const [uploadPreview, setUploadPreview] = useState<string | null>(null);
 
+  const languageOptions: Array<{ code: StoryLanguage; label: string; flag: string }> = [
+    { code: 'en', label: 'English (English)', flag: '🇬🇧' },
+    { code: 'hi', label: 'हिन्दी (Hindi)', flag: '🇮🇳' },
+    { code: 'as', label: 'অসমীয়া (Assamese)', flag: '🌾' },
+    { code: 'bn', label: 'বাংলা (Bengali)', flag: '🇧🇩' },
+    { code: 'ne', label: 'नेपाली (Nepali)', flag: '🇳🇵' },
+    { code: 'brx', label: 'बड़ो (Bodo)', flag: '🏹' },
+  ];
+
   const categories: Array<MemoryCategory | 'All'> = [
     'All',
     'Family',
@@ -53,27 +64,73 @@ export const MemoryGardenView: React.FC = () => {
     'Important Events',
   ];
 
-  const categoryLabels: Record<string, { en: string; hi: string; as: string }> = {
-    All: { en: 'All Memories', hi: 'सभी यादें', as: 'সকলো স্মৃতি' },
-    Family: { en: 'Family', hi: 'परिवार', as: 'পৰিয়াল' },
-    Childhood: { en: 'Childhood', hi: 'बचपन', as: 'শৈশৱ' },
-    School: { en: 'School', hi: 'विद्यालय', as: 'বিদ্যালয়' },
-    Career: { en: 'Career', hi: 'कर्मक्षेत्र', as: 'কৰ্মজীৱন' },
-    Marriage: { en: 'Marriage', hi: 'विवाह', as: 'বিবাহ' },
-    Grandchildren: { en: 'Grandchildren', hi: 'पोते-पोतियाँ', as: 'নাতিনী' },
-    'Important Events': { en: 'Important Events', hi: 'महत्वपूर्ण घटनाएँ', as: 'গুৰুত্বপূৰ্ণ ঘটনা' },
+  const categoryLabels: Record<string, Record<StoryLanguage, string>> = {
+    All: { en: 'All Memories', hi: 'सभी यादें', as: 'সকলো স্মৃতি', bn: 'সকল স্মৃতি', ne: 'सबै सम्झनाहरू', brx: 'गासै गोसोखांथि' },
+    Family: { en: 'Family', hi: 'परिवार', as: 'পৰিয়াল', bn: 'পরিবার', ne: 'परिवार', brx: 'नखर' },
+    Childhood: { en: 'Childhood', hi: 'बचपन', as: 'শৈশৱ', bn: 'শৈশব', ne: 'बाल्यकाल', brx: 'उन्दै सम' },
+    School: { en: 'School', hi: 'विद्यालय', as: 'বিদ্যালয়', bn: 'বিদ্যালয়', ne: 'विद्यालय', brx: 'फरायसालि' },
+    Career: { en: 'Career', hi: 'कर्मक्षेत्र', as: 'কৰ্মজীৱন', bn: 'কর্মজীবন', ne: 'जागिर/पेशा', brx: 'हाबा-हुखा' },
+    Marriage: { en: 'Marriage', hi: 'विवाह', as: 'বিবাহ', bn: 'বিবাহ', ne: 'विवाह', brx: 'हाबा' },
+    Grandchildren: { en: 'Grandchildren', hi: 'पोते-पोतियाँ', as: 'নাতিনী', bn: 'নাতি-নাতনি', ne: 'नाति-नातिना', brx: 'फिसाजो-फिसाज्ला' },
+    'Important Events': { en: 'Important Events', hi: 'महत्वपूर्ण घटनाएँ', as: 'গুৰুত্বপূৰ্ণ ঘটনা', bn: 'গুরুত্বপূর্ণ ঘটনা', ne: 'महत्वपूर्ण घटनाहरू', brx: 'गोनांथार जाथाय' },
   };
 
   const getMemoryTitle = (mem: MemoryEntry) => {
-    if (storyLang === 'as') return mem.titleAs || mem.title;
-    if (storyLang === 'hi') return mem.titleHi || mem.title;
-    return mem.titleEn || mem.title;
+    switch (storyLang) {
+      case 'as': return mem.titleAs || mem.title;
+      case 'bn': return mem.titleBn || mem.title;
+      case 'ne': return mem.titleNe || mem.title;
+      case 'brx': return mem.titleBrx || mem.title;
+      case 'hi': return mem.titleHi || mem.title;
+      default: return mem.titleEn || mem.title;
+    }
   };
 
   const getMemoryStory = (mem: MemoryEntry) => {
-    if (storyLang === 'as') return mem.storyAs || mem.story;
-    if (storyLang === 'hi') return mem.storyHi || mem.story;
-    return mem.storyEn || mem.story;
+    switch (storyLang) {
+      case 'as': return mem.storyAs || mem.story;
+      case 'bn': return mem.storyBn || mem.story;
+      case 'ne': return mem.storyNe || mem.story;
+      case 'brx': return mem.storyBrx || mem.story;
+      case 'hi': return mem.storyHi || mem.story;
+      default: return mem.storyEn || mem.story;
+    }
+  };
+
+  const voiceBtnLabels: Record<StoryLanguage, string> = {
+    en: 'Listen to Story',
+    hi: 'कहानी सुनें',
+    as: 'কাহিনী শুনক',
+    bn: 'গল্প শুনুন',
+    ne: 'कथा सुन्नुहोस्',
+    brx: "सल' खोनासं",
+  };
+
+  const viewDetailsLabels: Record<StoryLanguage, string> = {
+    en: 'View Details →',
+    hi: 'विवरण देखें →',
+    as: 'বিৱৰণ চাওক →',
+    bn: 'বিবরণ দেখুন →',
+    ne: 'विवरण हेर्नुहोस् →',
+    brx: 'गुवारै नाय →',
+  };
+
+  const viewFullLabels: Record<StoryLanguage, string> = {
+    en: 'View Full Memory & Photo →',
+    hi: 'पूरी कहानी और तस्वीर देखें →',
+    as: 'সম্পূৰ্ণ কাহিনী আৰু ছবি চাওক →',
+    bn: 'সম্পূর্ণ গল্প ও ছবি দেখুন →',
+    ne: 'पूरा कथा र तस्बिर हेर्नुहोस् →',
+    brx: "गासै सल' आरो सावगारि नाय →",
+  };
+
+  const closeLabels: Record<StoryLanguage, string> = {
+    en: 'Close',
+    hi: 'बंद करें',
+    as: 'বন্ধ কৰক',
+    bn: 'বন্ধ করুন',
+    ne: 'बन्द गर्नुहोस्',
+    brx: 'बन्द खालाम',
   };
 
   const filteredMemories = selectedCategory === 'All'
@@ -104,17 +161,23 @@ export const MemoryGardenView: React.FC = () => {
       titleHi: title,
       titleEn: title,
       titleAs: title,
+      titleBn: title,
+      titleNe: title,
+      titleBrx: title,
       year: parseInt(year) || 1980,
       category,
       story,
       storyHi: story,
       storyEn: story,
       storyAs: story,
+      storyBn: story,
+      storyNe: story,
+      storyBrx: story,
       person,
       location,
       imageUrl:
         uploadPreview ||
-        'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80',
     });
 
     setTitle('');
@@ -135,70 +198,63 @@ export const MemoryGardenView: React.FC = () => {
             <Heart className="w-3.5 h-3.5 fill-gold-500 stroke-forest-800" /> {
               storyLang === 'as' 
                 ? 'স্মৃতি উদ্যান (Personalized Family Timeline)' 
-                : storyLang === 'hi' 
-                  ? 'स्मृति उद्यान (Personalized Family Timeline)' 
-                  : 'Memory Garden & Family Timeline'
+                : storyLang === 'bn'
+                  ? 'স্মৃতি উদ্যান (Personalized Family Timeline)'
+                  : storyLang === 'ne'
+                    ? 'स्मृति वाटिका (Personalized Family Timeline)'
+                    : storyLang === 'brx'
+                      ? 'गोसोखांथि बारि (Personalized Family Timeline)'
+                      : storyLang === 'hi' 
+                        ? 'स्मृति उद्यान (Personalized Family Timeline)' 
+                        : 'Memory Garden & Family Timeline'
             }
           </span>
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-charcoal-900 mt-1">
             {
               storyLang === 'as'
                 ? 'জীৱনৰ অমূল্য স্মৃতি আৰু মনপৰশা কাহিনী'
-                : storyLang === 'hi' 
-                  ? 'जीवन की अनमोल यादें और कहानियाँ' 
-                  : 'Cherished Memories & Lifelong Stories'
+                : storyLang === 'bn'
+                  ? 'জীবনের অমূল্য স্মৃতি ও হৃদস্পর্শী গল্প'
+                  : storyLang === 'ne'
+                    ? 'जीवनका अमूल्य सम्झना र कथाहरू'
+                    : storyLang === 'brx'
+                      ? "जिउनि गोसोखांथाव जाथाय आरो सल'फोर"
+                      : storyLang === 'hi' 
+                        ? 'जीवन की अनमोल यादें और कहानियाँ' 
+                        : 'Cherished Memories & Lifelong Stories'
             }
           </h2>
           <p className="text-charcoal-600 text-base mt-2 max-w-2xl font-medium">
             {storyLang === 'as'
-              ? `${selectedPatient.name}ৰ পৰিয়াল আৰু জীৱনৰ ৭টা মূল অধ্যায়ৰ (পৰিয়াল, শৈশৱ, বিদ্যালয়, কৰ্মজীৱন, বিবাহ, নাতিনী, গুৰুত্বপূৰ্ণ ঘটনা) প্ৰকৃত স্মৃতি।`
-              : storyLang === 'hi'
-                ? `${selectedPatient.name} के परिवार और जीवन के 7 प्रमुख अध्यायों (परिवार, बचपन, विद्यालय, करियर, विवाह, पोते-पोतियाँ, महत्वपूर्ण घटनाएँ) की वास्तविक स्मृतियाँ।`
-                : `A realistic visual memory album across 7 life chapters (Family, Childhood, School, Career, Marriage, Grandchildren, Important Events) for ${selectedPatient.name}.`}
+              ? `${selectedPatient.name}ৰ পৰিয়াল আৰু জীৱনৰ ৭টা মূল অধ্যায়ৰ প্ৰকৃত স্মৃতি আৰু কাহিনী।`
+              : storyLang === 'bn'
+                ? `${selectedPatient.name}-এর পরিবার ও জীবনের ৭টি প্রধান অধ্যায়ের বাস্তব স্মৃতি ও গল্প।`
+                : storyLang === 'ne'
+                  ? `${selectedPatient.name}को परिवार र जीवनका ७ मुख्य अध्यायहरूको यथार्थ सम्झना।`
+                  : storyLang === 'brx'
+                    ? `${selectedPatient.name}नि नखर आरो जिउनि ७ गाहाइ खोलोबफोरनि सैथो गोसोखांथि।`
+                    : storyLang === 'hi'
+                      ? `${selectedPatient.name} के परिवार और जीवन के 7 प्रमुख अध्यायों की वास्तविक स्मृतियाँ।`
+                      : `A realistic visual memory album across 7 life chapters for ${selectedPatient.name}.`}
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          {/* 3-Language Switcher (English, Hindi & Assamese) */}
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-300 shadow-xs">
-            <span className="text-xs font-black text-slate-700 px-2 flex items-center gap-1">
-              <Languages className="w-4 h-4 text-[#004085]" /> {
-                storyLang === 'as' ? 'ভাষা:' : storyLang === 'hi' ? 'कहानी भाषा:' : 'Language:'
-              }
-            </span>
-            <button
-              type="button"
-              onClick={() => setStoryLang('as')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
-                storyLang === 'as'
-                  ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-300'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
-              }`}
+          {/* 6-Language Dropdown & Quick Selector */}
+          <div className="flex items-center gap-2 bg-white p-1.5 px-3 rounded-2xl border-2 border-slate-300 shadow-sm">
+            <Languages className="w-5 h-5 text-[#004085] flex-shrink-0" />
+            <select
+              value={storyLang}
+              onChange={(e) => setStoryLang(e.target.value as StoryLanguage)}
+              aria-label="Select Story Language"
+              className="bg-transparent text-sm font-bold text-slate-800 focus:outline-none cursor-pointer pr-2 py-1"
             >
-              <span>🌾 অসমীয়া (Assamese)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setStoryLang('hi')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
-                storyLang === 'hi'
-                  ? 'bg-amber-400 text-slate-900 shadow-md ring-2 ring-amber-300'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
-              }`}
-            >
-              <span>🇮🇳 हिंदी (Hindi)</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setStoryLang('en')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
-                storyLang === 'en'
-                  ? 'bg-[#004085] text-amber-300 shadow-md ring-2 ring-blue-300'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
-              }`}
-            >
-              <span>🇬🇧 English</span>
-            </button>
+              {languageOptions.map((opt) => (
+                <option key={opt.code} value={opt.code}>
+                  {opt.flag} {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
 
           <Button
@@ -206,18 +262,43 @@ export const MemoryGardenView: React.FC = () => {
             icon={<Camera className="w-5 h-5" />}
             onClick={() => setIsAddModalOpen(true)}
           >
-            {storyLang === 'as' ? 'নতুন স্মৃতি যোগ কৰক' : storyLang === 'hi' ? 'नई याद जोड़ें' : 'Add Photo Memory'}
+            {storyLang === 'as' ? 'নতুন স্মৃতি যোগ কৰক' : storyLang === 'bn' ? 'নতুন স্মৃতি যোগ করুন' : storyLang === 'ne' ? 'नयाँ सम्झना थप्नुहोस्' : storyLang === 'brx' ? 'गोदान गोसोखांथि सोदेर' : storyLang === 'hi' ? 'नई याद जोड़ें' : 'Add Photo Memory'}
           </Button>
         </div>
+      </div>
+
+      {/* 6-Language Quick Toggle Pills */}
+      <div className="flex flex-wrap items-center gap-2 bg-slate-100/80 p-2 rounded-2xl border border-slate-200">
+        <span className="text-xs font-black text-slate-600 px-2 flex items-center gap-1">
+          <Languages className="w-4 h-4 text-[#004085]" /> Language:
+        </span>
+        {languageOptions.map((opt) => {
+          const isSelected = storyLang === opt.code;
+          return (
+            <button
+              key={opt.code}
+              type="button"
+              onClick={() => setStoryLang(opt.code)}
+              className={`px-3 py-1 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${
+                isSelected
+                  ? 'bg-[#004085] text-amber-300 shadow-md ring-2 ring-blue-300'
+                  : 'bg-white text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200'
+              }`}
+            >
+              <span>{opt.flag}</span>
+              <span>{opt.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Category Filter Pills (All 7 Categories + All Memories) */}
       <div className="flex flex-wrap items-center gap-2 pb-1 overflow-x-auto">
         {categories.map((cat) => {
-          const label = categoryLabels[cat] || { en: cat, hi: cat, as: cat };
+          const labelMap = categoryLabels[cat] || { en: cat, hi: cat, as: cat, bn: cat, ne: cat, brx: cat };
           const isSelected = selectedCategory === cat;
-          const displayLabel = storyLang === 'as' ? label.as : storyLang === 'hi' ? label.hi : label.en;
-          const secondaryLabel = storyLang === 'as' ? label.en : storyLang === 'hi' ? label.en : label.hi;
+          const displayLabel = labelMap[storyLang] || labelMap.en || cat;
+          const secondaryLabel = storyLang === 'en' ? labelMap.hi : labelMap.en;
           return (
             <button
               key={cat}
@@ -255,10 +336,16 @@ export const MemoryGardenView: React.FC = () => {
             {/* Badges Row */}
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs shadow-xs flex items-center gap-1">
-                ⭐ {storyLang === 'as' ? 'মুখ্য স্মৃতি (Featured)' : storyLang === 'hi' ? 'प्रमुख स्मृति (Featured)' : 'Featured Memory'}
+                ⭐ {
+                  storyLang === 'as' ? 'মুখ্য স্মৃতি (Featured)' :
+                  storyLang === 'bn' ? 'প্রধান স্মৃতি (Featured)' :
+                  storyLang === 'ne' ? 'मुख्य सम्झना (Featured)' :
+                  storyLang === 'brx' ? 'गाहाइ गोसोखांथि (Featured)' :
+                  storyLang === 'hi' ? 'प्रमुख स्मृति (Featured)' : 'Featured Memory'
+                }
               </span>
               <span className="text-xs font-bold text-slate-100 bg-[#004085]/90 px-3 py-1 rounded-full shadow-xs">
-                {featuredMemory.category}
+                {categoryLabels[featuredMemory.category]?.[storyLang] || featuredMemory.category}
               </span>
               <span className="text-xs font-black text-amber-300 bg-black/50 px-2.5 py-1 rounded-full shadow-xs">
                 {featuredMemory.year}
@@ -285,17 +372,11 @@ export const MemoryGardenView: React.FC = () => {
               <VoiceButton
                 textToSpeak={`${getMemoryTitle(featuredMemory)}। ${getMemoryStory(featuredMemory)}`}
                 lang={storyLang}
-                label={
-                  storyLang === 'as'
-                    ? 'স্মৃতি কাহিনী শুনক (Listen in Assamese)'
-                    : storyLang === 'hi' 
-                      ? 'कहानी सुनें (Listen in Hindi)' 
-                      : 'Listen to Story (English)'
-                }
+                label={voiceBtnLabels[storyLang]}
                 size="md"
               />
               <span className="text-xs md:text-sm font-bold text-amber-300 group-hover:underline flex items-center gap-1">
-                {storyLang === 'as' ? 'সম্পূৰ্ণ কাহিনী আৰু ছবি চাওক →' : storyLang === 'hi' ? 'पूरी कहानी और तस्वीर देखें →' : 'View Full Memory & Photo →'}
+                {viewFullLabels[storyLang]}
               </span>
             </div>
           </div>
@@ -309,9 +390,15 @@ export const MemoryGardenView: React.FC = () => {
             <span>
               {storyLang === 'as'
                 ? 'সকলো স্মৃতিকথা আৰু আলোকচিত্ৰ'
-                : storyLang === 'hi'
-                  ? 'सभी स्मृतियाँ एवं पारिवारिक क्षण'
-                  : 'All Memories & Family Photographs'}
+                : storyLang === 'bn'
+                  ? 'সকল স্মৃতি ও আলোকচিত্র'
+                  : storyLang === 'ne'
+                    ? 'सबै सम्झना र तस्बिरहरू'
+                    : storyLang === 'brx'
+                      ? 'गासै गोसोखांथि आरो सावगारिफोर'
+                      : storyLang === 'hi'
+                        ? 'सभी स्मृतियाँ एवं पारिवारिक क्षण'
+                        : 'All Memories & Family Photographs'}
             </span>
             <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-blue-100 text-[#004085]">
               {filteredMemories.length}
@@ -320,9 +407,15 @@ export const MemoryGardenView: React.FC = () => {
           <p className="text-xs text-slate-500 mt-0.5">
             {storyLang === 'as'
               ? 'নিৰ্বাচিত ভাগ অনুসৰি পৰিয়ালৰ প্ৰতিটো অমূল্য স্মৃতি তলত চাওক'
-              : storyLang === 'hi'
-                ? 'चुनी गई श्रेणी के अनुसार परिवार की प्रत्येक अनमोल स्मृति नीचे देखें'
-                : 'Browse all cherished moments and family stories below'}
+              : storyLang === 'bn'
+                ? 'নির্বাচিত বিভাগ অনুযায়ী পরিবারের প্রতিটি অমূল্য স্মৃতি নিচে দেখুন'
+                : storyLang === 'ne'
+                  ? 'छनोट गरिएको वर्ग अनुसार परिवारको हरेक अनमोल सम्झना तल हेर्नुहोस्'
+                  : storyLang === 'brx'
+                    ? 'सायखनाय बाहागो बादियै नखरनि मोनफ्रोमबो अनसायथाव गोसोखांथिखौ गाहायाव नाय'
+                    : storyLang === 'hi'
+                      ? 'चुनी गई श्रेणी के अनुसार परिवार की प्रत्येक अनमोल स्मृति नीचे देखें'
+                      : 'Browse all cherished moments and family stories below'}
           </p>
         </div>
       </div>
@@ -344,7 +437,7 @@ export const MemoryGardenView: React.FC = () => {
                   className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3 bg-[#004085]/90 backdrop-blur-md text-amber-300 text-xs font-black px-3 py-1 rounded-full shadow-sm">
-                  {mem.category}
+                  {categoryLabels[mem.category]?.[storyLang] || mem.category}
                 </div>
                 <div className="absolute top-3 right-3 bg-amber-400 text-slate-900 text-xs font-black px-2.5 py-1 rounded-full shadow-sm">
                   {mem.year}
@@ -383,11 +476,11 @@ export const MemoryGardenView: React.FC = () => {
                   <VoiceButton
                     textToSpeak={`${getMemoryTitle(mem)}। ${getMemoryStory(mem)}`}
                     lang={storyLang}
-                    label={storyLang === 'as' ? 'কাহিনী শুনক' : storyLang === 'hi' ? 'कहानी सुनें' : 'Listen Story'}
+                    label={voiceBtnLabels[storyLang]}
                     size="sm"
                   />
                   <span className="text-xs font-extrabold text-blue-800 group-hover:underline">
-                    {storyLang === 'as' ? 'বিৱৰণ চাওক →' : storyLang === 'hi' ? 'विवरण देखें →' : 'View Details →'}
+                    {viewDetailsLabels[storyLang]}
                   </span>
                 </div>
               </div>
@@ -414,7 +507,7 @@ export const MemoryGardenView: React.FC = () => {
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ivory-200 pb-3">
               <span className="px-3.5 py-1 rounded-full bg-forest-800 text-ivory-50 text-xs font-bold">
-                {activeSelectedMemory.category} · {activeSelectedMemory.year}
+                {categoryLabels[activeSelectedMemory.category]?.[storyLang] || activeSelectedMemory.category} · {activeSelectedMemory.year}
               </span>
 
               {activeSelectedMemory.person && (
@@ -432,11 +525,11 @@ export const MemoryGardenView: React.FC = () => {
               <VoiceButton
                 textToSpeak={`${getMemoryTitle(activeSelectedMemory)}। ${getMemoryStory(activeSelectedMemory)}`}
                 lang={storyLang}
-                label={storyLang === 'as' ? 'স্মৃতি কাহিনী শুনক' : storyLang === 'hi' ? 'स्मृति कहानी सुनें' : 'Listen to Memory Story'}
+                label={voiceBtnLabels[storyLang]}
                 size="md"
               />
               <Button variant="outline" size="sm" onClick={() => setActiveSelectedMemory(null)}>
-                {storyLang === 'as' ? 'বন্ধ কৰক' : storyLang === 'hi' ? 'बंद करें' : 'Close'}
+                {closeLabels[storyLang]}
               </Button>
             </div>
           </div>

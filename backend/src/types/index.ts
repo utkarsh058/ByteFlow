@@ -51,6 +51,9 @@ export interface MemoryEntry {
   titleHi?: string;
   titleEn?: string;
   titleAs?: string;
+  titleBn?: string;
+  titleNe?: string;
+  titleBrx?: string;
   year: number;
   person?: string;
   location?: string;
@@ -59,6 +62,9 @@ export interface MemoryEntry {
   storyHi?: string;
   storyEn?: string;
   storyAs?: string;
+  storyBn?: string;
+  storyNe?: string;
+  storyBrx?: string;
   imageUrl?: string;
   audioUrl?: string;
   createdAt: string;
