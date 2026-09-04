@@ -322,20 +322,17 @@ export const MemoryGardenView: React.FC = () => {
       {featuredMemory && (
         <section
           onClick={() => setActiveSelectedMemory(featuredMemory)}
-          className="relative rounded-3xl overflow-hidden shadow-xl cursor-pointer group bg-slate-950 border-2 border-slate-200 min-h-[360px] md:min-h-[420px] flex items-end md:items-center"
+          className="rounded-3xl overflow-hidden shadow-2xl cursor-pointer group bg-gradient-to-br from-[#061833] via-[#002855] to-slate-950 border-2 border-slate-300/40 p-5 md:p-8 text-white transition-all hover:border-amber-400"
         >
-          <img
-            src={featuredMemory.imageUrl}
-            alt={getMemoryTitle(featuredMemory)}
-            className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80"
-          />
-          
-          <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-slate-950/95 via-slate-950/80 to-transparent" />
-
-          <div className="relative z-10 p-6 md:p-10 text-white space-y-4 max-w-2xl">
-            {/* Badges Row */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs shadow-xs flex items-center gap-1">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+            {/* Full Family Photo Container with Perfect Alignment & Uncropped Visibility */}
+            <div className="lg:col-span-7 xl:col-span-7 relative rounded-2xl overflow-hidden bg-slate-950/90 border border-slate-700/60 shadow-xl flex items-center justify-center min-h-[280px] md:min-h-[380px] max-h-[460px]">
+              <img
+                src={featuredMemory.imageUrl}
+                alt={getMemoryTitle(featuredMemory)}
+                className="w-full h-full max-h-[460px] object-contain md:object-cover object-top group-hover:scale-102 transition-transform duration-500 rounded-2xl"
+              />
+              <div className="absolute top-3 left-3 bg-amber-400 text-slate-950 font-black text-xs px-3 py-1 rounded-full shadow-md flex items-center gap-1">
                 ⭐ {
                   storyLang === 'as' ? 'মুখ্য স্মৃতি (Featured)' :
                   storyLang === 'bn' ? 'প্রধান স্মৃতি (Featured)' :
@@ -343,41 +340,44 @@ export const MemoryGardenView: React.FC = () => {
                   storyLang === 'brx' ? 'गाहाइ गोसोखांथि (Featured)' :
                   storyLang === 'hi' ? 'प्रमुख स्मृति (Featured)' : 'Featured Memory'
                 }
-              </span>
-              <span className="text-xs font-bold text-slate-100 bg-[#004085]/90 px-3 py-1 rounded-full shadow-xs">
-                {categoryLabels[featuredMemory.category]?.[storyLang] || featuredMemory.category}
-              </span>
-              <span className="text-xs font-black text-amber-300 bg-black/50 px-2.5 py-1 rounded-full shadow-xs">
-                {featuredMemory.year}
-              </span>
-              {featuredMemory.location && (
-                <span className="text-xs font-semibold text-slate-300 bg-black/40 px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-amber-400" /> {featuredMemory.location}
-                </span>
-              )}
+              </div>
+              <div className="absolute top-3 right-3 bg-[#004085]/90 text-amber-300 font-extrabold text-xs px-3 py-1 rounded-full shadow-md backdrop-blur-xs">
+                {categoryLabels[featuredMemory.category]?.[storyLang] || featuredMemory.category} · {featuredMemory.year}
+              </div>
             </div>
 
-            {/* Title */}
-            <h3 className="text-2xl md:text-3.5xl font-serif font-bold text-white leading-snug tracking-tight">
-              {getMemoryTitle(featuredMemory)}
-            </h3>
+            {/* Narrative & Details Column */}
+            <div className="lg:col-span-5 xl:col-span-5 flex flex-col justify-between space-y-4">
+              <div className="space-y-3">
+                {featuredMemory.location && (
+                  <span className="inline-flex text-xs font-semibold text-amber-300 bg-white/10 px-3 py-1 rounded-full items-center gap-1 backdrop-blur-xs border border-white/15">
+                    <MapPin className="w-3.5 h-3.5 text-amber-400" /> {featuredMemory.location}
+                  </span>
+                )}
+                {featuredMemory.person && (
+                  <div className="text-xs text-slate-300 font-medium flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5 text-amber-400" /> {featuredMemory.person}
+                  </div>
+                )}
+                <h3 className="text-2xl md:text-3xl font-serif font-bold text-white leading-snug tracking-tight">
+                  {getMemoryTitle(featuredMemory)}
+                </h3>
+                <p className="text-slate-200 text-sm md:text-base leading-relaxed line-clamp-4 font-normal">
+                  {getMemoryStory(featuredMemory)}
+                </p>
+              </div>
 
-            {/* Story */}
-            <p className="text-slate-200 text-sm md:text-base leading-relaxed line-clamp-3 font-normal">
-              {getMemoryStory(featuredMemory)}
-            </p>
-
-            {/* Action Buttons */}
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
-              <VoiceButton
-                textToSpeak={`${getMemoryTitle(featuredMemory)}। ${getMemoryStory(featuredMemory)}`}
-                lang={storyLang}
-                label={voiceBtnLabels[storyLang]}
-                size="md"
-              />
-              <span className="text-xs md:text-sm font-bold text-amber-300 group-hover:underline flex items-center gap-1">
-                {viewFullLabels[storyLang]}
-              </span>
+              <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-slate-700/60">
+                <VoiceButton
+                  textToSpeak={`${getMemoryTitle(featuredMemory)}। ${getMemoryStory(featuredMemory)}`}
+                  lang={storyLang}
+                  label={voiceBtnLabels[storyLang]}
+                  size="md"
+                />
+                <span className="text-xs md:text-sm font-bold text-amber-300 group-hover:underline flex items-center gap-1">
+                  {viewFullLabels[storyLang]}
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -412,7 +412,7 @@ export const MemoryGardenView: React.FC = () => {
                 : storyLang === 'ne'
                   ? 'छनोट गरिएको वर्ग अनुसार परिवारको हरेक अनमोल सम्झना तल हेर्नुहोस्'
                   : storyLang === 'brx'
-                    ? 'सायखनाय बाहागो बादियै नखरनि मोनफ्रोमबो अनसायथाव गोसोखांथिखौ गाहायाव नाय'
+                    ? 'सायखनाय बाहागो बादियै नखरनि मोनফ্রোমবো अनसायथाव गोसोखांथिखौ गाहायाव नाय'
                     : storyLang === 'hi'
                       ? 'चुनी गई श्रेणी के अनुसार परिवार की प्रत्येक अनमोल स्मृति नीचे देखें'
                       : 'Browse all cherished moments and family stories below'}
@@ -430,11 +430,11 @@ export const MemoryGardenView: React.FC = () => {
           >
             {/* Memory Photograph */}
             {mem.imageUrl && (
-              <div className="relative h-56 overflow-hidden bg-slate-100">
+              <div className="relative h-64 overflow-hidden bg-slate-950 flex items-center justify-center">
                 <img
                   src={mem.imageUrl}
                   alt={getMemoryTitle(mem)}
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 left-3 bg-[#004085]/90 backdrop-blur-md text-amber-300 text-xs font-black px-3 py-1 rounded-full shadow-sm">
                   {categoryLabels[mem.category]?.[storyLang] || mem.category}
@@ -498,11 +498,13 @@ export const MemoryGardenView: React.FC = () => {
         >
           <div className="space-y-6">
             {activeSelectedMemory.imageUrl && (
-              <img
-                src={activeSelectedMemory.imageUrl}
-                alt={getMemoryTitle(activeSelectedMemory)}
-                className="w-full h-80 object-cover rounded-3xl shadow-photo border-2 border-ivory-200"
-              />
+              <div className="w-full bg-slate-950 rounded-3xl overflow-hidden shadow-photo border-2 border-ivory-200 flex items-center justify-center max-h-[520px]">
+                <img
+                  src={activeSelectedMemory.imageUrl}
+                  alt={getMemoryTitle(activeSelectedMemory)}
+                  className="w-full max-h-[520px] object-contain rounded-2xl"
+                />
+              </div>
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-ivory-200 pb-3">
