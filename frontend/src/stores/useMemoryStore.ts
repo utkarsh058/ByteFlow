@@ -27,7 +27,7 @@ const initialMemories: MemoryEntry[] = [
     storyHi: 'रंगाली बिहू और दीवाली के पावन अवसर पर घर के आँगन में नीम के पेड़ के नीचे पूरा परिवार एक साथ इकट्ठा हुआ था। ढोल की मधुर थाप, ताज़ा बने नारियल के पीठा और गुड़ की खुशबू, और सबने मिलकर पारंपरिक गीत गाए थे। वह दिन आज भी दिल को सुकून और अपनेपन से भर देता है।',
     storyEn: 'During the festive Bihu celebration, the whole family gathered under the courtyard neem tree. We enjoyed the rhythmic beats of traditional dhols, shared fresh homemade sweet pithas, and sang joyful folk songs together.',
     storyAs: 'ৰঙালী বিহুৰ পবিত্ৰ সময়ত ঘৰৰ চোতালত নিম গছৰ তলত সকলো পৰিয়াল একলগ হৈছিল। ঢোলৰ মধুৰ চাপ, নাৰিকলৰ পিঠা আৰু লাড়ুৰ সোৱাদ আৰু সকলোৱে মিলি গোৱা বিহু গীতৰ সেই মিঠা দিনটো আজিও মনত সতেজ হৈ আছে।',
-    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80',
     createdAt: '2026-08-01T10:00:00Z',
     tags: ['Family', 'Bihu', 'Tradition', 'Guwahati', 'परिवार', 'পৰিয়াল'],
     featured: true,
