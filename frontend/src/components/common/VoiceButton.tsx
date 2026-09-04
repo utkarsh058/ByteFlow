@@ -7,6 +7,7 @@ import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
 interface VoiceButtonProps {
   textToSpeak: string;
   label?: string;
+  lang?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
@@ -14,6 +15,7 @@ interface VoiceButtonProps {
 export const VoiceButton: React.FC<VoiceButtonProps> = ({
   textToSpeak,
   label = 'Listen',
+  lang,
   size = 'md',
   className = '',
 }) => {
@@ -28,8 +30,15 @@ export const VoiceButton: React.FC<VoiceButtonProps> = ({
       setIsPlaying(false);
     } else {
       setIsPlaying(true);
-      speakText(textToSpeak, currentLanguage);
-      setTimeout(() => setIsPlaying(false), Math.max(3000, textToSpeak.length * 85));
+      const targetLanguage = lang || currentLanguage || 'en';
+      speakText(
+        textToSpeak,
+        targetLanguage,
+        () => setIsPlaying(false),
+        () => setIsPlaying(false)
+      );
+      // Safety timeout in case browser does not fire onend
+      setTimeout(() => setIsPlaying(false), Math.max(4000, textToSpeak.length * 100));
     }
   };
 

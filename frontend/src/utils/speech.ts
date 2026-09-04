@@ -43,16 +43,24 @@ export const getAvailableVoices = (): VoiceOption[] => {
   }));
 };
 
-export const speakText = (text: string, lang: string = 'en') => {
-  if (!('speechSynthesis' in window)) {
+export const speakText = (text: string, lang: string = 'en', onEnd?: () => void, onError?: () => void) => {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     console.warn('Speech synthesis is not supported in this browser environment.');
+    if (onError) onError();
     return;
   }
 
   // Cancel any ongoing speech
   window.speechSynthesis.cancel();
 
-  const utterance = new SpeechSynthesisUtterance(text);
+  // Clean and prepare text for speech synthesis
+  const cleanText = text.trim();
+  if (!cleanText) {
+    if (onEnd) onEnd();
+    return;
+  }
+
+  const utterance = new SpeechSynthesisUtterance(cleanText);
 
   // Map language codes to BCP 47 tags for speech synthesis
   const langMap: Record<string, string> = {
@@ -65,32 +73,72 @@ export const speakText = (text: string, lang: string = 'en') => {
     mr: 'mr-IN',
   };
 
-  const targetLang = langMap[lang] || 'en-IN';
+  const targetLang = langMap[lang] || lang || 'en-IN';
   utterance.lang = targetLang;
   utterance.rate = preferredRate; // Slightly slower, calm cadence for elderly comprehension
   utterance.pitch = 1.0;
 
-  // Find preferred voice if set or match matching language voice
-  const voices = window.speechSynthesis.getVoices();
-  if (voices.length > 0) {
-    let matchedVoice: SpeechSynthesisVoice | undefined;
-
-    if (preferredVoiceURI) {
-      matchedVoice = voices.find((v) => v.voiceURI === preferredVoiceURI);
-    }
-
-    if (!matchedVoice) {
-      // Find voice matching the target language code prefix
-      const prefix = targetLang.split('-')[0].toLowerCase();
-      matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith(prefix));
-    }
-
-    if (matchedVoice) {
-      utterance.voice = matchedVoice;
-    }
+  if (onEnd) {
+    utterance.onend = () => onEnd();
+  }
+  if (onError) {
+    utterance.onerror = () => onError();
   }
 
-  window.speechSynthesis.speak(utterance);
+  const selectVoiceAndSpeak = () => {
+    const voices = window.speechSynthesis.getVoices();
+    if (voices.length > 0) {
+      let matchedVoice: SpeechSynthesisVoice | undefined;
+
+      // 1. If preferred voice URI is set by user, prioritize it
+      if (preferredVoiceURI) {
+        matchedVoice = voices.find((v) => v.voiceURI === preferredVoiceURI);
+      }
+
+      // 2. Direct exact or prefix match
+      if (!matchedVoice) {
+        const prefix = targetLang.split('-')[0].toLowerCase();
+        matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith(prefix) || v.lang.toLowerCase() === targetLang.toLowerCase());
+      }
+
+      // 3. Special Fallbacks for Indian Regional Languages
+      if (!matchedVoice) {
+        if (lang === 'as' || targetLang === 'as-IN') {
+          // Assamese falls back to Bengali (same script/phonetics) or Hindi voice
+          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
+            || voices.find((v) => v.lang.toLowerCase().includes('india') || v.lang.toLowerCase().includes('in'));
+          if (matchedVoice) {
+            utterance.lang = matchedVoice.lang;
+          }
+        } else if (lang === 'hi' || targetLang === 'hi-IN') {
+          // Hindi falls back to any Indic or Indian English voice that supports Devanagari
+          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('mr'))
+            || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
+            || voices.find((v) => v.lang.toLowerCase().includes('in'));
+        }
+      }
+
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      }
+    }
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  // Ensure voices are loaded (Chrome loads voices asynchronously)
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) {
+    window.speechSynthesis.onvoiceschanged = () => {
+      selectVoiceAndSpeak();
+    };
+    // Fallback if event doesn't fire immediately
+    setTimeout(selectVoiceAndSpeak, 100);
+  } else {
+    selectVoiceAndSpeak();
+  }
 };
 
 export const stopSpeech = () => {

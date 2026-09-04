@@ -284,6 +284,7 @@ export const MemoryGardenView: React.FC = () => {
             <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
               <VoiceButton
                 textToSpeak={`${getMemoryTitle(featuredMemory)}। ${getMemoryStory(featuredMemory)}`}
+                lang={storyLang}
                 label={
                   storyLang === 'as'
                     ? 'স্মৃতি কাহিনী শুনক (Listen in Assamese)'
@@ -381,6 +382,7 @@ export const MemoryGardenView: React.FC = () => {
                 <div className="pt-1 flex items-center justify-between">
                   <VoiceButton
                     textToSpeak={`${getMemoryTitle(mem)}। ${getMemoryStory(mem)}`}
+                    lang={storyLang}
                     label={storyLang === 'as' ? 'কাহিনী শুনক' : storyLang === 'hi' ? 'कहानी सुनें' : 'Listen Story'}
                     size="sm"
                   />
@@ -429,6 +431,7 @@ export const MemoryGardenView: React.FC = () => {
             <div className="pt-2 flex justify-between items-center">
               <VoiceButton
                 textToSpeak={`${getMemoryTitle(activeSelectedMemory)}। ${getMemoryStory(activeSelectedMemory)}`}
+                lang={storyLang}
                 label={storyLang === 'as' ? 'স্মৃতি কাহিনী শুনক' : storyLang === 'hi' ? 'स्मृति कहानी सुनें' : 'Listen to Memory Story'}
                 size="md"
               />
