@@ -13,12 +13,23 @@ import { MemoryGardenView } from './components/memory/MemoryGardenView';
 import { RemindersManagerView } from './components/reminders/RemindersManagerView';
 import { AiVoiceCompanion } from './components/common/AiVoiceCompanion';
 import { ArrowLeft } from 'lucide-react';
+import { useHardwareSocketStore } from './stores/useHardwareSocketStore';
+import hardwareInputAdapter from './services/hardwareInputAdapter';
 
 export const App: React.FC = () => {
   const { role, setRole } = useAuthStore();
   const [viewMode, setViewMode] = useState<'public_portal' | 'authenticated_app'>('public_portal');
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
   const [activeTab, setActiveTab] = useState<string>('home');
+
+  React.useEffect(() => {
+    // Initialize Socket.io connection to hardware gateway
+    useHardwareSocketStore.getState().connect();
+    // Initialize unified hardware input adapter (unbound to games)
+    hardwareInputAdapter.initialize();
+  }, []);
+
+
 
   const handleStartActivity = (type: ActivityType) => {
     setSelectedActivity(type);

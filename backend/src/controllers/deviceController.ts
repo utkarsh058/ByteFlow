@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { dataStore } from '../store/dataStore';
+import { broadcastHardwareEvent, isValidHardwareButtonEvent } from '../modules/hardwareSocket';
 
 export const getDeviceTelemetry = (req: Request, res: Response) => {
   try {
@@ -29,7 +30,7 @@ export const getDeviceEvents = (req: Request, res: Response) => {
 export const triggerDeviceAction = (req: Request, res: Response) => {
   try {
     const deviceId = req.params.deviceId as string;
-    const { actionType, payload } = req.body;
+    const { actionType, payload, button } = req.body;
 
     const device = dataStore.getDevice(deviceId);
     if (!device) {
@@ -46,7 +47,14 @@ export const triggerDeviceAction = (req: Request, res: Response) => {
       dataStore.updateDeviceState(deviceId, { buzzerActive: nextBuzzer });
       description = nextBuzzer ? 'Buzzer audio alert triggered' : 'Buzzer audio alert silenced';
     } else if (actionType === 'button_press') {
-      description = description || 'Physical assist button pressed on ESP32 node';
+      description = description || `Physical assist button (${button || 'RED'}) pressed on ESP32 node`;
+      const targetButton = (button || 'RED').toUpperCase();
+      broadcastHardwareEvent({
+        type: 'BUTTON_PRESS',
+        button: targetButton as any,
+        deviceId,
+        timestamp: Date.now(),
+      });
     }
 
     const event = dataStore.addDeviceEvent(
@@ -64,6 +72,33 @@ export const triggerDeviceAction = (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to trigger device action', details: error.message });
   }
 };
+
+export const emitTestButtonEvent = (req: Request, res: Response) => {
+  try {
+    const { button = 'RED', deviceId = 'ESP32-NER-GW-001' } = req.body;
+    const eventPayload = {
+      type: 'BUTTON_PRESS',
+      button: String(button).toUpperCase(),
+      deviceId: String(deviceId),
+      timestamp: Date.now(),
+    };
+
+    if (!isValidHardwareButtonEvent(eventPayload)) {
+      res.status(400).json({ error: 'Invalid button payload', payload: eventPayload });
+      return;
+    }
+
+    const broadcasted = broadcastHardwareEvent(eventPayload);
+    res.json({
+      success: true,
+      broadcasted,
+      event: eventPayload,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Failed to emit test hardware event', details: error.message });
+  }
+};
+
 
 export const updateDevice = (req: Request, res: Response) => {
   try {
