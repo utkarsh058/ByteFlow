@@ -15,6 +15,8 @@ import { AiVoiceCompanion } from './components/common/AiVoiceCompanion';
 import { ArrowLeft } from 'lucide-react';
 import { useHardwareSocketStore } from './stores/useHardwareSocketStore';
 import hardwareInputAdapter from './services/hardwareInputAdapter';
+import { HardwareTestPanel } from './components/common/HardwareTestPanel';
+
 
 export const App: React.FC = () => {
   const { role, setRole } = useAuthStore();
@@ -149,8 +151,12 @@ export const App: React.FC = () => {
         onOpenPortal={() => setViewMode('public_portal')}
         currentTab={activeTab}
       />
+
+      {/* Development-Only ESP32 Hardware Test Panel Overlay */}
+      <HardwareTestPanel />
     </div>
   );
 };
+
 
 export default App;
