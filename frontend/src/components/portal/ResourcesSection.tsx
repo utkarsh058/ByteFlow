@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { FileText, Download, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Download } from 'lucide-react';
 import { sampleResourcesData } from '../../data/resourcesData';
 
 export const ResourcesSection: React.FC = () => {
+  const { t } = useTranslation();
   const [activeCategory, setActiveCategory] = useState<'All' | 'Patient' | 'Caregiver' | 'Clinical' | 'Language Pack'>('All');
 
   const filtered = activeCategory === 'All'
@@ -15,13 +17,13 @@ export const ResourcesSection: React.FC = () => {
         
         <div className="border-b border-slate-200 pb-4">
           <span className="text-xs font-extrabold uppercase tracking-wider text-govNavy-dark">
-            Health Publications & Downloads
+            {t('portal.resourcesBadge', 'Health Publications & Downloads')}
           </span>
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mt-1">
-            Health Resources Directory
+            {t('portal.resourcesTitle', 'Health Resources Directory')}
           </h2>
           <p className="text-slate-600 text-sm md:text-base mt-1">
-            Download official patient handbooks, caregiver memory garden setup guides, and clinical protocols.
+            {t('portal.resourcesSubtitle', 'Download official patient handbooks, caregiver memory garden setup guides, and clinical protocols.')}
           </p>
         </div>
 
@@ -37,7 +39,7 @@ export const ResourcesSection: React.FC = () => {
                   : 'bg-white text-slate-800 border border-slate-300 hover:bg-slate-100'
               }`}
             >
-              {cat === 'All' ? 'All Resources' : `${cat} Resources`}
+              {t(`portal.resourceCategory.${cat}`, cat === 'All' ? 'All Resources' : `${cat} Resources`)}
             </button>
           ))}
         </div>
@@ -49,28 +51,28 @@ export const ResourcesSection: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="px-2.5 py-0.5 bg-govNavy-soft text-govNavy-dark font-extrabold text-[11px] rounded uppercase tracking-wider">
-                    {res.category} · {res.format}
+                    {t(`portal.resourceCategory.${res.category}`, res.category)} · {res.format}
                   </span>
                   <span className="text-xs font-bold text-slate-500">{res.size}</span>
                 </div>
 
                 <h3 className="font-serif font-bold text-lg text-slate-900">
-                  {res.title}
+                  {t(`portal.resources.${res.id}.title`, res.title)}
                 </h3>
 
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  {res.description}
+                  {t(`portal.resources.${res.id}.desc`, res.description)}
                 </p>
 
                 <p className="text-[11px] font-semibold text-slate-500 pt-1">
-                  Languages: {res.language}
+                  {t('portal.languagesLabel', 'Languages')}: {res.language}
                 </p>
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex justify-end">
-                <button className="bg-govNavy text-white hover:bg-govNavy-light px-4 py-2 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5">
+                <button className="bg-govNavy text-white hover:bg-govNavy-light px-4 py-2 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer">
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download Resource</span>
+                  <span>{t('portal.downloadResource', 'Download Resource')}</span>
                 </button>
               </div>
             </div>

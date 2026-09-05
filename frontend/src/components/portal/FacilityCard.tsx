@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, MapPin, Phone, ShieldCheck, Heart } from 'lucide-react';
+import { MapPin, Phone, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HealthFacility } from '../../types/govPortal';
 
@@ -17,11 +17,11 @@ export const FacilityCard: React.FC<FacilityCardProps> = ({ facility, onOpenDeta
       <div className="space-y-3">
         <div className="flex items-center justify-between gap-2">
           <span className="px-2.5 py-1 bg-govNavy-soft text-govNavy-dark font-extrabold text-[11px] rounded-md uppercase tracking-wider">
-            {facility.type}
+            {t(`healthcare.types.${facility.type}`, facility.type)}
           </span>
           {facility.hasCognitiveCare && (
             <span className="px-2.5 py-1 bg-amber-100 text-amber-900 font-bold text-[11px] rounded-md flex items-center gap-1">
-              <Heart className="w-3 h-3 text-amber-600 fill-amber-600" /> {t('portal.cognitiveCareNode', { defaultValue: 'Cognitive Care Node' })}
+              <Heart className="w-3 h-3 text-amber-600 fill-amber-600" /> {t('portal.cognitiveCareNode', 'Cognitive Care Node')}
             </span>
           )}
         </div>
@@ -33,7 +33,7 @@ export const FacilityCard: React.FC<FacilityCardProps> = ({ facility, onOpenDeta
         <div className="space-y-1.5 text-xs text-slate-600 font-medium">
           <p className="flex items-center gap-1.5 text-slate-800 font-bold">
             <MapPin className="w-3.5 h-3.5 text-govNavy shrink-0" />
-            <span>{facility.district}, {facility.state}</span>
+            <span>{facility.district}, {t(`states.${facility.stateCode}`, facility.state)}</span>
           </p>
           <p className="text-slate-600 line-clamp-1">{facility.address}</p>
         </div>
@@ -42,7 +42,7 @@ export const FacilityCard: React.FC<FacilityCardProps> = ({ facility, onOpenDeta
         <div className="pt-1 flex flex-wrap items-center gap-1.5">
           {facility.services.slice(0, 3).map((srv) => (
             <span key={srv} className="px-2 py-0.5 bg-slate-100 text-slate-700 rounded text-[11px] font-semibold">
-              {srv}
+              {t(`healthcare.services.${srv}`, srv)}
             </span>
           ))}
           {facility.services.length > 3 && (
@@ -61,9 +61,9 @@ export const FacilityCard: React.FC<FacilityCardProps> = ({ facility, onOpenDeta
 
         <button
           onClick={() => onOpenDetails(facility)}
-          className="text-xs font-extrabold text-govNavy hover:underline"
+          className="text-xs font-extrabold text-govNavy hover:underline cursor-pointer"
         >
-          {t('portal.viewDetails', { defaultValue: 'View Details →' })}
+          {t('portal.viewDetails', 'View Details')} →
         </button>
       </div>
 

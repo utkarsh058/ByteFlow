@@ -73,7 +73,7 @@ export const LanguageSelectorModal: React.FC<LanguageSelectorModalProps> = ({ is
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search Assamese, Bodo, Hindi, Meitei, Khasi, Mizo, Nepali..."
+              placeholder="Search English, Assamese, Bodo, Manipuri, Mizo, Bengali, Kokborok, Nepali..."
               className="w-full pl-11 pr-4 py-3 rounded-xl border border-ivory-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-charcoal-900 dark:text-white placeholder:text-charcoal-400 focus:outline-none focus:ring-2 focus:ring-forest-600 text-sm font-medium"
             />
           </div>

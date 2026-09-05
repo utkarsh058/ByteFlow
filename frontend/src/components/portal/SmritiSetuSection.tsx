@@ -1,13 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Heart, 
   UserCheck, 
   Stethoscope, 
-  Sparkles, 
   ArrowRight, 
   Lock, 
-  BrainCircuit,
-  Volume2
+  BrainCircuit
 } from 'lucide-react';
 
 interface SmritiSetuSectionProps {
@@ -15,6 +14,8 @@ interface SmritiSetuSectionProps {
 }
 
 export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPlatform }) => {
+  const { t } = useTranslation();
+
   return (
     <section id="smriti-setu-section" className="py-14 md:py-20 bg-gradient-to-br from-govNavy-dark via-govNavy to-blue-900 text-white border-b border-slate-800">
       <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 space-y-12">
@@ -22,7 +23,7 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-govYellow text-slate-950 font-extrabold text-xs uppercase tracking-wider shadow-xs">
-            <Heart className="w-3.5 h-3.5 fill-slate-950" /> Featured Mission Platform
+            <Heart className="w-3.5 h-3.5 fill-slate-950" /> {t('portal.featuredMission', 'Featured Mission Platform')}
           </span>
 
           <h2 className="text-3xl md:text-5xl font-serif font-bold text-white leading-tight">
@@ -30,15 +31,15 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
           </h2>
 
           <p className="text-amber-300 font-serif text-lg md:text-xl italic">
-            "Connecting memories, families and care."
+            "{t('tagline', 'Connecting memories, families and care.')}"
           </p>
 
           <p className="text-slate-200 text-sm md:text-base leading-relaxed font-sans pt-2">
-            A multilingual cognitive assistance platform designed to support senior citizens experiencing memory and cognitive difficulties, alongside primary family caregivers and attending healthcare clinicians.
+            {t('portal.smritiSetuDesc', 'A multilingual cognitive assistance platform designed to support senior citizens experiencing memory and cognitive difficulties, alongside primary family caregivers and attending healthcare clinicians.')}
           </p>
         </div>
 
-        {/* Visual Workflow: Patient -> Cognitive Activities -> Caregiver -> Clinician with Real Photos */}
+        {/* Visual Workflow */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
           
           {/* Step 1: Patient */}
@@ -55,9 +56,9 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
               </div>
             </div>
             <div className="p-5 space-y-2">
-              <h3 className="font-serif font-bold text-lg text-white">1. Patient Portal</h3>
+              <h3 className="font-serif font-bold text-lg text-white">1. {t('portal.patientPortalTitle', 'Patient Portal')}</h3>
               <p className="text-slate-200 text-xs leading-relaxed">
-                Warm greeting, large typography, audio guidance, and peaceful memory exercises tailored for NER elders.
+                {t('portal.patientPortalDesc', 'Warm greeting, large typography, audio guidance, and peaceful memory exercises tailored for NER elders.')}
               </p>
             </div>
           </div>
@@ -76,9 +77,9 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
               </div>
             </div>
             <div className="p-5 space-y-2">
-              <h3 className="font-serif font-bold text-lg text-white">2. AI Cognitive Care</h3>
+              <h3 className="font-serif font-bold text-lg text-white">2. {t('portal.aiCognitiveCareTitle', 'AI Cognitive Care')}</h3>
               <p className="text-slate-200 text-xs leading-relaxed">
-                5 interactive games with automatic difficulty scaling, spatial recall, and picture recognition.
+                {t('portal.aiCognitiveCareDesc', 'Interactive games with automatic difficulty scaling, spatial recall, and picture recognition.')}
               </p>
             </div>
           </div>
@@ -97,9 +98,9 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
               </div>
             </div>
             <div className="p-5 space-y-2">
-              <h3 className="font-serif font-bold text-lg text-white">3. Caregiver Support</h3>
+              <h3 className="font-serif font-bold text-lg text-white">3. {t('portal.caregiverSupportTitle', 'Caregiver Support')}</h3>
               <p className="text-slate-200 text-xs leading-relaxed">
-                Memory Garden photo timelines, medicine reminders, and real-time engagement alerts for families.
+                {t('portal.caregiverSupportDesc', 'Memory Garden photo timelines, medicine reminders, and real-time engagement alerts for families.')}
               </p>
             </div>
           </div>
@@ -118,9 +119,9 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
               </div>
             </div>
             <div className="p-5 space-y-2">
-              <h3 className="font-serif font-bold text-lg text-white">4. Clinician Insights</h3>
+              <h3 className="font-serif font-bold text-lg text-white">4. {t('portal.clinicianInsightsTitle', 'Clinician Insights')}</h3>
               <p className="text-slate-200 text-xs leading-relaxed">
-                Session trends, response time metrics, and AI-assisted cognitive decline screening reports.
+                {t('portal.clinicianInsightsDesc', 'Session trends, response time metrics, and AI-assisted cognitive decline screening reports.')}
               </p>
             </div>
           </div>
@@ -131,10 +132,10 @@ export const SmritiSetuSection: React.FC<SmritiSetuSectionProps> = ({ onAccessPl
         <div className="text-center pt-4">
           <button
             onClick={onAccessPlatform}
-            className="bg-govYellow text-slate-950 hover:bg-govYellow-dark px-8 py-4 rounded-2xl font-extrabold text-base md:text-lg shadow-banner transition-all transform hover:scale-105 inline-flex items-center gap-3"
+            className="bg-govYellow text-slate-950 hover:bg-govYellow-dark px-8 py-4 rounded-2xl font-extrabold text-base md:text-lg shadow-banner transition-all transform hover:scale-105 inline-flex items-center gap-3 cursor-pointer"
           >
             <Lock className="w-5 h-5 text-slate-950" />
-            <span>Access Smriti-Setu Authenticated Platform</span>
+            <span>{t('portal.accessPlatformBtn', 'Access Smriti-Setu Authenticated Platform')}</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         </div>

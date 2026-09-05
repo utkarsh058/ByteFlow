@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Lock, 
   UserCheck, 
@@ -12,8 +13,7 @@ import {
   CreditCard,
   CheckCircle2,
   Cpu,
-  RefreshCw,
-  Key
+  RefreshCw
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';
 import { UserRole } from '../../types';
@@ -30,6 +30,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   onLoginSuccess,
 }) => {
+  const { t } = useTranslation();
   const { setRole } = useAuthStore();
   const [step, setStep] = useState<'login' | 'role_select'>('login');
   const [authMethod, setAuthMethod] = useState<'abha' | 'rfid'>('abha');
@@ -72,7 +73,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setRole(role);
     onLoginSuccess(role);
     onClose();
-    // Reset state for next time modal opens
     setStep('login');
   };
 
@@ -85,33 +85,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const roleProfiles = [
     {
       id: 'patient' as UserRole,
-      title: 'Patient Access',
+      title: t('auth.patientRole', 'Patient Access'),
       name: 'Ranjit Borthakur (72 Yrs)',
-      description: 'Simplified cognitive schedule, voice assistance & daily memory activities.',
+      description: t('auth.patientRoleDesc', 'Simplified cognitive schedule, voice assistance & daily memory activities.'),
       icon: <HeartPulse className="w-6 h-6 text-red-600" />,
       color: 'border-red-200 bg-red-50/50 hover:bg-red-50 hover:border-red-400',
     },
     {
       id: 'caregiver' as UserRole,
-      title: 'Caregiver Portal',
+      title: t('auth.caregiverRole', 'Caregiver Portal'),
       name: 'Ananya Borthakur',
-      description: 'Patient monitoring, Memory Garden timeline, and daily reminders management.',
+      description: t('auth.caregiverRoleDesc', 'Patient monitoring, Memory Garden timeline, and daily reminders management.'),
       icon: <UserCheck className="w-6 h-6 text-emerald-600" />,
       color: 'border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 hover:border-emerald-400',
     },
     {
       id: 'clinician' as UserRole,
-      title: 'Clinician Analytics',
+      title: t('auth.clinicianRole', 'Clinician Analytics'),
       name: 'Dr. Devashish Phukan',
-      description: 'Session history, response time trends, and AI-assisted observations.',
+      description: t('auth.clinicianRoleDesc', 'Session history, response time trends, and AI-assisted observations.'),
       icon: <Stethoscope className="w-6 h-6 text-blue-600" />,
       color: 'border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:border-blue-400',
     },
     {
       id: 'facility_admin' as UserRole,
-      title: 'Facility Administrator',
+      title: t('auth.facilityRole', 'Facility Administrator'),
       name: 'Guwahati Care Center Node',
-      description: 'Stationary ESP32 gateway telemetry, LED status, and event stream logs.',
+      description: t('auth.facilityRoleDesc', 'Stationary ESP32 gateway telemetry, LED status, and event stream logs.'),
       icon: <Building2 className="w-6 h-6 text-amber-600" />,
       color: 'border-amber-200 bg-amber-50/50 hover:bg-amber-50 hover:border-amber-400',
     },
@@ -127,17 +127,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <AshokaEmblem className="w-8 h-10 filter invert shrink-0" />
             <div>
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-300 block">
-                Official Government Access Gateway
+                {t('auth.gatewayBadge', 'Official Government Access Gateway')}
               </span>
               <h3 className="font-serif font-bold text-xl text-white">
-                Smriti-Setu Platform Login
+                {t('auth.loginTitle', 'Smriti-Setu Platform Login')}
               </h3>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-300 hover:text-white rounded-full hover:bg-govNavy-light transition-colors"
+            className="p-2 text-slate-300 hover:text-white rounded-full hover:bg-govNavy-light transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -146,17 +146,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         {/* Modal Body */}
         <div className="p-6 md:p-8 space-y-6 max-h-[80vh] overflow-y-auto">
 
-          {/* STEP 1: AUTHENTICATION LOGIN FIRST */}
+          {/* STEP 1: AUTHENTICATION */}
           {step === 'login' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               
               <div className="space-y-1">
                 <h4 className="font-serif font-bold text-slate-900 text-lg flex items-center gap-2">
                   <Lock className="w-5 h-5 text-govNavy" />
-                  <span>Step 1: Authenticate Account Credentials</span>
+                  <span>{t('auth.step1Title', 'Step 1: Authenticate Account Credentials')}</span>
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Please log in using your ABHA Health ID or scan your RFID RC522 Reader Smart Card:
+                  {t('auth.step1Subtitle', 'Please log in using your ABHA Health ID or scan your RFID RC522 Reader Smart Card:')}
                 </p>
               </div>
 
@@ -165,27 +165,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setAuthMethod('abha')}
-                  className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     authMethod === 'abha'
                       ? 'bg-govNavy text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <ShieldCheck className="w-4 h-4 text-govYellow" />
-                  <span>ABHA Health ID & PIN</span>
+                  <span>{t('auth.abhaTab', 'ABHA Health ID & PIN')}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => setAuthMethod('rfid')}
-                  className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  className={`flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                     authMethod === 'rfid'
                       ? 'bg-govNavy text-white shadow-xs'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
-                  <span>RFID RC522 Reader Card</span>
+                  <span>{t('auth.rfidTab', 'RFID RC522 Reader Card')}</span>
                 </button>
               </div>
 
@@ -195,7 +195,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        ABHA Health ID / Username
+                        {t('auth.abhaLabel', 'ABHA Health ID / Username')}
                       </label>
                       <input
                         type="text"
@@ -209,7 +209,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Passcode / PIN
+                        {t('auth.pinLabel', 'Passcode / PIN')}
                       </label>
                       <input
                         type="password"
@@ -225,24 +225,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   <div className="pt-2 flex items-center justify-between">
                     <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
                       <Lock className="w-3 h-3 text-emerald-600" />
-                      Encrypted Session · ABHA Verified
+                      {t('auth.encryptedNotice', 'Encrypted Session · ABHA Verified')}
                     </span>
                     <button
                       type="submit"
-                      className="bg-govNavy text-white hover:bg-govNavy-light px-6 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2"
+                      className="bg-govNavy text-white hover:bg-govNavy-light px-6 py-2.5 rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
                     >
-                      <span>Login & Proceed</span>
+                      <span>{t('auth.loginProceed', 'Login & Proceed')}</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 </form>
               )}
 
-              {/* AUTH METHOD 2: RFID RC522 CARD READER */}
+              {/* AUTH METHOD 2: RFID CARD READER */}
               {authMethod === 'rfid' && (
                 <div className="bg-slate-900 text-white p-6 rounded-2xl border border-slate-700 space-y-5 text-center relative overflow-hidden">
                   
-                  {/* Hardware Status Header */}
                   <div className="flex items-center justify-between text-xs text-slate-400 border-b border-slate-800 pb-3">
                     <span className="flex items-center gap-1.5 font-mono text-emerald-400 font-bold">
                       <Cpu className="w-4 h-4" />
@@ -253,7 +252,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     </span>
                   </div>
 
-                  {/* RFID Card Tap Scanner Graphic */}
                   <div className="py-4 flex flex-col items-center justify-center space-y-3">
                     <div 
                       onClick={handleRfidScan}
@@ -277,15 +275,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     <div>
                       <h5 className="font-bold text-sm text-white">
                         {rfidScanned 
-                          ? 'RFID Card Authenticated!' 
+                          ? t('auth.rfidSuccess', 'RFID Card Authenticated!') 
                           : rfidScanning 
-                            ? 'Scanning ESP32 RC522 Reader...' 
-                            : 'Tap / Scan RFID RC522 Smart Card'}
+                            ? t('auth.rfidScanning', 'Scanning ESP32 RC522 Reader...') 
+                            : t('auth.rfidPrompt', 'Tap / Scan RFID RC522 Smart Card')}
                       </h5>
                       <p className="text-xs font-mono text-slate-400 mt-0.5">
                         {rfidScanned 
                           ? 'Card UID: 84:9A:2B:3D (Ranjit Borthakur)' 
-                          : 'Hold RFID Card near RC522 Reader'}
+                          : t('auth.rfidHold', 'Hold RFID Card near RC522 Reader')}
                       </p>
                     </div>
                   </div>
@@ -294,10 +292,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     type="button"
                     onClick={handleRfidScan}
                     disabled={rfidScanning}
-                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Radio className="w-4 h-4" />
-                    <span>{rfidScanning ? 'Scanning Card...' : 'Scan RFID RC522 Card Now'}</span>
+                    <span>{rfidScanning ? t('auth.rfidScanning', 'Scanning Card...') : t('auth.scanRfidBtn', 'Scan RFID RC522 Card Now')}</span>
                   </button>
 
                 </div>
@@ -311,20 +309,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     setAuthenticatedAccount({ type: 'Demo Access', id: 'Quick Test Mode' });
                     setStep('role_select');
                   }}
-                  className="text-[11px] font-semibold text-govNavy hover:underline"
+                  className="text-[11px] font-semibold text-govNavy hover:underline cursor-pointer"
                 >
-                  ⚡ Skip to Role Selection (Quick Demo Mode)
+                  ⚡ {t('auth.quickDemoBypass', 'Skip to Role Selection (Quick Demo Mode)')}
                 </button>
               </div>
 
             </div>
           )}
 
-          {/* STEP 2: ROLE SELECTION AFTER SUCCESSFUL LOGIN */}
+          {/* STEP 2: ROLE SELECTION */}
           {step === 'role_select' && (
             <div className="space-y-6 animate-in fade-in duration-200">
               
-              {/* Login Confirmation Badge */}
               <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-emerald-600 text-white rounded-xl">
@@ -332,7 +329,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   </div>
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
-                      Authentication Successful
+                      {t('auth.authSuccess', 'Authentication Successful')}
                     </span>
                     <h5 className="font-bold text-slate-900 text-xs sm:text-sm">
                       {authenticatedAccount?.type}: <span className="font-mono text-emerald-700">{authenticatedAccount?.id}</span>
@@ -343,19 +340,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <button
                   type="button"
                   onClick={handleResetAuth}
-                  className="text-[11px] font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs"
+                  className="text-[11px] font-bold text-slate-600 hover:text-slate-900 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs cursor-pointer"
                 >
-                  Change Login
+                  {t('auth.changeLogin', 'Change Login')}
                 </button>
               </div>
 
               <div className="space-y-1">
                 <h4 className="font-serif font-bold text-slate-900 text-lg flex items-center gap-2">
                   <UserCheck className="w-5 h-5 text-govNavy" />
-                  <span>Step 2: Select Authorized Access Role</span>
+                  <span>{t('auth.step2Title', 'Step 2: Select Authorized Access Role')}</span>
                 </h4>
                 <p className="text-xs text-slate-600">
-                  Select your desired portal role below to enter the platform:
+                  {t('auth.step2Subtitle', 'Select your desired portal role below to enter the platform:')}
                 </p>
               </div>
 
@@ -372,7 +369,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         {role.icon}
                       </div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-govNavy group-hover:underline flex items-center gap-1">
-                        Enter Role <ArrowRight className="w-3 h-3" />
+                        {t('auth.enterRole', 'Enter Role')} <ArrowRight className="w-3 h-3" />
                       </span>
                     </div>
 

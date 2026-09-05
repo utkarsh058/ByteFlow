@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Building2, 
   MapPin, 
-  Search, 
-  PhoneCall, 
   ShieldCheck, 
-  ArrowRight,
-  Activity,
-  Award,
-  Users
+  ArrowRight
 } from 'lucide-react';
 import { VoiceButton } from '../common/VoiceButton';
 
@@ -23,6 +19,7 @@ export const Hero: React.FC<HeroProps> = ({
   onExploreServices,
   onSearchSubmit,
 }) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
 
   const handleSearch = (e: React.FormEvent) => {
@@ -43,22 +40,22 @@ export const Hero: React.FC<HeroProps> = ({
           <div className="lg:col-span-7 space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-govNavy-soft text-govNavy-dark text-xs font-extrabold border border-blue-200">
               <ShieldCheck className="w-4 h-4 text-govNavy" />
-              <span>Official Healthcare Gateway · North Eastern Region</span>
+              <span>{t('portal.officialGateway', 'Official Healthcare Gateway · North Eastern Region')}</span>
             </div>
 
             <h1 className="text-3xl md:text-5xl font-serif font-extrabold text-slate-900 leading-tight">
-              Public Healthcare Portal & Cognitive Care Services
+              {t('portal.publicPortalTitle', 'Public Healthcare Portal & Cognitive Care Services')}
             </h1>
 
             <p className="text-slate-700 text-base md:text-lg leading-relaxed font-medium">
-              Connecting citizens across Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura with official government hospitals, primary health centers, and Smriti-Setu memory care assistance.
+              {t('portal.heroDescription', 'Connecting citizens across Assam, Arunachal Pradesh, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim, and Tripura with official government hospitals, primary health centers, and Smriti-Setu memory care assistance.')}
             </p>
 
             {/* Voice Audio Read Button */}
             <div className="pt-1">
               <VoiceButton 
-                textToSpeak="Welcome to the North Eastern Region Cognitive Health Portal. Search public government hospitals, explore healthcare services, and access Smriti-Setu cognitive care."
-                label="Listen to Audio Introduction"
+                textToSpeak={t('portal.heroAudioSpeech', 'Welcome to the North Eastern Region Cognitive Health Portal. Search public government hospitals, explore healthcare services, and access Smriti-Setu cognitive care.')}
+                label={t('portal.listenIntro', 'Listen to Audio Introduction')}
               />
             </div>
 
@@ -69,7 +66,7 @@ export const Hero: React.FC<HeroProps> = ({
                 className="bg-govNavy text-white hover:bg-govNavy-light px-6 py-3 rounded-xl font-bold text-sm shadow-md transition-all flex items-center gap-2"
               >
                 <Building2 className="w-4 h-4 text-govYellow" />
-                <span>Find Government Hospitals</span>
+                <span>{t('portal.findHospitals', 'Find Government Hospitals')}</span>
                 <ArrowRight className="w-4 h-4 text-govYellow" />
               </button>
 
@@ -77,12 +74,12 @@ export const Hero: React.FC<HeroProps> = ({
                 onClick={onExploreServices}
                 className="bg-white text-govNavy hover:bg-slate-100 border-2 border-govNavy px-6 py-3 rounded-xl font-bold text-sm shadow-xs transition-all flex items-center gap-2"
               >
-                <span>Explore Health Services</span>
+                <span>{t('portal.exploreServices', 'Explore Health Services')}</span>
               </button>
             </div>
           </div>
 
-          {/* Right Visual Image Frame: Real Senior Citizen Cognitive Care Visual */}
+          {/* Right Visual Image Frame */}
           <div className="lg:col-span-5 relative">
             <div className="rounded-3xl overflow-hidden shadow-banner border-4 border-white bg-slate-900 h-72 md:h-96 relative group">
               <img
@@ -93,10 +90,10 @@ export const Hero: React.FC<HeroProps> = ({
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent flex items-end p-6 text-white">
                 <div className="space-y-1">
                   <span className="text-xs font-bold text-amber-300 flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-amber-300" /> Regional Senior Care Node · North East India
+                    <MapPin className="w-3.5 h-3.5 text-amber-300" /> {t('portal.seniorCareNode', 'Regional Senior Care Node · North East India')}
                   </span>
                   <p className="font-serif font-bold text-base md:text-lg">
-                    Smriti-Setu AI Dementia Screening & Memory Recall Mission
+                    {t('portal.aiDementiaMission', 'Smriti-Setu AI Dementia Screening & Memory Recall Mission')}
                   </p>
                 </div>
               </div>

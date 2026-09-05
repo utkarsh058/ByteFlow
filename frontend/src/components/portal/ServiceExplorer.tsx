@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Building2, 
   Heart, 
@@ -16,6 +17,8 @@ interface ServiceExplorerProps {
 }
 
 export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ onSelectService }) => {
+  const { t } = useTranslation();
+
   const getIcon = (iconName: string) => {
     switch (iconName) {
       case 'Building2': return <Building2 className="w-6 h-6" />;
@@ -36,13 +39,13 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ onSelectServic
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-govNavy-dark">
-              Regional Health Services
+              {t('portal.regionalServicesBadge', 'Regional Health Services')}
             </span>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mt-1">
-              Public Health Services Directory
+              {t('portal.servicesDirectoryTitle', 'Public Health Services Directory')}
             </h2>
             <p className="text-slate-600 text-sm md:text-base mt-1">
-              Discover outpatient clinics, emergency hospitals, mental health helplines, and digital cognitive care programs.
+              {t('portal.servicesDirectorySubtitle', 'Discover outpatient clinics, emergency hospitals, mental health helplines, and digital cognitive care programs.')}
             </p>
           </div>
         </div>
@@ -66,27 +69,27 @@ export const ServiceExplorer: React.FC<ServiceExplorerProps> = ({ onSelectServic
                   </div>
                   {srv.featured && (
                     <span className="bg-amber-400 text-slate-950 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1">
-                      <Sparkles className="w-3 h-3" /> Priority Service
+                      <Sparkles className="w-3 h-3" /> {t('portal.priorityService', 'Priority Service')}
                     </span>
                   )}
                 </div>
 
                 <span className={`text-xs font-bold uppercase tracking-wider ${srv.featured ? 'text-amber-300' : 'text-govNavy'}`}>
-                  {srv.category}
+                  {t(`portal.services.${srv.id}.category`, srv.category)}
                 </span>
 
                 <h3 className={`font-serif font-bold text-xl ${srv.featured ? 'text-white' : 'text-slate-900'}`}>
-                  {srv.title}
+                  {t(`portal.services.${srv.id}.title`, srv.title)}
                 </h3>
 
                 <p className={`text-sm leading-relaxed ${srv.featured ? 'text-slate-200' : 'text-slate-600'}`}>
-                  {srv.description}
+                  {t(`portal.services.${srv.id}.desc`, srv.description)}
                 </p>
               </div>
 
               <div className="pt-3 border-t border-slate-200/40 flex items-center justify-between">
                 <span className={`text-xs font-bold ${srv.featured ? 'text-govYellow' : 'text-govNavy'}`}>
-                  {srv.actionLabel}
+                  {t(`portal.services.${srv.id}.action`, srv.actionLabel)}
                 </span>
                 <ArrowRight className={`w-4 h-4 group-hover:translate-x-1 transition-transform ${
                   srv.featured ? 'text-govYellow' : 'text-govNavy'

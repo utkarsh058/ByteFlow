@@ -18,7 +18,11 @@ import hardwareInputAdapter from './services/hardwareInputAdapter';
 import { HardwareTestPanel } from './components/common/HardwareTestPanel';
 
 
+import { ForceTranslationListener } from './components/common/ForceTranslationListener';
+import { useTranslation } from 'react-i18next';
+
 export const App: React.FC = () => {
+  const { t } = useTranslation();
   const { role, setRole } = useAuthStore();
   const [viewMode, setViewMode] = useState<'public_portal' | 'authenticated_app'>('public_portal');
   const [selectedActivity, setSelectedActivity] = useState<ActivityType | null>(null);
@@ -30,8 +34,6 @@ export const App: React.FC = () => {
     // Initialize unified hardware input adapter (unbound to games)
     hardwareInputAdapter.initialize();
   }, []);
-
-
 
   const handleStartActivity = (type: ActivityType) => {
     setSelectedActivity(type);
@@ -55,6 +57,7 @@ export const App: React.FC = () => {
   if (viewMode === 'public_portal') {
     return (
       <>
+        <ForceTranslationListener />
         <PublicPortalPage onOpenAppAuth={handleOpenAppAuth} />
         <AiVoiceCompanion
           onStartActivity={(type) => {
@@ -75,17 +78,18 @@ export const App: React.FC = () => {
   // If inside the Authenticated Smriti-Setu Application:
   return (
     <div className="relative min-h-screen bg-slate-50">
+      <ForceTranslationListener />
       {/* Return to Public Government Portal Banner Strip */}
       <div className="bg-govNavy-dark text-white py-2 px-4 text-xs font-bold flex items-center justify-between border-b border-slate-700 sticky top-0 z-50 shadow-md">
         <button
           onClick={() => setViewMode('public_portal')}
           className="hover:underline flex items-center gap-1.5 text-amber-300 font-extrabold"
         >
-          <ArrowLeft className="w-4 h-4" /> Return to Official Government Health Portal
+          <ArrowLeft className="w-4 h-4" /> {t('portal.returnToOfficial', 'Return to Official Government Health Portal')}
         </button>
         <div className="flex items-center gap-3">
           <span className="text-slate-200 font-semibold hidden sm:inline bg-govNavy px-3 py-0.5 rounded-full border border-slate-600">
-            Authenticated Role: <strong className="text-white uppercase">{role}</strong>
+            {t('portal.authenticatedRole', 'Authenticated Role')}: <strong className="text-white uppercase">{t(`roles.${role}`, role)}</strong>
           </span>
         </div>
       </div>
