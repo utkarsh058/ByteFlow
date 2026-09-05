@@ -489,6 +489,9 @@ export const FamiliarSound: React.FC<FamiliarSoundProps> = ({ onComplete, onBack
       {/* Top Navigation Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-md">
         <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
+          </Button>
           <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center font-bold shadow-sm">
             <Volume2 className="w-6 h-6" />
           </div>
@@ -502,7 +505,7 @@ export const FamiliarSound: React.FC<FamiliarSoundProps> = ({ onComplete, onBack
           </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
           <Button
             variant="outline"
             size="sm"
@@ -510,9 +513,6 @@ export const FamiliarSound: React.FC<FamiliarSoundProps> = ({ onComplete, onBack
             className="rounded-2xl font-bold bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100 flex items-center gap-1.5 shadow-sm"
           >
             <Plus className="w-4 h-4" /> Upload Loved One's Voice
-          </Button>
-          <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
           </Button>
         </div>
       </div>
