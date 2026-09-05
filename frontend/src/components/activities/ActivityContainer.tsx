@@ -17,7 +17,7 @@ export const ActivityContainer: React.FC<ActivityContainerProps> = ({
   initialActivityType = 'memory_match',
   onBack,
 }) => {
-  const activeType = initialActivityType;
+  const [activeType, setActiveType] = useState<ActivityType>(initialActivityType);
   const { completeSession } = useActivityStore();
 
   const handleSessionComplete = (accuracy: number, attempts: number, responseTimeMs: number) => {
@@ -34,11 +34,18 @@ export const ActivityContainer: React.FC<ActivityContainerProps> = ({
     case 'sequence_recall':
       return <SequenceRecall onComplete={handleSessionComplete} onBack={onBack} />;
     case 'routine_recall':
-      return <RoutineRecall onComplete={handleSessionComplete} onBack={onBack} />;
+      return (
+        <RoutineRecall
+          onComplete={handleSessionComplete}
+          onBack={onBack}
+          onLaunchGame={(gameId) => setActiveType(gameId as ActivityType)}
+        />
+      );
     case 'photo_puzzle':
       return <PhotoPuzzle onComplete={handleSessionComplete} onBack={onBack} />;
     default:
       return <MemoryMatch onComplete={handleSessionComplete} onBack={onBack} />;
   }
 };
+
 

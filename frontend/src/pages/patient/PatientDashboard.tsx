@@ -40,12 +40,12 @@ export const PatientDashboard: React.FC<PatientDashboardProps> = ({ onStartActiv
     },
     {
       id: 'routine_recall' as ActivityType,
-      title: 'Daily Care Routine Recall',
-      category: 'Daily Care',
-      duration: '6 mins',
-      difficulty: 'Guided',
+      title: 'Daily Care & Routine Timetable',
+      category: 'Daily Timetable',
+      duration: 'Interactive Schedule',
+      difficulty: 'Task Tracker',
       image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=600&q=80',
-      description: 'Sequence daily morning routines: morning tea, medication, walk, and breakfast.',
+      description: 'Time table for games, medicine, meals & drinks. Mark tasks done to receive celebratory appreciation.',
       badgeColor: 'bg-amber-600',
     },
     {

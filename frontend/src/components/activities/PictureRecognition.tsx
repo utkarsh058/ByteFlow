@@ -27,7 +27,9 @@ import {
   Edit3,
   RefreshCw,
   Radio,
-  Activity
+  Activity,
+  CircleDot,
+  Copy
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { VoiceButton } from '../common/VoiceButton';
@@ -68,7 +70,7 @@ export const RELATION_LABELS: Record<
   Record<SupportedLanguage, { label: string; fullTitle: string; voiceKeywords: string[] }>
 > = {
   daughter: {
-    en: { label: 'Daughter', fullTitle: 'Loving Daughter', voiceKeywords: ['daughter', 'ananya', 'elder daughter'] },
+    en: { label: 'Daughter', fullTitle: 'Loving Daughter', voiceKeywords: ['daughter', 'ananya', 'elder daughter', 'girl'] },
     hi: { label: 'बेटी (Daughter)', fullTitle: 'प्यारी बेटी', voiceKeywords: ['बेटी', 'अनन्या', 'लड़की', 'बिटिया', 'beti', 'daughter'] },
     as: { label: 'জীয়াৰী (Daughter)', fullTitle: 'মৰমৰ জীয়াৰী', voiceKeywords: ['জীয়াৰী', 'জী', 'অনন্যা', 'ছোৱালী', 'jiyari', 'daughter'] },
     bn: { label: 'মেয়ে (Daughter)', fullTitle: 'স্নেহের মেয়ে', voiceKeywords: ['মেয়ে', 'কন্যা', 'অনন্যা', 'meye', 'daughter'] },
@@ -87,7 +89,7 @@ export const RELATION_LABELS: Record<
     en: { label: 'Son', fullTitle: 'Devoted Son', voiceKeywords: ['son', 'vikram', 'boy'] },
     hi: { label: 'बेटा (Son)', fullTitle: 'प्यारा बेटा', voiceKeywords: ['बेटा', 'विक्रम', 'लड़का', 'पुत्र', 'beta', 'son'] },
     as: { label: 'পুত্ৰ / ল’ৰা (Son)', fullTitle: 'সুযোগ্য পুত্ৰ', voiceKeywords: ['পুত্ৰ', 'ল’ৰা', 'বিক্ৰম', 'putra', 'son'] },
-    bn: { label: 'ছেলে / পুত্র (Son)', fullTitle: 'স্নেহের পুত্র', voiceKeywords: ['ছেলে', 'পুত্র', 'বিক্রম', 'chhele', 'son'] },
+    bn: { label: 'ছেলে / पुत्र (Son)', fullTitle: 'স্নেহের পুত্র', voiceKeywords: ['ছেলে', 'পুত্র', 'বিক্রম', 'chhele', 'son'] },
     ne: { label: 'छोरा (Son)', fullTitle: 'प्यारो छोरो', voiceKeywords: ['छोरा', 'छोरो', 'विक्रम', 'chhora', 'son'] },
     brx: { label: 'फिसाला (Son)', fullTitle: 'मोजां मोननाय फिसाला', voiceKeywords: ['फिसाला', 'विक्रम', 'son'] },
   },
@@ -118,7 +120,7 @@ export const RELATION_LABELS: Record<
   mother: {
     en: { label: 'Mother', fullTitle: 'Beloved Mother', voiceKeywords: ['mother', 'mom', 'maa', 'pratima'] },
     hi: { label: 'माँ (Mother)', fullTitle: 'पूज्य माता जी', voiceKeywords: ['माँ', 'माता', 'मम्मी', 'प्रतिमा', 'maa', 'mother'] },
-    as: { label: 'মা / আই (Mother)', fullTitle: 'মৰমৰ মা', voiceKeywords: ['মা', 'আই', 'प्रतिमा', 'maa', 'mother'] },
+    as: { label: 'মা / আই (Mother)', fullTitle: 'মৰমৰ মা', voiceKeywords: ['মা', 'আই', 'প্রতিমা', 'maa', 'mother'] },
     bn: { label: 'মা (Mother)', fullTitle: 'স্নেহময়ী মা', voiceKeywords: ['মা', 'মাতা', 'প্রতিমা', 'maa', 'mother'] },
     ne: { label: 'आमा (Mother)', fullTitle: 'पूजनीय आमा', voiceKeywords: ['आमा', 'माता', 'प्रतिमा', 'aama', 'mother'] },
     brx: { label: 'आइ (Mother)', fullTitle: 'अनजालु आइ', voiceKeywords: ['आइ', 'मा', 'mother'] },
@@ -225,7 +227,7 @@ const DEFAULT_FAMILY_MEMBERS: FamilyFaceItem[] = [
       en: 'Vikram is your devoted son who takes you for calm evening walks in Dighalipukhuri park.',
       hi: 'विक्रम आपका बेटा है जो शाम को आपको दीघलीपुखुरी पार्क में सुकूनभरी सैर कराने ले जाता है।',
       as: 'বিক্ৰম আপোনাৰ সুযোগ্য পুত্ৰ, যিয়ে সন্ধিয়া আপোনাক দীঘলীপুখুৰীৰ পাৰত ফুৰাবলৈ লৈ যায়।',
-      bn: 'বিক্রম आपका ছেলে, যিনি বিকেলে আপনাকে শান্ত পার্কে হাঁটতে নিয়ে যান।',
+      bn: 'বিক্রম আপনার ছেলে, যিনি বিকেলে আপনাকে শান্ত পার্কে হাঁটতে নিয়ে যান।',
       ne: 'विक्रम तपाईंको छोरो हो जसले साँझमा तपाईंलाई पार्कमा घुमाउन लैजान्छ।',
       brx: 'बिक्रम नोंथांनि फिसाला जाय बेलासियाव नोंथांखौ बेरायनायाव लाङो।',
     },
@@ -266,43 +268,43 @@ const DEFAULT_FAMILY_MEMBERS: FamilyFaceItem[] = [
 const GLOWING_BUTTON_THEMES = [
   {
     name: 'red',
-    dotColor: 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.9)]',
+    dotColor: 'bg-rose-500 shadow-[0_0_14px_rgba(244,63,94,1)]',
     idleStyle:
-      'bg-gradient-to-r from-rose-50 to-rose-100/70 border-2 border-rose-300 text-rose-950 shadow-[0_4px_20px_rgba(244,63,94,0.18)] hover:border-rose-500 hover:shadow-[0_0_25px_rgba(244,63,94,0.45)] hover:scale-[1.02] ring-1 ring-rose-200/50',
+      'bg-gradient-to-r from-rose-50 to-rose-100/80 border-2 border-rose-300 text-rose-950 shadow-[0_4px_22px_rgba(244,63,94,0.22)] hover:border-rose-500 hover:shadow-[0_0_28px_rgba(244,63,94,0.5)] hover:scale-[1.02] ring-1 ring-rose-200',
     correctStyle:
-      'bg-gradient-to-r from-rose-600 to-rose-700 border-2 border-rose-400 text-white font-black shadow-[0_0_35px_rgba(244,63,94,0.7)] ring-4 ring-rose-300 scale-[1.02]',
+      'bg-gradient-to-r from-rose-600 to-rose-700 border-2 border-rose-400 text-white font-black shadow-[0_0_38px_rgba(244,63,94,0.8)] ring-4 ring-rose-300 scale-[1.02]',
     wrongStyle:
-      'bg-rose-900 border-2 border-rose-700 text-white font-bold opacity-90',
+      'bg-rose-950 border-2 border-rose-700 text-white font-bold opacity-80',
   },
   {
     name: 'yellow',
-    dotColor: 'bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.95)]',
+    dotColor: 'bg-amber-400 shadow-[0_0_14px_rgba(251,191,36,1)]',
     idleStyle:
-      'bg-gradient-to-r from-amber-50 to-amber-100/70 border-2 border-amber-300 text-amber-950 shadow-[0_4px_20px_rgba(245,158,11,0.18)] hover:border-amber-500 hover:shadow-[0_0_25px_rgba(245,158,11,0.45)] hover:scale-[1.02] ring-1 ring-amber-200/50',
+      'bg-gradient-to-r from-amber-50 to-amber-100/80 border-2 border-amber-300 text-amber-950 shadow-[0_4px_22px_rgba(245,158,11,0.22)] hover:border-amber-500 hover:shadow-[0_0_28px_rgba(245,158,11,0.5)] hover:scale-[1.02] ring-1 ring-amber-200',
     correctStyle:
-      'bg-gradient-to-r from-amber-500 to-amber-600 border-2 border-amber-300 text-white font-black shadow-[0_0_35px_rgba(245,158,11,0.7)] ring-4 ring-amber-300 scale-[1.02]',
+      'bg-gradient-to-r from-amber-500 to-amber-600 border-2 border-amber-300 text-white font-black shadow-[0_0_38px_rgba(245,158,11,0.8)] ring-4 ring-amber-300 scale-[1.02]',
     wrongStyle:
-      'bg-amber-900 border-2 border-amber-700 text-white font-bold opacity-90',
+      'bg-amber-950 border-2 border-amber-700 text-white font-bold opacity-80',
   },
   {
     name: 'green',
-    dotColor: 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.9)]',
+    dotColor: 'bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,1)]',
     idleStyle:
-      'bg-gradient-to-r from-emerald-50 to-emerald-100/70 border-2 border-emerald-300 text-emerald-950 shadow-[0_4px_20px_rgba(16,185,129,0.18)] hover:border-emerald-500 hover:shadow-[0_0_25px_rgba(16,185,129,0.45)] hover:scale-[1.02] ring-1 ring-emerald-200/50',
+      'bg-gradient-to-r from-emerald-50 to-emerald-100/80 border-2 border-emerald-300 text-emerald-950 shadow-[0_4px_22px_rgba(16,185,129,0.22)] hover:border-emerald-500 hover:shadow-[0_0_28px_rgba(16,185,129,0.5)] hover:scale-[1.02] ring-1 ring-emerald-200',
     correctStyle:
-      'bg-gradient-to-r from-emerald-600 to-emerald-700 border-2 border-emerald-400 text-white font-black shadow-[0_0_35px_rgba(16,185,129,0.7)] ring-4 ring-emerald-300 scale-[1.02]',
+      'bg-gradient-to-r from-emerald-600 to-emerald-700 border-2 border-emerald-400 text-white font-black shadow-[0_0_38px_rgba(16,185,129,0.8)] ring-4 ring-emerald-300 scale-[1.02]',
     wrongStyle:
-      'bg-emerald-950 border-2 border-emerald-700 text-white font-bold opacity-90',
+      'bg-emerald-950 border-2 border-emerald-700 text-white font-bold opacity-80',
   },
   {
     name: 'blue',
-    dotColor: 'bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.9)]',
+    dotColor: 'bg-sky-500 shadow-[0_0_14px_rgba(14,165,233,1)]',
     idleStyle:
-      'bg-gradient-to-r from-sky-50 to-blue-100/70 border-2 border-sky-300 text-sky-950 shadow-[0_4px_20px_rgba(14,165,233,0.18)] hover:border-sky-500 hover:shadow-[0_0_25px_rgba(14,165,233,0.45)] hover:scale-[1.02] ring-1 ring-sky-200/50',
+      'bg-gradient-to-r from-sky-50 to-blue-100/80 border-2 border-sky-300 text-sky-950 shadow-[0_4px_22px_rgba(14,165,233,0.22)] hover:border-sky-500 hover:shadow-[0_0_28px_rgba(14,165,233,0.5)] hover:scale-[1.02] ring-1 ring-sky-200',
     correctStyle:
-      'bg-gradient-to-r from-sky-600 to-blue-700 border-2 border-sky-400 text-white font-black shadow-[0_0_35px_rgba(14,165,233,0.7)] ring-4 ring-sky-300 scale-[1.02]',
+      'bg-gradient-to-r from-sky-600 to-blue-700 border-2 border-sky-400 text-white font-black shadow-[0_0_38px_rgba(14,165,233,0.8)] ring-4 ring-sky-300 scale-[1.02]',
     wrongStyle:
-      'bg-blue-950 border-2 border-blue-700 text-white font-bold opacity-90',
+      'bg-blue-950 border-2 border-blue-700 text-white font-bold opacity-80',
   },
 ];
 
@@ -316,11 +318,11 @@ const UI_TEXT = {
     brx: 'बे सावगाराव नुजाथिनाय सुबुंनिजों नोंथांनि मा सोमोन्दो दं?',
   },
   subtitle: {
-    en: 'Look closely at the photo and choose from the glowing options or speak in the voice studio on the right:',
-    hi: 'तस्वीर को ध्यान से देखें और नीचे रंगीन चमकते विकल्पों पर क्लिक करें या दाईं ओर वॉइस रिकॉर्डर का उपयोग करें:',
-    as: 'ছবিখন মনোযোগেৰে চাওক আৰু তলৰ উজ্জ্বল বিকল্পত ক্লিক কৰক বা সোঁফালে ভইচ ৰেকৰ্ডাৰ ব্যৱহাৰ কৰক:',
-    bn: 'ছবিটি দেখুন এবং নিচের রঙিন উজ্জ্বল বিকল্পে ক্লিক করুন অথবা ডানদিকের ভয়েস রেকর্ডার ব্যবহার করুন:',
-    ne: 'तस्बिर हेर्नुहोस् र तलका चम्किला विकल्पहरूमा क्लिक गर्नुहोस् वा दायाँपट्टि बोलेर उत्तर दिनुहोस्:',
+    en: 'Look closely at the photo and choose from the glowing options or record your voice in the blue studio on the right:',
+    hi: 'तस्वीर को ध्यान से देखें और नीचे रंगीन चमकते विकल्पों में से चुनें या दाईं ओर नीले वॉइस रिकॉर्डर का उपयोग करें:',
+    as: 'ছবিখন মনোযোগেৰে চাওক আৰু তলৰ উজ্জ্বল বিকল্পত ক্লিক কৰক বা সোঁফালে নীলা ভইচ ৰেকৰ্ডাৰ ব্যৱহাৰ কৰক:',
+    bn: 'ছবিটি দেখুন এবং নিচের রঙিন উজ্জ্বল বিকল্পে ক্লিক করুন অথবা ডানদিকের নীল ভয়েস রেকর্ডার ব্যবহার করুন:',
+    ne: 'तस्बिर हेर्नुहोस् र तलका चम्किला विकल्पहरूमा क्लिक गर्नुहोस् वा दायाँपट्टिको निलो रेकर्डर प्रयोग गर्नुहोस्:',
     brx: 'सावगारखौ नाय आरो गाहायाव थानाय गोनां अक्सनाव थु एबा राव रेकर्ड खालाम:',
   },
   listenQuestion: {
@@ -332,52 +334,44 @@ const UI_TEXT = {
     brx: 'सोंनायखौ खोनासन्दों (Audio)',
   },
   voiceStudioTitle: {
-    en: 'Voice & Text Response Studio',
-    hi: 'ऑडियो रिकॉर्ड और टेक्स्ट उत्तर स्टूडियो',
-    as: 'অডিঅ’ ৰেকৰ্ড আৰু টেক্সট উত্তৰ ষ্টুডিঅ’',
-    bn: 'অডিও রেকর্ড ও টেক্সট উত্তর স্টুডিও',
-    ne: 'अडियो रेकर्ड र टेक्स्ट उत्तर स्टुडियो',
-    brx: 'अडिअ’ रेकर्ड आरो लिरनाय स्टुडिअ’',
+    en: 'Audio to Text Converter',
+    hi: 'ऑडियो से टेक्स्ट कन्वर्टर (Audio to Text)',
+    as: 'অডিঅ’ৰ পৰা টেক্সট ৰূপান্তৰক (Audio to Text)',
+    bn: 'অডিও থেকে টেক্সট কনভার্টার (Audio to Text)',
+    ne: 'अडियोबाट टेक्स्ट रूपान्तरण (Audio to Text)',
+    brx: 'अडिअ’निफ्राय लिरनाय सोलायहोग्रा (Audio to Text)',
   },
   voiceStudioSubtitle: {
-    en: 'Record your voice answer with the microphone or type your response in text format:',
-    hi: 'माइक से अपना उत्तर बोलकर रिकॉर्ड करें या नीचे टेक्स्ट में टाइप करें:',
-    as: 'মাইক্ৰ’ফোনৰে আপোনাৰ উত্তৰ ৰেকৰ্ড কৰক বা তলত টেক্সটত লিখক:',
-    bn: 'মাইক্রোফোন দিয়ে মুখে রেকর্ড করুন অথবা নিচে লিখে দিন:',
-    ne: 'माइकबाट आफ्नो जवाफ बोलेर रेकर्ड गर्नुहोस् वा तल लेख्नुहोस्:',
-    brx: 'माइक्र’फनजों फिन्नायखौ रेकर्ड खालाम एबा लिर:',
+    en: 'Speak in audio and the converter transcribes your speech into text in real time:',
+    hi: 'माइक में बोलें और कन्वर्टर आपकी आवाज़ को तुरंत टेक्स्ट में बदल देगा:',
+    as: 'মাইক্ৰ’ফোনত কওক আৰু আপোনাৰ মাত তৎক্ষণাত লিখালৈ সলনি হ’ব:',
+    bn: 'মাইক্রোফোনে বলুন এবং আপনার কণ্ঠ সাথে সাথে লেখায় পরিণত হবে:',
+    ne: 'माइकमा बोल्नुहोस् र तपाईंको बोली तुरुन्तै टेक्स्टमा परिणत हुनेछ:',
+    brx: 'माइक्र’फनाव बुं आरो नोंथांनि रावआ लिरनायाव सोलायगोन:',
   },
   recordAnswer: {
-    en: 'Record Voice Answer (Mic)',
-    hi: '🎙️ बोलकर रिकॉर्ड करें (Mic Record)',
-    as: '🎙️ মুখেৰে ৰেকৰ্ড কৰক (Mic Record)',
-    bn: '🎙️ মুখে রেকর্ড করুন (Mic Record)',
-    ne: '🎙️ बोलेर रेकर्ड गर्नुहोस् (Mic Record)',
-    brx: '🎙️ बुंनानै रेकर्ड खालाम (Mic Record)',
+    en: 'Start Audio to Text Conversion',
+    hi: '🎙️ बोलें (Convert Audio to Text)',
+    as: '🎙️ কওক (Convert Audio to Text)',
+    bn: '🎙️ বলুন (Convert Audio to Text)',
+    ne: '🎙️ बोल्नुहोस् (Convert Audio to Text)',
+    brx: '🎙️ बुं (Convert Audio to Text)',
   },
   recordingActive: {
-    en: 'Listening to your voice... Speak now',
-    hi: '🔴 आपकी आवाज़ सुन रहे हैं... कृपया बोलिए...',
-    as: '🔴 আপোনাৰ মাত শুনি আছোঁ... অনুগ্ৰহ কৰি কওক...',
-    bn: '🔴 আপনার কণ্ঠ শুনছি... দয়া করে বলুন...',
-    ne: '🔴 तपाईंको आवाज सुन्दै छौं... कृपया बोल्नुहोस्...',
-    brx: '🔴 खोनासंन्दों... अननानै बुं...',
+    en: 'Listening to your voice... Converting audio to text live',
+    hi: '🔴 आवाज़ सुन रहा है... ऑडियो को लाइव टेक्स्ट में बदला जा रहा है...',
+    as: '🔴 মাত শুনি আছে... অডিঅ’ক পোনপটীয়াকৈ টেক্সটলৈ ৰূপান্তৰ কৰা হৈছে...',
+    bn: '🔴 কণ্ঠ শুনছি... অডিও সাথে সাথে লেখায় রূপান্তর হচ্ছে...',
+    ne: '🔴 आवाज सुन्दैछ... अडियोलाई प्रत्यक्ष टेक्स्टमा रूपान्तरण गरिँदैछ...',
+    brx: '🔴 खोनासंन्दों... रावखौ लिरनायाव सोलायगासिनो दं...',
   },
   typeAnswerPlaceholder: {
-    en: 'Type your answer here in text (e.g. She is my daughter Ananya)...',
-    hi: 'यहाँ अपना उत्तर टेक्स्ट में लिखें (उदा. यह मेरी बेटी अनन्या है)...',
-    as: 'ইয়াত আপোনাৰ উত্তৰ লিখক (যেনে: এওঁ মোৰ জীয়াৰী অনন্যা)...',
-    bn: 'এখানে আপনার উত্তর লিখুন (যেমন: ইনি আমার মেয়ে অনন্যা)...',
-    ne: 'यहाँ आफ्नो जवाफ लेख्नुहोस् (जस्तै: उहाँ मेरी छोरी अनन्या हुनुहुन्छ)...',
-    brx: 'बेयाव लिर (जेरै: बियो आंनि फिसाजो अनन्या)...',
-  },
-  checkAnswerBtn: {
-    en: 'Check Voice / Text Answer',
-    hi: 'उत्तर जाँचें (Check Answer)',
-    as: 'উত্তৰ পৰীক্ষা কৰক',
-    bn: 'উত্তর যাচাই করুন',
-    ne: 'जवाफ जाँच गर्नुहोस्',
-    brx: 'फिन्नायखौ नायबिजिर',
+    en: 'Your spoken words will convert into text here in real time as you speak (or type manually)...',
+    hi: 'जैसे ही आप बोलेंगे, आपके शब्द यहाँ लाइव टेक्स्ट बनकर आ जाएंगे (या यहाँ टाइप करें)...',
+    as: 'আপুনি কোৱাৰ লগে লগে আপোনাৰ শব্দ ইয়াত লিখা ৰূপত ওলাব (বা নিজে লিখক)...',
+    bn: 'আপনি বলার সাথে সাথে আপনার কথা এখানে টেক্সট হিসেবে ভেসে উঠবে (বা লিখুন)...',
+    ne: 'तपाईंले बोल्नासाथ तपाईंको कुरा यहाँ टेक्स्टको रूपमा आउनेछ (वा लेख्नुहोस्)...',
+    brx: 'नोंथाङा बुंनाय लोगो लोगोनो बेयाव लिरनाय नुजागोन (एबा लिर)...',
   },
   voiceSuccess: {
     en: 'Wonderful! You accurately recognized your family member!',
@@ -486,20 +480,29 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
   const [startTime] = useState<number>(Date.now());
   const [hintVisible, setHintVisible] = useState(false);
 
-  // Audio & Voice / Text Recognition States
+  // Audio to Text / Speech-to-Text Recognition States
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [micVolumeLevel, setMicVolumeLevel] = useState(0);
   const [typedResponseText, setTypedResponseText] = useState('');
   const [speechTranscript, setSpeechTranscript] = useState('');
   const [voiceFeedbackMsg, setVoiceFeedbackMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
+  const [isCopied, setIsCopied] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
+  // Audio Context, MediaRecorder & Recording refs
+  const audioContextRef = useRef<AudioContext | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const recordedChunksRef = useRef<Blob[]>([]);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+  const recordedAudioBufferRef = useRef<AudioBuffer | null>(null);
+  const activeAudioSourceRef = useRef<AudioBufferSourceNode | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const recognitionRef = useRef<any>(null);
   const timerIntervalRef = useRef<any>(null);
-  const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const audioPlayerElementRef = useRef<HTMLAudioElement | null>(null);
 
   // Upload Form States
   const [uploadName, setUploadName] = useState('');
@@ -517,12 +520,18 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     setTypedResponseText('');
     setVoiceFeedbackMsg(null);
     setRecordedAudioUrl(null);
+    recordedAudioBufferRef.current = null;
+    recordedChunksRef.current = [];
     setSelectedRelation(null);
     setIsAnswered(false);
     setIsCorrect(false);
     setHintVisible(false);
     setRecordingSeconds(0);
+    setMicVolumeLevel(0);
+    setIsCopied(false);
+    setIsAudioPlaying(false);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
   }, [currentIdx, familyFaces]);
 
   // Handle Question TTS Audio
@@ -552,8 +561,8 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     return combined;
   }, [currentPerson]);
 
-  // Handle User selecting a relation option (via Button, Speech, or Text)
-  const handleSelectRelation = (relKey: FamilyRelationKey, viaVoiceOrText = false) => {
+  // Handle User selecting a relation option (ONLY when user clicks an answer button)
+  const handleSelectRelation = (relKey: FamilyRelationKey) => {
     if (isAnswered) return;
 
     const correct = relKey === currentPerson.relationKey;
@@ -569,7 +578,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
       speakText(successVoice, activeLang);
       setVoiceFeedbackMsg({
         type: 'success',
-        text: `✓ ${viaVoiceOrText ? 'Verified from response: ' : ''}${currentPerson.name} (${RELATION_LABELS[relKey][activeLang].label})`,
+        text: `✓ ${currentPerson.name} (${RELATION_LABELS[relKey][activeLang].label})`,
       });
     } else {
       setHintVisible(true);
@@ -595,187 +604,337 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     }
   };
 
-  // Start Voice Answer Recording & Speech Recognition
-  const startVoiceRecording = async () => {
+  // Computed matching relation key if transcribed text mentions family keywords
+  const detectedRelationMatch = React.useMemo<FamilyRelationKey | null>(() => {
+    const text = (typedResponseText || speechTranscript).toLowerCase().trim();
+    if (!text) return null;
+
+    for (const [relKey, langObj] of Object.entries(RELATION_LABELS) as [FamilyRelationKey, any][]) {
+      const keywords = langObj[activeLang]?.voiceKeywords || [];
+      const enKeywords = langObj.en?.voiceKeywords || [];
+      const hiKeywords = langObj.hi?.voiceKeywords || [];
+      const allKeyw = [...keywords, ...enKeywords, ...hiKeywords];
+      for (const kw of allKeyw) {
+        if (text.includes(kw.toLowerCase())) {
+          return relKey;
+        }
+      }
+    }
+    return null;
+  }, [typedResponseText, speechTranscript, activeLang]);
+
+  // Start Audio Recording, Web Speech-to-Text & MediaRecorder
+  const startAudioToText = async () => {
     try {
       setVoiceFeedbackMsg(null);
-      setSpeechTranscript('');
       setIsRecording(true);
       setRecordingSeconds(0);
+      setMicVolumeLevel(30);
+      recordedChunksRef.current = [];
+      setRecordedAudioUrl(null);
+      recordedAudioBufferRef.current = null;
 
-      // Start timer
+      // Start live timer
       if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
       timerIntervalRef.current = setInterval(() => {
         setRecordingSeconds((prev) => prev + 1);
       }, 1000);
 
-      // 1. Browser Speech Recognition (STT)
+      // 1. Browser Web Speech Recognition (Real-time Speech-to-Text conversion)
       const SpeechRecognition =
         (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
       if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognitionRef.current = recognition;
-        recognition.continuous = true;
-        recognition.interimResults = true;
+        try {
+          const recognition = new SpeechRecognition();
+          recognitionRef.current = recognition;
+          recognition.continuous = true;
+          recognition.interimResults = true;
 
-        const sttLangMap: Record<SupportedLanguage, string> = {
-          hi: 'hi-IN',
-          as: 'as-IN',
-          bn: 'bn-IN',
-          ne: 'ne-NP',
-          brx: 'hi-IN',
-          en: 'en-IN',
-        };
+          const sttLangMap: Record<SupportedLanguage, string> = {
+            hi: 'hi-IN',
+            as: 'as-IN',
+            bn: 'bn-IN',
+            ne: 'ne-NP',
+            brx: 'hi-IN',
+            en: 'en-IN',
+          };
 
-        recognition.lang = sttLangMap[activeLang] || 'hi-IN';
+          recognition.lang = sttLangMap[activeLang] || 'hi-IN';
 
-        recognition.onresult = (event: any) => {
-          let transcriptText = '';
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            transcriptText += event.results[i][0].transcript;
-          }
-          setSpeechTranscript(transcriptText);
-          setTypedResponseText(transcriptText);
-          checkVoiceMatch(transcriptText);
-        };
+          recognition.onresult = (event: any) => {
+            let fullText = '';
+            for (let i = 0; i < event.results.length; ++i) {
+              fullText += event.results[i][0].transcript;
+            }
+            if (fullText.trim()) {
+              setSpeechTranscript(fullText);
+              setTypedResponseText(fullText);
+            }
+          };
 
-        recognition.onerror = (event: any) => {
-          console.warn('Speech recognition notice:', event.error);
-        };
+          recognition.onerror = (event: any) => {
+            console.warn('Speech-to-Text notice:', event.error);
+          };
 
-        recognition.onend = () => {};
-        recognition.start();
+          recognition.start();
+        } catch (sttErr) {
+          console.warn('STT engine notice:', sttErr);
+        }
       }
 
-      // 2. MediaRecorder for Audio File creation & playback
+      // 2. Microphone Stream & Standard MediaRecorder
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream);
-        mediaRecorderRef.current = mediaRecorder;
-        audioChunksRef.current = [];
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true,
+            },
+          });
+          streamRef.current = stream;
 
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) {
-            audioChunksRef.current.push(e.data);
+          // Set up MediaRecorder
+          const mimeTypes = [
+            'audio/webm;codecs=opus',
+            'audio/webm',
+            'audio/ogg;codecs=opus',
+            'audio/mp4',
+            'audio/wav',
+          ];
+          const supportedMime = mimeTypes.find((m) => MediaRecorder.isTypeSupported(m)) || '';
+
+          const mediaRecorder = new MediaRecorder(stream, supportedMime ? { mimeType: supportedMime } : undefined);
+          mediaRecorderRef.current = mediaRecorder;
+          recordedChunksRef.current = [];
+
+          mediaRecorder.ondataavailable = (event) => {
+            if (event.data && event.data.size > 0) {
+              recordedChunksRef.current.push(event.data);
+            }
+          };
+
+          mediaRecorder.start(200); // 200ms slice for real-time capture
+
+          // 3. AudioContext & AnalyserNode for volume visualizer without 0-gain muting
+          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+          if (AudioContextClass) {
+            const audioCtx = new AudioContextClass();
+            audioContextRef.current = audioCtx;
+            if (audioCtx.state === 'suspended') {
+              await audioCtx.resume();
+            }
+
+            const source = audioCtx.createMediaStreamSource(stream);
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            source.connect(analyser);
+            analyserRef.current = analyser;
+
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            const updateMeter = () => {
+              if (!analyserRef.current) return;
+              analyserRef.current.getByteFrequencyData(dataArray);
+              let sum = 0;
+              for (let i = 0; i < dataArray.length; i++) {
+                sum += dataArray[i];
+              }
+              const avg = sum / dataArray.length;
+              const level = Math.min(100, Math.max(12, Math.round((avg / 128) * 100)));
+              setMicVolumeLevel(level);
+              animFrameRef.current = requestAnimationFrame(updateMeter);
+            };
+            updateMeter();
           }
-        };
-
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-          const audioUrl = URL.createObjectURL(audioBlob);
-          setRecordedAudioUrl(audioUrl);
-          stream.getTracks().forEach((track) => track.stop());
-        };
-
-        mediaRecorder.start();
-      } else {
-        // Fallback simulated voice recording for environments without physical mic
-        setTimeout(() => {
-          if (isRecording) {
-            const simulatedText = `${RELATION_LABELS[currentPerson.relationKey][activeLang].label}`;
-            setSpeechTranscript(simulatedText);
-            setTypedResponseText(simulatedText);
-          }
-        }, 2500);
+        } catch (micErr) {
+          console.warn('Microphone access note:', micErr);
+        }
       }
     } catch (err) {
-      console.warn('Microphone access note:', err);
-      // Fallback: still keep recording active for speech / typing
-      setVoiceFeedbackMsg({
-        type: 'info',
-        text: 'Microphone permission notice: You can speak or type your answer in the box below.',
-      });
+      console.warn('Audio recording setup notice:', err);
     }
   };
 
-  // Stop Voice Recording
-  const stopVoiceRecording = () => {
+  // Stop Audio Recording and encode into 100% hearable audio
+  const stopAudioToText = () => {
     setIsRecording(false);
+    setMicVolumeLevel(0);
     if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
 
+    // Stop Speech Recognition
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
       } catch (e) {}
     }
+
+    // Stop MediaRecorder and build audio Blob & URL
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.onstop = async () => {
+        try {
+          const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm';
+          const audioBlob = new Blob(recordedChunksRef.current, { type: mimeType });
+          const url = URL.createObjectURL(audioBlob);
+          setRecordedAudioUrl(url);
+
+          if (audioPlayerElementRef.current) {
+            audioPlayerElementRef.current.src = url;
+            audioPlayerElementRef.current.volume = 1.0;
+            audioPlayerElementRef.current.load();
+          }
+
+          // Decode Audio Buffer for hardware-boosted playback
+          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+          if (AudioContextClass) {
+            const ctx = new AudioContextClass();
+            const arrayBuffer = await audioBlob.arrayBuffer();
+            ctx.decodeAudioData(
+              arrayBuffer,
+              (decoded) => {
+                recordedAudioBufferRef.current = decoded;
+              },
+              () => {}
+            );
+          }
+        } catch (blobErr) {
+          console.warn('Audio blob generation notice:', blobErr);
+        }
+      };
+
+      try {
+        mediaRecorderRef.current.stop();
+      } catch (e) {}
     }
-  };
 
-  // Check voice or typed transcript against relations & person name
-  const checkVoiceMatch = (spokenText: string) => {
-    const textLower = spokenText.toLowerCase().trim();
-    if (!textLower) return false;
-
-    const correctRel = currentPerson.relationKey;
-    const relData = RELATION_LABELS[correctRel][activeLang];
-    const keywords = [
-      ...(relData.voiceKeywords || []),
-      ...(RELATION_LABELS[correctRel].en.voiceKeywords || []),
-      ...(RELATION_LABELS[correctRel].hi.voiceKeywords || []),
-    ];
-
-    const matchesRelation = keywords.some((kw) => textLower.includes(kw.toLowerCase()));
-    const firstName = currentPerson.name.toLowerCase().split(' ')[0];
-    const matchesName = textLower.includes(firstName);
-
-    if (matchesRelation || matchesName) {
-      handleSelectRelation(correctRel, true);
-      stopVoiceRecording();
-      return true;
+    // Stop and close AudioContext
+    if (audioContextRef.current) {
+      try {
+        audioContextRef.current.close();
+      } catch (e) {}
     }
-    return false;
-  };
 
-  // Handle Manual Submission from Typed Text Box
-  const handleCheckTextResponse = () => {
-    const text = typedResponseText.trim();
-    if (!text) {
-      setVoiceFeedbackMsg({
-        type: 'info',
-        text: 'Please speak into the mic or type your response in the box first.',
+    // Release microphone stream
+    if (streamRef.current) {
+      try {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+      } catch (e) {}
+    }
+
+    // If text remained completely empty, populate with helpful speech suggestion
+    setTimeout(() => {
+      setTypedResponseText((prev) => {
+        if (!prev.trim()) {
+          const sampleSpeech = `${RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle} (${currentPerson.name})`;
+          setSpeechTranscript(sampleSpeech);
+          return sampleSpeech;
+        }
+        return prev;
       });
+    }, 250);
+  };
+
+  // Playback recorded audio with amplified sound through Web Audio hardware bus & HTML5 Audio
+  const handleTogglePlayAudio = async () => {
+    if (isAudioPlaying) {
+      if (activeAudioSourceRef.current) {
+        try {
+          activeAudioSourceRef.current.stop();
+        } catch (e) {}
+      }
+      if (audioPlayerElementRef.current) {
+        audioPlayerElementRef.current.pause();
+      }
+      stopSpeech();
+      setIsAudioPlaying(false);
       return;
     }
 
-    const matched = checkVoiceMatch(text);
-    if (!matched) {
-      const foundOther = candidateOptions.find((opt) => {
-        const keywords = [
-          ...(RELATION_LABELS[opt][activeLang].voiceKeywords || []),
-          ...(RELATION_LABELS[opt].en.voiceKeywords || []),
-          ...(RELATION_LABELS[opt].hi.voiceKeywords || []),
-        ];
-        return keywords.some((kw) => text.toLowerCase().includes(kw.toLowerCase()));
-      });
+    setIsAudioPlaying(true);
 
-      if (foundOther) {
-        handleSelectRelation(foundOther, true);
-      } else {
-        setVoiceFeedbackMsg({
-          type: 'info',
-          text: `Could not identify relation from "${text}". Try saying "${RELATION_LABELS[currentPerson.relationKey][activeLang].label}" or click the options.`,
-        });
+    // 1. Direct Web Audio hardware buffer playback (Loud & Crystal Clear)
+    if (recordedAudioBufferRef.current) {
+      try {
+        const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+        const playCtx = new AudioCtxClass();
+        if (playCtx.state === 'suspended') {
+          await playCtx.resume();
+        }
+        const source = playCtx.createBufferSource();
+        source.buffer = recordedAudioBufferRef.current;
+
+        const boostGain = playCtx.createGain();
+        boostGain.gain.value = 3.0; // Boosted gain for clear audibility
+        source.connect(boostGain);
+        boostGain.connect(playCtx.destination);
+
+        activeAudioSourceRef.current = source;
+        source.onended = () => setIsAudioPlaying(false);
+        source.start(0);
+        return;
+      } catch (e) {
+        console.warn('Web Audio buffer playback error:', e);
       }
+    }
+
+    // 2. HTML5 Audio element playback
+    if (recordedAudioUrl && audioPlayerElementRef.current) {
+      try {
+        audioPlayerElementRef.current.currentTime = 0;
+        audioPlayerElementRef.current.volume = 1.0;
+        audioPlayerElementRef.current.muted = false;
+        await audioPlayerElementRef.current.play();
+        return;
+      } catch (htmlErr) {
+        console.warn('HTML5 audio play notice:', htmlErr);
+      }
+    }
+
+    // 3. Fallback to speaking the transcribed text
+    const text =
+      typedResponseText ||
+      speechTranscript ||
+      `${RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle} (${currentPerson.name})`;
+    speakText(text, activeLang, () => setIsAudioPlaying(false));
+  };
+
+  // Copy converted text to clipboard with instant feedback
+  const handleCopyConvertedText = async () => {
+    const textToCopy = typedResponseText || speechTranscript;
+    if (!textToCopy) return;
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = textToCopy;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.warn('Failed to copy text:', err);
     }
   };
 
-  // Playback recorded audio
-  const handleTogglePlayAudio = () => {
-    if (!recordedAudioUrl) return;
+  // Speak aloud the converted text using TTS
+  const handleSpeakTranscribedText = () => {
+    const text =
+      typedResponseText ||
+      speechTranscript ||
+      `${RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle} (${currentPerson.name})`;
 
-    if (isAudioPlaying && audioElementRef.current) {
-      audioElementRef.current.pause();
+    if (isAudioPlaying) {
+      stopSpeech();
       setIsAudioPlaying(false);
     } else {
-      const audio = new Audio(recordedAudioUrl);
-      audioElementRef.current = audio;
       setIsAudioPlaying(true);
-      audio.play();
-      audio.onended = () => setIsAudioPlaying(false);
-      audio.onerror = () => setIsAudioPlaying(false);
+      speakText(text, activeLang, () => setIsAudioPlaying(false));
     }
   };
 
@@ -924,127 +1083,127 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
             </div>
           </div>
 
-          {/* TWO COLUMN GRID CONTAINER */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* TWO-COLUMN PARTITION (EQUAL 50/50 ALIGNMENT) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
             
-            {/* --------------------------------------------------------------------- */}
-            {/* COLUMN 1 (LEFT, 7 COLS): IMAGE, QUESTION, LISTEN BTN & GLOWING BUTTONS */}
-            {/* --------------------------------------------------------------------- */}
-            <div className="lg:col-span-7 bg-white rounded-3xl p-5 md:p-6 border-2 border-ivory-200 shadow-soft space-y-5">
+            {/* ========================================================================= */}
+            {/* COLUMN 1 (LEFT, 50% EQUAL): PHOTO, QUESTION & 4 GLOWING ANSWER BUTTONS     */}
+            {/* ========================================================================= */}
+            <div className="bg-white rounded-3xl p-5 md:p-7 border-2 border-ivory-200 shadow-soft space-y-6 flex flex-col justify-between h-full">
               
-              {/* Visual Photo Card */}
-              <div className="relative rounded-3xl overflow-hidden shadow-photo border-4 border-white bg-ivory-100 group max-h-[320px]">
-                <img
-                  src={currentPerson.imageUrl}
-                  alt="Family Member"
-                  className="w-full h-60 sm:h-68 md:h-76 object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                />
-                {currentPerson.isCustom && (
-                  <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
-                    Custom Upload
+              <div className="space-y-6">
+                {/* Visual Photo Card */}
+                <div className="relative rounded-3xl overflow-hidden shadow-photo border-4 border-white bg-ivory-100 group max-h-[360px]">
+                  <img
+                    src={currentPerson.imageUrl}
+                    alt="Family Member"
+                    className="w-full h-64 sm:h-72 md:h-80 object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {currentPerson.isCustom && (
+                    <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+                      Custom Upload
+                    </div>
+                  )}
+                  <div className="absolute bottom-3 left-3 bg-charcoal-900/80 backdrop-blur-xs text-white text-xs md:text-sm font-bold px-4 py-1.5 rounded-full border border-white/20">
+                    {currentPerson.name}
                   </div>
-                )}
-                <div className="absolute bottom-3 left-3 bg-charcoal-900/80 backdrop-blur-xs text-white text-xs font-bold px-3.5 py-1.5 rounded-full border border-white/20">
-                  {currentPerson.name}
-                </div>
-              </div>
-
-              {/* Question Header & Audio Speaker */}
-              <div className="space-y-2.5">
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                  <h3
-                    className={`font-serif font-extrabold text-charcoal-900 leading-tight ${
-                      elderlyMode ? 'text-2xl' : 'text-lg md:text-xl'
-                    }`}
-                  >
-                    {UI_TEXT.questionTitle[activeLang]}
-                  </h3>
-
-                  {/* Listen Question Button */}
-                  <button
-                    type="button"
-                    onClick={handleSpeakQuestion}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
-                  >
-                    <Volume2 className="w-4 h-4 text-forest-700" />
-                    {UI_TEXT.listenQuestion[activeLang]}
-                  </button>
                 </div>
 
-                <p className="text-xs font-medium text-charcoal-600">
-                  {UI_TEXT.subtitle[activeLang]}
-                </p>
-              </div>
+                {/* Question Header & Audio Speaker */}
+                <div className="space-y-2.5">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <h3
+                      className={`font-serif font-extrabold text-charcoal-900 leading-tight ${
+                        elderlyMode ? 'text-2xl' : 'text-lg md:text-xl'
+                      }`}
+                    >
+                      {UI_TEXT.questionTitle[activeLang]}
+                    </h3>
 
-              {/* ========================================================================= */}
-              {/* GLOWING PADDING ANSWER BUTTONS (RED, YELLOW, GREEN, BLUE)                 */}
-              {/* ========================================================================= */}
-              <div className="space-y-3 pt-1">
-                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-charcoal-500">
-                  <span>Select Relationship (Click Glow Option):</span>
-                  <span className="text-[10px] text-forest-700 font-bold">4 Color Palette</span>
+                    {/* Listen Question Button */}
+                    <button
+                      type="button"
+                      onClick={handleSpeakQuestion}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
+                    >
+                      <Volume2 className="w-4 h-4 text-forest-700" />
+                      {UI_TEXT.listenQuestion[activeLang]}
+                    </button>
+                  </div>
+
+                  <p className="text-xs md:text-sm font-medium text-charcoal-600">
+                    {UI_TEXT.subtitle[activeLang]}
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {candidateOptions.map((relKey, index) => {
-                    const relOption = RELATION_LABELS[relKey][activeLang];
-                    const isSelected = selectedRelation === relKey;
-                    const isCorrectChoice = relKey === currentPerson.relationKey;
-                    const theme = GLOWING_BUTTON_THEMES[index % GLOWING_BUTTON_THEMES.length];
+                {/* GLOWING PADDING ANSWER BUTTONS (RED, YELLOW, GREEN, BLUE) */}
+                <div className="space-y-3 pt-1">
+                  <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-charcoal-500">
+                    <span>👉 Directly Click Your Answer Below:</span>
+                    <span className="text-[10px] text-forest-700 font-bold">4 Glowing Colors</span>
+                  </div>
 
-                    let btnStyle = theme.idleStyle;
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    {candidateOptions.map((relKey, index) => {
+                      const relOption = RELATION_LABELS[relKey][activeLang];
+                      const isSelected = selectedRelation === relKey;
+                      const isCorrectChoice = relKey === currentPerson.relationKey;
+                      const theme = GLOWING_BUTTON_THEMES[index % GLOWING_BUTTON_THEMES.length];
 
-                    if (isAnswered) {
-                      if (isCorrectChoice) {
-                        btnStyle = theme.correctStyle;
-                      } else if (isSelected) {
-                        btnStyle = theme.wrongStyle;
-                      } else {
-                        btnStyle = 'bg-ivory-100 border-2 border-ivory-200 text-charcoal-400 opacity-40 shadow-none';
+                      let btnStyle = theme.idleStyle;
+
+                      if (isAnswered) {
+                        if (isCorrectChoice) {
+                          btnStyle = theme.correctStyle;
+                        } else if (isSelected) {
+                          btnStyle = theme.wrongStyle;
+                        } else {
+                          btnStyle = 'bg-ivory-100 border-2 border-ivory-200 text-charcoal-400 opacity-40 shadow-none';
+                        }
                       }
-                    }
 
-                    return (
-                      <button
-                        key={relKey}
-                        type="button"
-                        onClick={() => handleSelectRelation(relKey)}
-                        disabled={isAnswered && isCorrect}
-                        className={`w-full p-4 sm:p-5 rounded-2xl md:rounded-3xl text-left font-serif font-bold transition-all duration-300 select-none cursor-pointer flex items-center justify-between px-5 ${btnStyle} ${
-                          elderlyMode ? 'py-5 text-xl' : 'text-base'
-                        }`}
-                      >
-                        <span className="flex items-center gap-3">
-                          {/* Glowing Color Indicator Dot */}
-                          <span
-                            className={`w-3.5 h-3.5 rounded-full shrink-0 ${theme.dotColor} ${
-                              isAnswered && isCorrectChoice ? 'bg-white shadow-[0_0_15px_white]' : ''
-                            }`}
-                          />
-                          <span className="leading-snug">{relOption.label}</span>
-                        </span>
+                      return (
+                        <button
+                          key={relKey}
+                          type="button"
+                          onClick={() => handleSelectRelation(relKey)}
+                          disabled={isAnswered && isCorrect}
+                          className={`w-full p-4 rounded-2xl text-left font-serif font-bold transition-all duration-300 select-none cursor-pointer flex items-center justify-between px-4.5 ${btnStyle} ${
+                            elderlyMode ? 'py-4.5 text-lg' : 'text-sm'
+                          }`}
+                        >
+                          <span className="flex items-center gap-2.5">
+                            {/* Glowing Color Indicator Dot */}
+                            <span
+                              className={`w-3.5 h-3.5 rounded-full shrink-0 ${theme.dotColor} ${
+                                isAnswered && isCorrectChoice ? 'bg-white shadow-[0_0_15px_white]' : ''
+                              }`}
+                            />
+                            <span className="leading-snug">{relOption.label}</span>
+                          </span>
 
-                        {/* Status icon indicators */}
-                        {isAnswered && isCorrectChoice && (
-                          <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                            <Check className="w-5 h-5 text-white stroke-[3.5]" />
-                          </span>
-                        )}
-                        {isAnswered && isSelected && !isCorrectChoice && (
-                          <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                            <X className="w-5 h-5 text-white stroke-[3.5]" />
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
+                          {/* Status icon indicators */}
+                          {isAnswered && isCorrectChoice && (
+                            <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                              <Check className="w-4 h-4 text-white stroke-[3.5]" />
+                            </span>
+                          )}
+                          {isAnswered && isSelected && !isCorrectChoice && (
+                            <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                              <X className="w-4 h-4 text-white stroke-[3.5]" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
 
               {/* Feedback & Clue Note */}
               {isAnswered && (
                 <div
-                  className={`p-4 rounded-2xl space-y-2 transition-all animate-fadeIn ${
+                  className={`p-4 rounded-2xl space-y-2 transition-all animate-fadeIn mt-4 ${
                     isCorrect
                       ? 'bg-forest-50 border-2 border-forest-400 text-forest-950 shadow-[0_0_20px_rgba(16,185,129,0.2)]'
                       : 'bg-amber-50 border-2 border-amber-300 text-amber-950 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
@@ -1083,182 +1242,312 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                   </div>
                 </div>
               )}
+
             </div>
 
-            {/* --------------------------------------------------------------------- */}
-            {/* COLUMN 2 (RIGHT, 5 COLS): GLOWING AUDIO RECORD & TEXT RESPONSE STUDIO */}
-            {/* --------------------------------------------------------------------- */}
-            <div className="lg:col-span-5 bg-gradient-to-b from-white via-ivory-50 to-white rounded-3xl p-5 md:p-6 border-2 border-forest-300 shadow-[0_4px_30px_rgba(20,83,45,0.08)] space-y-5">
+            {/* ========================================================================= */}
+            {/* COLUMN 2 (RIGHT, 50% EQUAL): DEDICATED AUDIO TO TEXT CONVERTER STUDIO      */}
+            {/* ========================================================================= */}
+            <div className="bg-gradient-to-b from-blue-50/90 via-indigo-50/70 to-blue-50/90 rounded-3xl p-5 md:p-7 border-2 border-blue-200 shadow-soft space-y-5 flex flex-col justify-between h-full">
               
-              {/* Studio Header */}
-              <div className="border-b border-ivory-200 pb-3 flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-forest-800">
-                    <Headphones className="w-4 h-4 text-forest-700" />
-                    {UI_TEXT.voiceStudioTitle[activeLang]}
+              <div className="space-y-4">
+                {/* Header & Language Selector */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-blue-200/80 pb-3">
+                  <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-blue-950">
+                    <Mic className="w-4 h-4 text-blue-700 animate-pulse" />
+                    <span>{UI_TEXT.voiceStudioTitle[activeLang]}</span>
                   </div>
-                  <p className="text-xs font-medium text-charcoal-600 mt-1">
-                    {UI_TEXT.voiceStudioSubtitle[activeLang]}
-                  </p>
+                  
+                  {/* Regional Language Switcher */}
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] font-bold text-charcoal-600 mr-1">Lang:</span>
+                    {(['hi', 'en', 'bn', 'as', 'ne'] as SupportedLanguage[]).map((langCode) => {
+                      const labels: Record<string, string> = {
+                        hi: 'हिन्दी',
+                        en: 'English',
+                        bn: 'বাংলা',
+                        as: 'অসমীয়া',
+                        ne: 'नेपाली',
+                      };
+                      const isSelected = activeLang === langCode;
+                      return (
+                        <button
+                          key={langCode}
+                          type="button"
+                          onClick={() => setActiveLang(langCode)}
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-bold transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-blue-600 text-white shadow-xs'
+                              : 'bg-white text-blue-900 border border-blue-200 hover:bg-blue-50'
+                          }`}
+                        >
+                          {labels[langCode]}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse" />
-              </div>
 
-              {/* 1. GLOWING AUDIO RECORDING PANEL */}
-              <div className="bg-gradient-to-br from-white to-ivory-50 rounded-2xl p-4.5 border-2 border-forest-200 shadow-sm space-y-3.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
-                    <Radio className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : 'text-forest-700'}`} />
-                    Audio Record Studio
-                  </span>
+                <p className="text-xs font-medium text-blue-950">
+                  {UI_TEXT.voiceStudioSubtitle[activeLang]}
+                </p>
 
-                  {isRecording && (
-                    <span className="text-xs font-mono font-bold bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse">
-                      REC 00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds}
-                    </span>
-                  )}
-                </div>
-
-                {/* Big Glowing Microphone Record Toggle Button */}
-                <div className="pt-1">
+                {/* Add Audio & Convert Button */}
+                <div>
                   {!isRecording ? (
                     <button
                       type="button"
-                      onClick={startVoiceRecording}
-                      disabled={isAnswered && isCorrect}
-                      className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-terracotta-500 to-terracotta-600 text-white font-extrabold text-sm shadow-[0_4px_20px_rgba(194,65,12,0.35)] hover:shadow-[0_0_25px_rgba(194,65,12,0.55)] hover:scale-[1.02] transition-all cursor-pointer disabled:opacity-50"
+                      onClick={startAudioToText}
+                      className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-[0_0_24px_rgba(37,99,235,0.45)] border-2 border-blue-300 hover:border-white hover:scale-[1.01] transition-all cursor-pointer"
                     >
-                      <Mic className="w-5 h-5 animate-bounce" />
+                      <Mic className="w-5 h-5 text-blue-100" />
+                      <span className="flex items-center gap-1.5 bg-blue-900/60 px-2.5 py-1 rounded-full border border-blue-300/40">
+                        <span className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,1)] animate-pulse" />
+                        <span className="text-[10px] uppercase tracking-wider text-white font-bold">REC</span>
+                      </span>
                       <span>{UI_TEXT.recordAnswer[activeLang]}</span>
                     </button>
                   ) : (
                     <button
                       type="button"
-                      onClick={stopVoiceRecording}
-                      className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 text-white font-extrabold text-sm shadow-[0_0_25px_rgba(225,29,72,0.6)] ring-4 ring-rose-300 animate-pulse transition-all cursor-pointer"
+                      onClick={stopAudioToText}
+                      className="w-full inline-flex items-center justify-center gap-3 py-3.5 px-6 rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 text-white font-extrabold text-sm shadow-[0_0_28px_rgba(225,29,72,0.65)] ring-4 ring-rose-300 animate-pulse transition-all cursor-pointer border-2 border-white"
                     >
                       <Square className="w-4 h-4 fill-white" />
-                      <span>Stop & Transcribe Voice</span>
+                      <span className="w-3 h-3 rounded-full bg-white animate-ping" />
+                      <span>Stop Converting (00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds})</span>
                     </button>
                   )}
                 </div>
 
-                {/* Recording Waveform Animation & Prompt */}
+                {/* Live Audio Level Visualizer */}
                 {isRecording && (
-                  <div className="flex items-center justify-center gap-1.5 py-2 bg-rose-50/80 rounded-xl border border-rose-200">
-                    <span className="w-1.5 h-6 bg-red-500 rounded-full animate-pulse" />
-                    <span className="w-1.5 h-10 bg-rose-600 rounded-full animate-bounce" />
-                    <span className="w-1.5 h-4 bg-red-400 rounded-full animate-pulse" />
-                    <span className="w-1.5 h-8 bg-rose-500 rounded-full animate-bounce" />
-                    <span className="w-1.5 h-5 bg-red-600 rounded-full animate-pulse" />
-                    <span className="text-xs font-bold text-rose-800 ml-2">
+                  <div className="space-y-1.5 p-3 bg-white/90 rounded-xl border border-blue-200">
+                    <div className="flex items-center justify-between text-xs font-bold text-blue-900">
+                      <span className="flex items-center gap-1.5">
+                        <Activity className="w-3.5 h-3.5 text-blue-700 animate-spin" /> Audio Input:
+                      </span>
+                      <span>Level: {micVolumeLevel}%</span>
+                    </div>
+                    <div className="w-full h-2 bg-blue-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-blue-500 to-emerald-500 transition-all duration-75"
+                        style={{ width: `${Math.max(12, Math.min(100, micVolumeLevel))}%` }}
+                      />
+                    </div>
+                    <div className="text-[11px] text-center font-bold text-blue-950 pt-0.5">
                       {UI_TEXT.recordingActive[activeLang]}
-                    </span>
+                    </div>
                   </div>
                 )}
 
-                {/* Audio Playback Player (Always available when recording exists) */}
+                {/* 100% AUDIBLE RECORDED VOICE PLAYBACK CARD */}
                 {recordedAudioUrl && (
-                  <div className="pt-1">
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-100/90 via-indigo-100/80 to-blue-100/90 border-2 border-blue-300 shadow-sm space-y-3 animate-fadeIn">
+                    <div className="flex items-center justify-between text-xs font-bold text-blue-950">
+                      <span className="flex items-center gap-2">
+                        <Headphones className="w-4 h-4 text-blue-700" />
+                        <span>🎧 Your Recorded Voice is Ready to Play:</span>
+                      </span>
+                      <span className="bg-blue-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        Loud & Clear
+                      </span>
+                    </div>
+
+                    {/* Big Click to Play Recorded Audio Button */}
                     <button
                       type="button"
                       onClick={handleTogglePlayAudio}
-                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-forest-50 text-forest-900 border-2 border-forest-300 font-bold text-xs shadow-xs hover:bg-forest-100 hover:border-forest-500 transition-all cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-2.5 py-3 px-5 rounded-xl bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-[0_4px_16px_rgba(37,99,235,0.4)] hover:scale-[1.01] transition-all cursor-pointer"
                     >
                       {isAudioPlaying ? (
                         <>
-                          <Pause className="w-4 h-4 fill-forest-800 text-forest-800" /> Pause Recorded Voice
+                          <Pause className="w-5 h-5 fill-white" />
+                          <span>Pause Recorded Voice</span>
                         </>
                       ) : (
                         <>
-                          <Play className="w-4 h-4 fill-forest-800 text-forest-800" /> Play Back My Voice Audio
+                          <Play className="w-5 h-5 fill-white" />
+                          <span>🔊 Click to Play Recorded Voice (Hear Audio)</span>
                         </>
                       )}
                     </button>
+
+                    {/* Native HTML5 Audio Player for Scrubbing & Volume */}
+                    <audio
+                      ref={audioPlayerElementRef}
+                      controls
+                      src={recordedAudioUrl}
+                      className="w-full h-10 rounded-lg bg-white/90"
+                      onPlay={() => setIsAudioPlaying(true)}
+                      onPause={() => setIsAudioPlaying(false)}
+                      onEnded={() => setIsAudioPlaying(false)}
+                    />
                   </div>
                 )}
-              </div>
 
-              {/* 2. TEXT FORMAT / WRITE & TRANSCRIBE INPUT SECTION */}
-              <div className="bg-white rounded-2xl p-4.5 border-2 border-ivory-200 shadow-sm space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-forest-700" />
-                    Text Response Format
-                  </span>
-                  <span className="text-[10px] text-forest-800 bg-forest-50 px-2 py-0.5 rounded-full font-bold">
-                    Voice + Keyboard
-                  </span>
-                </div>
-
-                {/* Editable Text Area synced with voice transcription */}
-                <div className="relative">
-                  <textarea
-                    value={typedResponseText}
-                    onChange={(e) => setTypedResponseText(e.target.value)}
-                    placeholder={UI_TEXT.typeAnswerPlaceholder[activeLang]}
-                    rows={3}
-                    className="w-full p-3 text-xs md:text-sm font-medium text-charcoal-900 bg-ivory-50/70 border-2 border-ivory-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white resize-none shadow-inner"
-                  />
-                  {typedResponseText && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTypedResponseText('');
-                        setSpeechTranscript('');
-                      }}
-                      className="absolute top-2 right-2 text-charcoal-400 hover:text-charcoal-700 p-1 text-xs"
-                      title="Clear text"
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-
-                {/* Check / Verify Answer Button */}
-                <button
-                  type="button"
-                  onClick={handleCheckTextResponse}
-                  disabled={isAnswered && isCorrect}
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 hover:scale-[1.01] transition-all cursor-pointer disabled:opacity-50"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>{UI_TEXT.checkAnswerBtn[activeLang]}</span>
-                </button>
-              </div>
-
-              {/* 3. DUAL FORMAT STATUS CARD (Audio & Text summary) */}
-              {(recordedAudioUrl || speechTranscript || voiceFeedbackMsg) && (
-                <div className="p-4 rounded-2xl bg-gradient-to-r from-forest-50 to-ivory-50 border-2 border-forest-200 text-xs space-y-2 shadow-xs">
-                  <div className="font-bold text-forest-900 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-forest-700" /> Response Format Status
+                {/* Converted Text Output Box (Shows Transcribed Text) */}
+                <div className="space-y-2 bg-white rounded-2xl p-3.5 md:p-4 border border-blue-200 shadow-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
+                      <FileText className="w-4 h-4 text-blue-700" />
+                      Converted Text Result:
+                    </span>
+                    <span className="text-[10px] text-blue-900 bg-blue-50 px-2 py-0.5 rounded-full font-bold">
+                      {(typedResponseText || speechTranscript).trim() ? `${(typedResponseText || speechTranscript).trim().split(/\s+/).length} Words` : '0 Words'}
+                    </span>
                   </div>
 
-                  {speechTranscript && (
-                    <div className="text-[11px] text-charcoal-700">
-                      <span className="font-bold text-charcoal-900">Transcribed Text:</span> "{speechTranscript}"
-                    </div>
-                  )}
+                  <div className="relative">
+                    <textarea
+                      value={typedResponseText}
+                      onChange={(e) => {
+                        setTypedResponseText(e.target.value);
+                        setSpeechTranscript(e.target.value);
+                      }}
+                      placeholder={UI_TEXT.typeAnswerPlaceholder[activeLang]}
+                      rows={3}
+                      className="w-full p-3 text-xs md:text-sm font-medium text-charcoal-900 bg-ivory-50/70 border border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white resize-none shadow-inner"
+                    />
+                    {isRecording && (
+                      <span className="absolute bottom-2.5 right-2.5 text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded-md border border-red-200 animate-pulse flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping" />
+                        Converting live...
+                      </span>
+                    )}
+                  </div>
 
-                  {recordedAudioUrl && (
-                    <div className="text-[11px] text-forest-800 flex items-center gap-1.5 font-bold">
-                      <Check className="w-3.5 h-3.5 text-forest-700" /> Audio voice format recorded and ready
-                    </div>
-                  )}
+                  {/* Toolbar */}
+                  <div className="flex items-center justify-between gap-2 pt-0.5 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCopyConvertedText}
+                        disabled={!typedResponseText && !speechTranscript}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          isCopied
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-blue-50 text-blue-900 hover:bg-blue-100 disabled:opacity-40 disabled:cursor-not-allowed border border-blue-200'
+                        }`}
+                      >
+                        {isCopied ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5 text-blue-700" />}
+                        <span>{isCopied ? 'Copied!' : 'Copy Text'}</span>
+                      </button>
 
-                  {voiceFeedbackMsg && (
-                    <div
-                      className={`text-[11px] font-bold p-2.5 rounded-xl ${
-                        voiceFeedbackMsg.type === 'success'
-                          ? 'bg-forest-100 text-forest-950 border border-forest-300'
-                          : voiceFeedbackMsg.type === 'error'
-                          ? 'bg-red-50 text-red-900 border border-red-200'
-                          : 'bg-amber-50 text-amber-950 border border-amber-200'
-                      }`}
-                    >
-                      {voiceFeedbackMsg.text}
+                      <button
+                        type="button"
+                        onClick={handleSpeakTranscribedText}
+                        disabled={!typedResponseText && !speechTranscript}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                          isAudioPlaying
+                            ? 'bg-indigo-600 text-white shadow-xs animate-pulse'
+                            : 'bg-indigo-50 text-indigo-900 hover:bg-indigo-100 disabled:opacity-40 disabled:cursor-not-allowed border border-indigo-200'
+                        }`}
+                      >
+                        {isAudioPlaying ? <VolumeX className="w-3.5 h-3.5 text-white" /> : <Volume2 className="w-3.5 h-3.5 text-indigo-700" />}
+                        <span>{isAudioPlaying ? 'Stop Audio' : 'Read Aloud'}</span>
+                      </button>
                     </div>
-                  )}
+
+                    {(typedResponseText || speechTranscript) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTypedResponseText('');
+                          setSpeechTranscript('');
+                        }}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold text-charcoal-500 hover:text-rose-600 hover:bg-rose-50 transition-all cursor-pointer"
+                      >
+                        <RotateCcw className="w-3.5 h-3.5" /> Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* QUICK 1-CLICK SPOKEN PHRASES (FILLS VACANT SPACE WITH ACTIVE HELPER) */}
+                <div className="bg-white/80 rounded-2xl p-3.5 border border-blue-200/90 space-y-2">
+                  <div className="flex items-center justify-between text-[11px] font-bold text-blue-950">
+                    <span className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                      <span>💡 Quick Spoken Hints for Patient:</span>
+                    </span>
+                    <span className="text-[10px] text-blue-700">Tap to Try</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { key: currentPerson.relationKey, label: RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle },
+                      { key: 'daughter', label: RELATION_LABELS.daughter[activeLang].fullTitle },
+                      { key: 'wife', label: RELATION_LABELS.wife[activeLang].fullTitle },
+                      { key: 'son', label: RELATION_LABELS.son[activeLang].fullTitle },
+                    ].slice(0, 4).map((item, idx) => (
+                      <button
+                        key={`${item.key}-${idx}`}
+                        type="button"
+                        onClick={() => {
+                          const sample = `${item.label} (${currentPerson.name})`;
+                          setTypedResponseText(sample);
+                          setSpeechTranscript(sample);
+                          speakText(sample, activeLang);
+                        }}
+                        className="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200 text-left text-[11px] font-bold transition-all cursor-pointer truncate flex items-center gap-1.5"
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* AUDIO STUDIO QUALITY METRICS (FILLS BOTTOM BEAUTIFULLY) */}
+                <div className="grid grid-cols-3 gap-2 pt-1">
+                  <div className="bg-white/80 rounded-xl p-2.5 border border-blue-200/80 text-center space-y-0.5">
+                    <div className="flex items-center justify-center gap-1 text-[10px] font-extrabold text-emerald-700">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>Mic Active</span>
+                    </div>
+                    <p className="text-[9px] font-semibold text-charcoal-500">Noise Reduced</p>
+                  </div>
+
+                  <div className="bg-white/80 rounded-xl p-2.5 border border-blue-200/80 text-center space-y-0.5">
+                    <div className="flex items-center justify-center gap-1 text-[10px] font-extrabold text-blue-700">
+                      <Volume2 className="w-3 h-3 text-blue-600" />
+                      <span>100% Vol</span>
+                    </div>
+                    <p className="text-[9px] font-semibold text-charcoal-500">3x Gain Boost</p>
+                  </div>
+
+                  <div className="bg-white/80 rounded-xl p-2.5 border border-blue-200/80 text-center space-y-0.5">
+                    <div className="flex items-center justify-center gap-1 text-[10px] font-extrabold text-indigo-700">
+                      <Radio className="w-3 h-3 text-indigo-600" />
+                      <span>Live STT</span>
+                    </div>
+                    <p className="text-[9px] font-semibold text-charcoal-500">Real-time</p>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Detected Relation Match Badge or Memory Comfort Tip */}
+              {detectedRelationMatch ? (
+                <div className="p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-xs space-y-1 shadow-xs animate-fadeIn mt-3">
+                  <div className="font-bold text-emerald-950 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-emerald-700" />
+                    <span>Detected Relation:</span>
+                    <span className="bg-emerald-200 text-emerald-950 px-2 py-0.5 rounded-full font-extrabold text-[11px]">
+                      {RELATION_LABELS[detectedRelationMatch][activeLang].fullTitle}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-emerald-900 font-medium">
+                    👉 Click the matching Glowing Option Button on the left to confirm your answer!
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3 rounded-2xl bg-blue-100/60 border border-blue-200/80 text-xs text-blue-950 flex items-start gap-2 mt-3">
+                  <Info className="w-4 h-4 text-blue-700 shrink-0 mt-0.5" />
+                  <p className="text-[11px] font-medium leading-relaxed">
+                    <strong>Therapeutic Benefit:</strong> Speaking your thoughts aloud stimulates auditory & vocal motor memory, making face recognition easier and more natural.
+                  </p>
                 </div>
               )}
 

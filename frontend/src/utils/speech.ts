@@ -8,7 +8,7 @@ export interface VoiceOption {
 }
 
 let preferredVoiceURI: string | null = localStorage.getItem('smriti_preferred_voice') || null;
-let preferredRate: number = parseFloat(localStorage.getItem('smriti_speech_rate') || '0.85');
+let preferredRate: number = parseFloat(localStorage.getItem('smriti_speech_rate') || '0.9');
 
 export const setPreferredVoice = (voiceURI: string | null) => {
   preferredVoiceURI = voiceURI;
@@ -33,7 +33,7 @@ export const getPreferredRate = (): number => {
 };
 
 export const getAvailableVoices = (): VoiceOption[] => {
-  if (!('speechSynthesis' in window)) return [];
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
   const voices = window.speechSynthesis.getVoices();
   return voices.map((v) => ({
     voiceURI: v.voiceURI,
@@ -43,6 +43,35 @@ export const getAvailableVoices = (): VoiceOption[] => {
   }));
 };
 
+// Play an acoustic chime tone via Web Audio API so user always hears immediate sound
+export const playAcousticChime = (freq: number = 587.33, duration: number = 0.18) => {
+  try {
+    const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtxClass) return;
+    const ctx = new AudioCtxClass();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(freq * 1.5, ctx.currentTime + duration);
+
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch (e) {
+    // ignore
+  }
+};
+
 export const speakText = (text: string, lang: string = 'en', onEnd?: () => void, onError?: () => void) => {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     console.warn('Speech synthesis is not supported in this browser environment.');
@@ -50,8 +79,18 @@ export const speakText = (text: string, lang: string = 'en', onEnd?: () => void,
     return;
   }
 
-  // Cancel any ongoing speech
-  window.speechSynthesis.cancel();
+  // Acoustic chime feedback so hearing is immediately verified
+  playAcousticChime(523.25, 0.12);
+
+  // Unpause synthesis if browser suspended it
+  try {
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+    window.speechSynthesis.cancel();
+  } catch (e) {
+    console.warn('Speech cancel notice:', e);
+  }
 
   // Clean and prepare text for speech synthesis
   const cleanText = text.trim();
@@ -77,83 +116,102 @@ export const speakText = (text: string, lang: string = 'en', onEnd?: () => void,
   utterance.lang = targetLang;
   utterance.rate = preferredRate; // Slightly slower, calm cadence for elderly comprehension
   utterance.pitch = 1.0;
+  utterance.volume = 1.0; // Max volume for clear hearing
 
-  if (onEnd) {
-    utterance.onend = () => onEnd();
-  }
-  if (onError) {
-    utterance.onerror = () => onError();
-  }
+  let finished = false;
+  utterance.onend = () => {
+    if (!finished) {
+      finished = true;
+      if (onEnd) onEnd();
+    }
+  };
+
+  utterance.onerror = (e) => {
+    console.warn('Utterance error:', e);
+    if (!finished) {
+      finished = true;
+      if (onError) onError();
+    }
+  };
 
   const selectVoiceAndSpeak = () => {
-    const voices = window.speechSynthesis.getVoices();
-    if (voices.length > 0) {
-      let matchedVoice: SpeechSynthesisVoice | undefined;
-
-      // 1. If preferred voice URI is set by user, prioritize it
-      if (preferredVoiceURI) {
-        matchedVoice = voices.find((v) => v.voiceURI === preferredVoiceURI);
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
       }
 
-      // 2. Direct exact or prefix match
-      if (!matchedVoice) {
-        const prefix = targetLang.split('-')[0].toLowerCase();
-        matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith(prefix) || v.lang.toLowerCase() === targetLang.toLowerCase());
-      }
+      const voices = window.speechSynthesis.getVoices();
+      if (voices.length > 0) {
+        let matchedVoice: SpeechSynthesisVoice | undefined;
 
-      // 3. Special Fallbacks for Indian Regional Languages
-      if (!matchedVoice) {
-        if (lang === 'as' || targetLang === 'as-IN') {
-          // Assamese falls back to Bengali (same Eastern Nagari script/phonetics) or Hindi voice
-          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('as'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
-            || voices.find((v) => v.lang.toLowerCase().includes('in'));
-          if (matchedVoice) {
-            utterance.lang = matchedVoice.lang;
+        // 1. If preferred voice URI is set by user, prioritize it
+        if (preferredVoiceURI) {
+          matchedVoice = voices.find((v) => v.voiceURI === preferredVoiceURI);
+        }
+
+        // 2. Direct exact or prefix match
+        if (!matchedVoice) {
+          const prefix = targetLang.split('-')[0].toLowerCase();
+          matchedVoice = voices.find(
+            (v) => v.lang.toLowerCase().startsWith(prefix) || v.lang.toLowerCase() === targetLang.toLowerCase()
+          );
+        }
+
+        // 3. Special Fallbacks for Indian Regional Languages
+        if (!matchedVoice) {
+          if (lang === 'as' || targetLang === 'as-IN') {
+            matchedVoice =
+              voices.find((v) => v.lang.toLowerCase().startsWith('as')) ||
+              voices.find((v) => v.lang.toLowerCase().startsWith('bn')) ||
+              voices.find((v) => v.lang.toLowerCase().startsWith('hi')) ||
+              voices.find((v) => v.lang.toLowerCase().includes('in'));
+          } else if (lang === 'bn' || targetLang === 'bn-IN' || targetLang === 'bn-BD') {
+            matchedVoice =
+              voices.find((v) => v.lang.toLowerCase().startsWith('bn')) ||
+              voices.find((v) => v.lang.toLowerCase().startsWith('hi')) ||
+              voices.find((v) => v.lang.toLowerCase().includes('in'));
+          } else if (lang === 'ne' || targetLang === 'ne-NP' || targetLang === 'ne-IN') {
+            matchedVoice =
+              voices.find((v) => v.lang.toLowerCase().startsWith('ne')) ||
+              voices.find((v) => v.lang.toLowerCase().startsWith('hi')) ||
+              voices.find((v) => v.lang.toLowerCase().includes('in'));
+          } else if (lang === 'brx' || targetLang === 'brx-IN') {
+            matchedVoice =
+              voices.find((v) => v.lang.toLowerCase().startsWith('hi')) ||
+              voices.find((v) => v.lang.toLowerCase().startsWith('bn')) ||
+              voices.find((v) => v.lang.toLowerCase().includes('in'));
+          } else if (lang === 'hi' || targetLang === 'hi-IN') {
+            matchedVoice =
+              voices.find((v) => v.lang.toLowerCase().startsWith('hi')) ||
+              voices.find((v) => v.lang.toLowerCase().startsWith('mr')) ||
+              voices.find((v) => v.lang.toLowerCase().includes('in'));
           }
-        } else if (lang === 'bn' || targetLang === 'bn-IN' || targetLang === 'bn-BD') {
-          // Bengali
-          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('as'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
-            || voices.find((v) => v.lang.toLowerCase().includes('in'));
-          if (matchedVoice) {
-            utterance.lang = matchedVoice.lang;
-          }
-        } else if (lang === 'ne' || targetLang === 'ne-NP' || targetLang === 'ne-IN') {
-          // Nepali (Devanagari script) falls back to Hindi if no dedicated Nepali voice
-          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('ne'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('mr'))
-            || voices.find((v) => v.lang.toLowerCase().includes('in'));
-          if (matchedVoice) {
-            utterance.lang = matchedVoice.lang;
-          }
-        } else if (lang === 'brx' || targetLang === 'brx-IN') {
-          // Bodo (Devanagari/Assamese script) falls back to Hindi or Assamese
-          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('as'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
-            || voices.find((v) => v.lang.toLowerCase().includes('in'));
-          if (matchedVoice) {
-            utterance.lang = matchedVoice.lang;
-          }
-        } else if (lang === 'hi' || targetLang === 'hi-IN') {
-          // Hindi falls back to any Indic voice that supports Devanagari
-          matchedVoice = voices.find((v) => v.lang.toLowerCase().startsWith('hi'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('mr'))
-            || voices.find((v) => v.lang.toLowerCase().startsWith('bn'))
-            || voices.find((v) => v.lang.toLowerCase().includes('in'));
+        }
+
+        // 4. Global fallback voice (Default system voice)
+        if (!matchedVoice) {
+          matchedVoice = voices.find((v) => v.default) || voices[0];
+        }
+
+        if (matchedVoice) {
+          utterance.voice = matchedVoice;
         }
       }
 
-      if (matchedVoice) {
-        utterance.voice = matchedVoice;
-      }
-    }
+      window.speechSynthesis.speak(utterance);
 
-    window.speechSynthesis.speak(utterance);
+      // Keep synthesis alive on Chromium long utterances
+      const resumeInterval = setInterval(() => {
+        if (!window.speechSynthesis.speaking) {
+          clearInterval(resumeInterval);
+        } else if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      }, 5000);
+    } catch (err) {
+      console.warn('speakText error:', err);
+      if (onError) onError();
+    }
   };
 
   // Ensure voices are loaded (Chrome loads voices asynchronously)
@@ -162,7 +220,6 @@ export const speakText = (text: string, lang: string = 'en', onEnd?: () => void,
     window.speechSynthesis.onvoiceschanged = () => {
       selectVoiceAndSpeak();
     };
-    // Fallback if event doesn't fire immediately
     setTimeout(selectVoiceAndSpeak, 100);
   } else {
     selectVoiceAndSpeak();
@@ -170,7 +227,7 @@ export const speakText = (text: string, lang: string = 'en', onEnd?: () => void,
 };
 
 export const stopSpeech = () => {
-  if ('speechSynthesis' in window) {
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
 };
