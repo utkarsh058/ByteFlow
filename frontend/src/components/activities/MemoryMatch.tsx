@@ -142,9 +142,51 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
     }
   };
 
+  // Touchable gentle acoustic chime sound on card click / image tap
+  const playTouchableCardSound = (pitchOffset = 0) => {
+    try {
+      if (!audioCtxRef.current) {
+        const AudioCtx =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioCtxRef.current = new AudioCtx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const now = ctx.currentTime;
+
+      // Primary warm acoustic tone
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(523.25 + pitchOffset, now); // C5
+      gain1.gain.setValueAtTime(0.2, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.25);
+
+      // Gentle secondary harmonic overtone for touchable tactile feel
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(783.99 + pitchOffset * 1.5, now); // G5
+      gain2.gain.setValueAtTime(0.1, now);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now);
+      osc2.stop(now + 0.2);
+    } catch {
+      // Graceful fallback
+    }
+  };
+
   // Card Flip Click Sound
   const playCardFlipSound = () => {
-    playTone(587.33, 0.15, 'sine', 0.12); // D5
+    playTouchableCardSound(30);
   };
 
   // Success Match Sound
@@ -476,13 +518,17 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
               </div>
             )}
 
-            {/* Re-peek Memorize Button */}
+            {/* Re-start 5s Memorize Button with enhanced padding and vibrant styling */}
             {!isMemorizingPhase && !isSwapping && (
               <button
-                onClick={() => initGameRound(cardPairs)}
-                className="text-xs font-bold text-cyan-700 hover:text-cyan-900 bg-cyan-50 hover:bg-cyan-100 px-3.5 py-1.5 rounded-xl border border-cyan-200 flex items-center gap-1.5 transition-all cursor-pointer"
+                onClick={() => {
+                  playTouchableCardSound(100);
+                  initGameRound(cardPairs);
+                }}
+                className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-white font-black text-xs sm:text-sm shadow-lg shadow-amber-500/25 border-2 border-amber-300 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer select-none"
               >
-                <Eye className="w-3.5 h-3.5" /> Re-start 5s Memorize
+                <Eye className="w-4 h-4 text-white animate-pulse" />
+                <span>🔁 Re-start 5s Memorize</span>
               </button>
             )}
           </div>
