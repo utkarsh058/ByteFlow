@@ -1,16 +1,75 @@
-import React, { useState, useEffect } from 'react';
-import { CheckCircle2, Sparkles, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  CheckCircle2,
+  Sparkles,
+  ArrowLeft,
+  Upload,
+  RotateCcw,
+  Play,
+  Clock,
+  Heart,
+  Eye,
+  Shuffle,
+  PartyPopper,
+  X,
+  Plus,
+  Image as ImageIcon,
+} from 'lucide-react';
 import { Button } from '../common/Button';
-import { useActivityStore } from '../../stores/useActivityStore';
-import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
 
 interface MemoryMatchProps {
   onComplete: (accuracy: number, attempts: number, responseTimeMs: number) => void;
   onBack: () => void;
 }
 
-interface MatchCard {
-  id: number;
+export interface CardPairItem {
+  pairId: string;
+  name: string;
+  imageUrl: string;
+  category?: string;
+}
+
+const DEFAULT_CARD_PAIRS: CardPairItem[] = [
+  {
+    pairId: 'bihu',
+    name: 'Rongali Bihu',
+    category: 'Festival',
+    imageUrl: 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'tea',
+    name: 'Assam Tea Garden',
+    category: 'Landscape',
+    imageUrl: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'river',
+    name: 'Brahmaputra Sunset',
+    category: 'River',
+    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'orchid',
+    name: 'Assam Wild Orchid',
+    category: 'Flora',
+    imageUrl: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'rhino',
+    name: 'Kaziranga Rhino',
+    category: 'Wildlife',
+    imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'temple',
+    name: 'Kamakhya Temple',
+    category: 'Heritage',
+    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
+  },
+];
+
+interface ActiveMatchCard {
+  uniqueId: number;
   pairId: string;
   name: string;
   imageUrl: string;
@@ -18,41 +77,181 @@ interface MatchCard {
   isMatched: boolean;
 }
 
-const cardItems = [
-  { pairId: 'bihu', name: 'Bihu Festival', imageUrl: 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=600&q=80' },
-  { pairId: 'tea', name: 'Assam Tea Garden', imageUrl: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=600&q=80' },
-  { pairId: 'river', name: 'Brahmaputra Sunset', imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=80' },
-  { pairId: 'flowers', name: 'Orchid Bloom', imageUrl: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=600&q=80' },
-];
+const LOCAL_STORAGE_CUSTOM_PAIRS = 'smriti_setu_custom_memory_cards';
 
 export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) => {
-  const { elderlyMode } = useAccessibilityStore();
-  const { currentDifficulty } = useActivityStore();
+  const [cardPairs, setCardPairs] = useState<CardPairItem[]>(() => {
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_CUSTOM_PAIRS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length >= 6) {
+          return parsed.slice(0, 6);
+        }
+      }
+    } catch {
+      // Fallback
+    }
+    return DEFAULT_CARD_PAIRS;
+  });
 
-  const [cards, setCards] = useState<MatchCard[]>([]);
+  const [cards, setCards] = useState<ActiveMatchCard[]>([]);
   const [flippedCards, setFlippedCards] = useState<number[]>([]);
   const [attempts, setAttempts] = useState(0);
   const [matchedPairs, setMatchedPairs] = useState(0);
-  const [startTime] = useState<number>(Date.now());
+  const [isMemorizingPhase, setIsMemorizingPhase] = useState(true);
+  const [countdown, setCountdown] = useState(5);
+  const [isSwapping, setIsSwapping] = useState(false);
+  const [startTime, setStartTime] = useState<number>(Date.now());
   const [isFinished, setIsFinished] = useState(false);
 
-  useEffect(() => {
-    const doubled = [...cardItems, ...cardItems];
-    const shuffled = doubled
-      .sort(() => Math.random() - 0.5)
-      .map((item, idx) => ({
-        id: idx,
-        pairId: item.pairId,
-        name: item.name,
-        imageUrl: item.imageUrl,
-        isFlipped: false,
-        isMatched: false,
-      }));
-    setCards(shuffled);
+  // Upload Modal State
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadedImages, setUploadedImages] = useState<Array<{ name: string; url: string }>>([]);
+
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const countdownTimerRef = useRef<any>(null);
+
+  // Audio synthesize gentle chimes
+  const playTone = (freq: number, duration = 0.35, type: OscillatorType = 'sine', gainVal = 0.18) => {
+    try {
+      if (!audioCtxRef.current) {
+        const AudioCtx =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        audioCtxRef.current = new AudioCtx();
+      }
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      osc.stop(ctx.currentTime + duration + 0.05);
+    } catch {
+      // Graceful fallback
+    }
+  };
+
+  // Card Flip Click Sound
+  const playCardFlipSound = () => {
+    playTone(587.33, 0.15, 'sine', 0.12); // D5
+  };
+
+  // Success Match Sound
+  const playMatchSound = () => {
+    playTone(523.25, 0.25, 'sine', 0.15); // C5
+    setTimeout(() => playTone(659.25, 0.35, 'sine', 0.18), 100); // E5
+  };
+
+  // Harmonious, melted celebration sound upon completing all 12 cards
+  const playGrandCelebrationSound = useCallback(() => {
+    const chord = [
+      { freq: 261.63, delay: 0 },
+      { freq: 329.63, delay: 130 },
+      { freq: 392.0, delay: 260 },
+      { freq: 523.25, delay: 390 },
+      { freq: 659.25, delay: 520 },
+      { freq: 783.99, delay: 680 },
+    ];
+    chord.forEach((n) => {
+      setTimeout(() => playTone(n.freq, 0.6, 'sine', 0.18), n.delay);
+    });
   }, []);
 
+  // Initialize round: double 6 pairs to make 12 cards, show for 5s, then swap & flip
+  const initGameRound = useCallback((pairsToUse: CardPairItem[]) => {
+    // Take 6 pairs
+    const pairs = pairsToUse.slice(0, 6);
+    const doubled: ActiveMatchCard[] = [];
+
+    pairs.forEach((p, pIdx) => {
+      doubled.push({
+        uniqueId: pIdx * 2,
+        pairId: p.pairId,
+        name: p.name,
+        imageUrl: p.imageUrl,
+        isFlipped: true, // Initially flipped face-up during 5s memory phase
+        isMatched: false,
+      });
+      doubled.push({
+        uniqueId: pIdx * 2 + 1,
+        pairId: p.pairId,
+        name: p.name,
+        imageUrl: p.imageUrl,
+        isFlipped: true, // Initially flipped face-up during 5s memory phase
+        isMatched: false,
+      });
+    });
+
+    // Initial arrangement
+    setCards(doubled);
+    setFlippedCards([]);
+    setMatchedPairs(0);
+    setAttempts(0);
+    setIsFinished(false);
+    setIsMemorizingPhase(true);
+    setIsSwapping(false);
+    setCountdown(5);
+
+    if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+
+    let count = 5;
+    countdownTimerRef.current = setInterval(() => {
+      count -= 1;
+      setCountdown(count);
+
+      if (count === 0) {
+        clearInterval(countdownTimerRef.current);
+        // Start swap & flip face-down
+        setIsSwapping(true);
+        playTone(440, 0.3, 'sine', 0.15); // Audio cue for swap
+
+        setTimeout(() => {
+          // Shuffle the 12 cards into swapped random positions
+          setCards((prev) =>
+            [...prev]
+              .sort(() => Math.random() - 0.5)
+              .map((c) => ({ ...c, isFlipped: false }))
+          );
+          setIsMemorizingPhase(false);
+          setIsSwapping(false);
+          setStartTime(Date.now());
+        }, 900);
+      }
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    initGameRound(cardPairs);
+    return () => {
+      if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
+    };
+  }, [cardPairs, initGameRound]);
+
+  // Handle Card Click
   const handleCardClick = (index: number) => {
-    if (flippedCards.length === 2 || cards[index].isFlipped || cards[index].isMatched) return;
+    if (
+      isMemorizingPhase ||
+      isSwapping ||
+      isFinished ||
+      flippedCards.length === 2 ||
+      cards[index].isFlipped ||
+      cards[index].isMatched
+    ) {
+      return;
+    }
+
+    playCardFlipSound();
 
     const newCards = [...cards];
     newCards[index].isFlipped = true;
@@ -66,6 +265,8 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
       const [firstIdx, secondIdx] = newFlipped;
 
       if (cards[firstIdx].pairId === cards[secondIdx].pairId) {
+        // Matched!
+        playMatchSound();
         setTimeout(() => {
           setCards((prev) =>
             prev.map((c, i) =>
@@ -75,9 +276,16 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
           setFlippedCards([]);
           setMatchedPairs((prev) => {
             const nextCount = prev + 1;
-            if (nextCount === cardItems.length) {
+            if (nextCount === cardPairs.length) {
               const elapsed = Date.now() - startTime;
-              const accuracy = Math.max(60, Math.min(100, Math.round((cardItems.length / Math.max(attempts + 1, cardItems.length)) * 100)));
+              const accuracy = Math.max(
+                60,
+                Math.min(
+                  100,
+                  Math.round((cardPairs.length / Math.max(attempts + 1, cardPairs.length)) * 100)
+                )
+              );
+              playGrandCelebrationSound();
               setIsFinished(true);
               onComplete(accuracy, attempts + 1, elapsed);
             }
@@ -85,6 +293,7 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
           });
         }, 400);
       } else {
+        // Not matched: Gentle flip back
         setTimeout(() => {
           setCards((prev) =>
             prev.map((c, i) =>
@@ -92,85 +301,394 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
             )
           );
           setFlippedCards([]);
-        }, 900);
+        }, 850);
       }
     }
   };
 
+  // Upload Custom Images (Up to 12 images or 6 pairs)
+  const handleMultipleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files).slice(0, 12);
+    const newItems: Array<{ name: string; url: string }> = [];
+
+    let loaded = 0;
+    fileArray.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        newItems.push({
+          name: file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
+          url: event.target?.result as string,
+        });
+        loaded += 1;
+        if (loaded === fileArray.length) {
+          setUploadedImages((prev) => [...prev, ...newItems].slice(0, 12));
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Save Uploaded Images as Active Memory Match Pairs
+  const handleApplyCustomImages = () => {
+    if (uploadedImages.length < 2) {
+      alert('Please upload at least 2 photos (or up to 12 photos) to play custom memory match.');
+      return;
+    }
+
+    // Build 6 pairs from uploaded photos
+    const newPairs: CardPairItem[] = [];
+    const source = uploadedImages;
+
+    for (let i = 0; i < 6; i++) {
+      const item = source[i % source.length];
+      newPairs.push({
+        pairId: `custom-pair-${i}-${Date.now()}`,
+        name: item.name || `Photo ${i + 1}`,
+        category: 'Family Photo',
+        imageUrl: item.url,
+      });
+    }
+
+    setCardPairs(newPairs);
+    try {
+      localStorage.setItem(LOCAL_STORAGE_CUSTOM_PAIRS, JSON.stringify(newPairs));
+    } catch {
+      // Storage error
+    }
+
+    setShowUploadModal(false);
+    initGameRound(newPairs);
+  };
+
+  // Reset back to Regional defaults
+  const handleResetToDefaults = () => {
+    localStorage.removeItem(LOCAL_STORAGE_CUSTOM_PAIRS);
+    setCardPairs(DEFAULT_CARD_PAIRS);
+    setShowUploadModal(false);
+    setUploadedImages([]);
+    initGameRound(DEFAULT_CARD_PAIRS);
+  };
+
   return (
-    <div className="space-y-8 max-w-4xl mx-auto py-4">
-      
-      {/* Clean Top Navigation */}
-      <div className="flex items-center justify-between border-b border-ivory-200 pb-4">
-        <button
-          onClick={onBack}
-          className="inline-flex items-center gap-2 text-sm font-bold text-forest-800 hover:underline"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Schedule
-        </button>
-        <span className="text-xs font-bold uppercase tracking-wider text-charcoal-600">
-          Matched: {matchedPairs} / {cardItems.length}
-        </span>
+    <div className="space-y-6 max-w-4xl mx-auto animate-fadeIn">
+      {/* Top Header & Actions */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold shadow-sm">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-black text-xl text-slate-900 flex items-center gap-2">
+              <span>Visual Memory Match (12 Cards)</span>
+            </h3>
+            <p className="text-xs text-slate-500 font-medium">
+              Memorize the 12 photos in 5 seconds, then match each pair!
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowUploadModal(true)}
+            className="rounded-2xl font-bold bg-cyan-50 text-cyan-800 border-cyan-200 hover:bg-cyan-100 flex items-center gap-1.5 shadow-sm"
+          >
+            <Upload className="w-4 h-4" /> Upload 12 Images
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => initGameRound(cardPairs)}
+            className="rounded-xl font-bold"
+            title="Restart round"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </Button>
+
+          <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
+          </Button>
+        </div>
       </div>
 
       {!isFinished && (
-        <div className="space-y-6">
-          <div className="text-center space-y-1">
-            <h3 className="font-serif font-bold text-2xl md:text-3xl text-charcoal-900">
-              Remember the Picture
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-xl space-y-5 relative overflow-hidden">
+          
+          {/* Top Status Bar: 5-Second Countdown / Progress Tracker */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            {isMemorizingPhase ? (
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-start animate-pulse">
+                <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white font-black text-lg flex items-center justify-center shadow-md shadow-amber-500/30">
+                  {countdown}
+                </div>
+                <div>
+                  <h4 className="font-black text-sm sm:text-base text-slate-900 flex items-center gap-1.5">
+                    <Eye className="w-4 h-4 text-amber-600" />
+                    <span>Memorize all 12 images: {countdown}s remaining!</span>
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Cards will flip face-down and swap positions in {countdown}s.
+                  </p>
+                </div>
+              </div>
+            ) : isSwapping ? (
+              <div className="flex items-center gap-2 text-cyan-800 font-black text-sm animate-bounce">
+                <Shuffle className="w-5 h-5 animate-spin text-cyan-600" />
+                <span>Swapping and shuffling cards now... Get ready!</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 text-xs font-bold text-slate-600">
+                <span className="px-3.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-800 font-black flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4" /> Matched: {matchedPairs} / {cardPairs.length} Pairs
+                </span>
+                <span className="px-3.5 py-1.5 rounded-xl bg-slate-200 text-slate-700">
+                  Attempts: {attempts}
+                </span>
+              </div>
+            )}
+
+            {/* Re-peek Memorize Button */}
+            {!isMemorizingPhase && !isSwapping && (
+              <button
+                onClick={() => initGameRound(cardPairs)}
+                className="text-xs font-bold text-cyan-700 hover:text-cyan-900 bg-cyan-50 hover:bg-cyan-100 px-3.5 py-1.5 rounded-xl border border-cyan-200 flex items-center gap-1.5 transition-all cursor-pointer"
+              >
+                <Eye className="w-3.5 h-3.5" /> Re-start 5s Memorize
+              </button>
+            )}
+          </div>
+
+          {/* 12 Cards Grid (4 Columns on Tablet/Desktop, 3 Columns on Mobile) */}
+          <div
+            className={`grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto transition-all duration-500 ${
+              isSwapping ? 'scale-95 opacity-60 rotate-1' : 'scale-100 opacity-100'
+            }`}
+          >
+            {cards.map((card, idx) => {
+              const isRevealed = card.isFlipped || card.isMatched;
+
+              // Glowing Neon Clickable Styles
+              const neonBorderClasses = card.isMatched
+                ? 'border-4 border-emerald-400 ring-4 ring-emerald-300 shadow-[0_0_28px_rgba(16,185,129,0.9)] scale-[1.02] bg-emerald-950/90'
+                : card.isFlipped
+                ? 'border-4 border-cyan-300 ring-4 ring-cyan-400 shadow-[0_0_32px_rgba(6,182,212,0.95)] scale-[1.03] bg-cyan-950/90'
+                : 'border-3 border-slate-700 hover:border-cyan-400 hover:shadow-[0_0_24px_rgba(6,182,212,0.85)] hover:scale-105 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white';
+
+              return (
+                <button
+                  key={card.uniqueId}
+                  onClick={() => handleCardClick(idx)}
+                  disabled={isMemorizingPhase || isSwapping || card.isMatched}
+                  aria-label={isRevealed ? card.name : `Card ${idx + 1}`}
+                  className={`group relative aspect-square rounded-3xl cursor-pointer transition-all duration-300 transform select-none overflow-hidden p-1.5 sm:p-2 flex flex-col items-center justify-center text-center shadow-lg active:scale-95 ${neonBorderClasses}`}
+                >
+                  {/* Neon Glow Ambient Layer */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-transparent to-pink-500/10 pointer-events-none" />
+
+                  {isRevealed ? (
+                    <div className="w-full h-full flex flex-col items-center justify-between rounded-2xl bg-white p-1 shadow-inner relative overflow-hidden animate-scaleIn">
+                      <img
+                        src={card.imageUrl}
+                        alt={card.name}
+                        className="w-full h-[72%] object-cover rounded-xl shadow-xs"
+                      />
+                      <div className="w-full py-0.5 px-1 bg-slate-900 text-white rounded-lg text-center">
+                        <span className="font-black text-[10px] sm:text-xs block truncate leading-tight">
+                          {card.name}
+                        </span>
+                      </div>
+
+                      {/* Matched Neon Badge */}
+                      {card.isMatched && (
+                        <div className="absolute top-1 right-1 bg-emerald-500 text-white p-1 rounded-full shadow-lg animate-scaleIn">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-1 sm:space-y-2 text-center text-cyan-200">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cyan-950/80 border border-cyan-400/50 flex items-center justify-center mx-auto shadow-[0_0_12px_rgba(6,182,212,0.6)] group-hover:scale-110 transition-transform">
+                        <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-300 animate-pulse" />
+                      </div>
+                      <span className="font-black text-[10px] sm:text-xs block tracking-widest text-cyan-300 uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.9)]">
+                        SMRITI
+                      </span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-xs text-slate-400 font-medium pt-1">
+            💡 Tap any two cards to flip them. Neon glowing borders highlight your active choices!
+          </p>
+        </div>
+      )}
+
+      {/* Grand Completion Screen with Heartwarming Greetings */}
+      {isFinished && (
+        <div className="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 border-2 border-emerald-400 text-center space-y-6 p-8 sm:p-12 rounded-3xl shadow-2xl animate-scaleIn max-w-2xl mx-auto">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/30 animate-bounce">
+            <PartyPopper className="w-10 h-10" />
+          </div>
+
+          <div>
+            <h3 className="text-3xl sm:text-4xl font-black text-slate-900">
+              Splendid Memory Recall, Ranjit ji! 🌸✨
             </h3>
-            <p className="text-charcoal-600 text-sm">
-              Click cards to reveal matching pairs of familiar photos.
+            <p className="text-slate-700 font-semibold text-base sm:text-lg max-w-md mx-auto mt-2">
+              You matched all 12 photo cards with remarkable focus and accuracy!
             </p>
           </div>
 
-          {/* Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            {cards.map((card, idx) => (
-              <div
-                key={card.id}
-                onClick={() => handleCardClick(idx)}
-                className={`aspect-square rounded-3xl border-4 cursor-pointer transition-all duration-300 transform flex items-center justify-center p-2 text-center shadow-soft select-none ${
-                  card.isFlipped || card.isMatched
-                    ? 'bg-white border-forest-600'
-                    : 'bg-forest-800 border-forest-900 hover:scale-105'
-                }`}
-              >
-                {card.isFlipped || card.isMatched ? (
-                  <div className="space-y-2">
-                    <img
-                      src={card.imageUrl}
-                      alt={card.name}
-                      className="w-24 h-24 object-cover rounded-2xl mx-auto shadow-xs"
-                    />
-                    <span className="font-serif font-bold text-xs text-charcoal-900 block">{card.name}</span>
-                  </div>
-                ) : (
-                  <div className="text-ivory-100 space-y-1">
-                    <Sparkles className="w-8 h-8 mx-auto text-gold-400 opacity-80" />
-                    <span className="font-serif font-bold text-xs block tracking-widest uppercase">SMRITI</span>
-                  </div>
-                )}
-              </div>
-            ))}
+          {/* Stats Badges */}
+          <div className="flex items-center justify-center gap-3">
+            <div className="px-4 py-2 rounded-2xl bg-white border border-emerald-200 shadow-sm text-center">
+              <span className="text-[11px] font-bold text-slate-500 block uppercase">Pairs Matched</span>
+              <span className="text-xl font-black text-emerald-700">6 / 6</span>
+            </div>
+            <div className="px-4 py-2 rounded-2xl bg-white border border-emerald-200 shadow-sm text-center">
+              <span className="text-[11px] font-bold text-slate-500 block uppercase">Attempts</span>
+              <span className="text-xl font-black text-teal-700">{attempts}</span>
+            </div>
+            <div className="px-4 py-2 rounded-2xl bg-white border border-emerald-200 shadow-sm text-center">
+              <span className="text-[11px] font-bold text-slate-500 block uppercase">Accuracy</span>
+              <span className="text-xl font-black text-cyan-700">
+                {Math.max(60, Math.min(100, Math.round((6 / Math.max(attempts, 6)) * 100)))}%
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <button
+              onClick={() => initGameRound(cardPairs)}
+              className="px-6 py-3.5 rounded-2xl bg-cyan-600 hover:bg-cyan-700 text-white font-black text-sm shadow-lg shadow-cyan-500/25 flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4" /> Play Again
+            </button>
+            <button
+              onClick={onBack}
+              className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-800 font-bold text-sm border border-slate-300 transition-all shadow-sm cursor-pointer"
+            >
+              Return to Activities
+            </button>
           </div>
         </div>
       )}
 
-      {/* Completion Screen */}
-      {isFinished && (
-        <div className="bg-ivory-100 border-2 border-forest-600 text-center space-y-6 p-10 md:p-14 rounded-4xl shadow-photo max-w-2xl mx-auto">
-          <CheckCircle2 className="w-20 h-20 text-forest-700 mx-auto" />
-          <h3 className="text-3xl md:text-4xl font-serif font-bold text-charcoal-900">Wonderful Job!</h3>
-          <p className="text-charcoal-700 font-medium text-xl">
-            You matched all photo pairs smoothly.
-          </p>
-          <Button variant="primary" size="elderly" onClick={onBack}>
-            Return to Schedule
-          </Button>
+      {/* Upload 12 Custom Images Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 space-y-5 animate-scaleIn my-8">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-10 h-10 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center">
+                  <ImageIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-black text-lg text-slate-900">Upload 12 Memory Photos</h4>
+                  <p className="text-xs text-slate-500">
+                    Upload family pictures to create personalized match cards
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-left">
+              {/* File Upload Box */}
+              <label className="block p-6 rounded-2xl border-2 border-dashed border-cyan-300 hover:border-cyan-500 bg-cyan-50/50 hover:bg-cyan-50 text-center cursor-pointer transition-all">
+                <Upload className="w-8 h-8 text-cyan-600 mx-auto mb-2" />
+                <span className="font-black text-sm text-cyan-900 block">
+                  Click to select photos (up to 12 images)
+                </span>
+                <span className="text-xs text-cyan-700 mt-1 block">
+                  Supports JPG, PNG, WEBP family pictures
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleMultipleImageUpload}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Uploaded Thumbnails Preview Grid */}
+              {uploadedImages.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs font-black text-slate-700">
+                    <span>Uploaded Photos ({uploadedImages.length}/12):</span>
+                    <button
+                      onClick={() => setUploadedImages([])}
+                      className="text-rose-600 hover:underline"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-4 gap-2 max-h-48 overflow-y-auto p-2 bg-slate-50 rounded-2xl border border-slate-200">
+                    {uploadedImages.map((img, i) => (
+                      <div key={i} className="relative aspect-square rounded-xl overflow-hidden shadow-xs border border-slate-200 group">
+                        <img src={img.url} alt={img.name} className="w-full h-full object-cover" />
+                        <button
+                          onClick={() => setUploadedImages((prev) => prev.filter((_, idx) => idx !== i))}
+                          className="absolute top-1 right-1 bg-rose-600 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <button
+                onClick={handleResetToDefaults}
+                className="text-xs font-bold text-slate-500 hover:text-slate-800 underline cursor-pointer"
+              >
+                Reset to Regional Photos
+              </button>
+
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowUploadModal(false)}
+                  className="rounded-xl font-bold"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleApplyCustomImages}
+                  disabled={uploadedImages.length === 0}
+                  className="rounded-xl font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow-md shadow-cyan-500/20"
+                >
+                  Apply & Start Game
+                </Button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-
     </div>
   );
 };
+
+export default MemoryMatch;
