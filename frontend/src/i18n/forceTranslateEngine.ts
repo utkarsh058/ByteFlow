@@ -346,8 +346,11 @@ export function forceTranslateString(text: string, targetLang?: string): string 
   return result;
 }
 
+import bhashiniService from '../services/bhashiniService';
+
 /**
- * Traverses DOM tree to forcefully translate any remaining raw English text nodes
+ * Traverses DOM tree to forcefully translate any remaining raw English text nodes,
+ * and calls Bhashini NMT API asynchronously for dynamic content.
  */
 export function runForceDOMTranslation(rootElement?: HTMLElement) {
   const currentLang = i18n.language || 'en';
@@ -382,6 +385,16 @@ export function runForceDOMTranslation(rootElement?: HTMLElement) {
       const translated = forceTranslateString(rawText, currentLang);
       if (translated !== rawText) {
         currentNode.nodeValue = translated;
+      } else if (/[a-zA-Z]{3,}/.test(rawText)) {
+        // Text node is still raw English after dictionary lookup:
+        // Asynchronously request Govt. of India Bhashini NMT translation API
+        const targetNodeRef = currentNode;
+        const textToTranslate = rawText;
+        bhashiniService.translateText(textToTranslate, currentLang).then((bhashiniResult) => {
+          if (bhashiniResult && bhashiniResult !== textToTranslate && targetNodeRef.nodeValue === textToTranslate) {
+            targetNodeRef.nodeValue = bhashiniResult;
+          }
+        });
       }
     }
     currentNode = walker.nextNode();
