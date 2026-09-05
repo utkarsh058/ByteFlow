@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { useHardwareControls } from '../../hooks/useHardwareControls';
+import { useLanguageStore } from '../../stores/useLanguageStore';
+import { useTranslation } from 'react-i18next';
 
 interface SequenceRecallProps {
   onComplete: (accuracy: number, attempts: number, responseTimeMs: number) => void;

@@ -24,6 +24,8 @@ import { Button } from '../common/Button';
 import { speakText } from '../../utils/speech';
 import { gameApi } from '../../services/api';
 import { GameQuestion } from '../../types';
+import { useLanguageStore } from '../../stores/useLanguageStore';
+import { useTranslation } from 'react-i18next';
 
 interface FamiliarSoundProps {
   onComplete: (accuracy: number, attempts: number, responseTimeMs: number) => void;

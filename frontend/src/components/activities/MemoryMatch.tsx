@@ -16,6 +16,8 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { Button } from '../common/Button';
+import { useLanguageStore } from '../../stores/useLanguageStore';
+import { useTranslation } from 'react-i18next';
 
 interface MemoryMatchProps {
   onComplete: (accuracy: number, attempts: number, responseTimeMs: number) => void;
@@ -38,41 +40,43 @@ const DEFAULT_CARD_PAIRS: CardPairItem[] = [
   },
   {
     pairId: 'tea',
-    name: 'Assam Tea Garden',
-    category: 'Landscape',
-    imageUrl: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    pairId: 'river',
-    name: 'Brahmaputra Sunset',
-    category: 'River',
-    imageUrl: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=600&q=80',
-  },
-  {
-    pairId: 'orchid',
-    name: 'Assam Wild Orchid',
-    category: 'Flora',
-    imageUrl: 'https://images.unsplash.com/photo-1563241527-3004b7be0ffd?auto=format&fit=crop&w=600&q=80',
+    name: 'Tea Garden',
+    category: 'Nature',
+    imageUrl: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80',
   },
   {
     pairId: 'rhino',
     name: 'Kaziranga Rhino',
     category: 'Wildlife',
-    imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1534567153574-2b12153a87f0?auto=format&fit=crop&w=600&q=80',
   },
   {
     pairId: 'temple',
     name: 'Kamakhya Temple',
     category: 'Heritage',
-    imageUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'gamosa',
+    name: 'Assamese Gamosa',
+    category: 'Culture',
+    imageUrl: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80',
+  },
+  {
+    pairId: 'peacock',
+    name: 'Peacock Sanctuary',
+    category: 'Fauna',
+    imageUrl: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=600&q=80',
   },
 ];
 
 interface ActiveMatchCard {
+  id?: number;
   uniqueId: number;
   pairId: string;
   name: string;
   imageUrl: string;
+  category?: string;
   isFlipped: boolean;
   isMatched: boolean;
 }
@@ -80,6 +84,8 @@ interface ActiveMatchCard {
 const LOCAL_STORAGE_CUSTOM_PAIRS = 'smriti_setu_custom_memory_cards';
 
 export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) => {
+  const { currentLanguage } = useLanguageStore();
+  const { t } = useTranslation();
   const [cardPairs, setCardPairs] = useState<CardPairItem[]>(() => {
     try {
       const saved = localStorage.getItem(LOCAL_STORAGE_CUSTOM_PAIRS);

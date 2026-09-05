@@ -11,6 +11,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
+import { useLanguageStore } from '../../stores/useLanguageStore';
+import { useTranslation } from 'react-i18next';
 
 interface PhotoPuzzleProps {
   onComplete: (accuracy: number, attempts: number, responseTimeMs: number) => void;
@@ -38,7 +40,7 @@ const PRESET_MEMORIES = [
     id: 'tea-garden',
     title: 'Tea Estate Walk',
     caption: 'Peaceful morning stroll in the emerald hills.',
-    url: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=1200&q=80',
+    url: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'majuli',
