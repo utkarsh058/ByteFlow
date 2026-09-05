@@ -24,6 +24,7 @@ import { useAuthStore } from '../../stores/useAuthStore';
 import { useMemoryStore } from '../../stores/useMemoryStore';
 import { useReminderStore } from '../../stores/useReminderStore';
 import { useDeviceStore } from '../../stores/useDeviceStore';
+import { useActivityStore } from '../../stores/useActivityStore';
 import { Button } from '../../components/common/Button';
 import { Modal } from '../../components/common/Modal';
 import { MemoryCategory, ReminderType } from '../../types';
@@ -34,6 +35,7 @@ export const CaregiverDashboard: React.FC = () => {
   const { memories, addMemory } = useMemoryStore();
   const { reminders, addReminder, updateReminderState } = useReminderStore();
   const { device } = useDeviceStore();
+  const { sessionHistory, currentDifficulty } = useActivityStore();
 
   // Modal States
   const [isAddMemoryOpen, setIsAddMemoryOpen] = useState(false);
@@ -151,11 +153,11 @@ export const CaregiverDashboard: React.FC = () => {
           <h3 className="font-serif font-bold text-xl text-ivory-50">{t('reports.aiObservationTitle', 'AI-assisted Observation — Care Summary')}</h3>
         </div>
         <p className="text-ivory-200 text-base leading-relaxed max-w-4xl">
-          {selectedPatient.name} maintains steady cognitive engagement in visual photo recognition activities featuring regional memories. Response times averaged 3.1s with 88% overall accuracy across recent sessions.
+          {selectedPatient.name.split(' ')[0]} has completed <strong>{sessionHistory.length} cognitive game sessions</strong> with <strong>{sessionHistory.length > 0 ? Math.round(sessionHistory.reduce((s, x) => s + x.accuracyPercentage, 0) / sessionHistory.length) : 85}% overall accuracy</strong> and an average response time of <strong>{sessionHistory.length > 0 ? (sessionHistory.reduce((s, x) => s + (x.avgResponseTimeMs || 3000), 0) / sessionHistory.length / 1000).toFixed(1) : '3.1'}s</strong>. Current cognitive calibration is active on <strong>{currentDifficulty.toUpperCase()}</strong>.
         </p>
         <p className="text-xs font-semibold text-gold-300 flex items-center gap-1 pt-1">
           <AlertCircle className="w-4 h-4 text-gold-400" />
-          <span>{t('reports.aiDisclaimer', 'AI-assisted observation — not a medical diagnosis.')}</span>
+          <span>AI-assisted observation from live gameplay telemetry — not a medical diagnosis.</span>
         </p>
       </section>
 

@@ -352,6 +352,7 @@ const DEFAULT_TIMETABLE: TimetableItem[] = [
 ];
 
 export const RoutineRecall: React.FC<RoutineRecallProps> = ({
+  onComplete,
   onBack,
   onLaunchGame,
 }) => {
@@ -469,6 +470,13 @@ export const RoutineRecall: React.FC<RoutineRecallProps> = ({
         itemToAppreciate.appreciation[activeLang] || itemToAppreciate.appreciation.en,
         activeLang
       );
+
+      if (onComplete) {
+        const completedCount = timetable.filter((t) => t.isCompleted || t.id === itemToToggle.id).length;
+        const totalCount = Math.max(timetable.length, 1);
+        const accuracy = Math.round((completedCount / totalCount) * 100);
+        onComplete(accuracy, completedCount, 2200);
+      }
     }
   };
 

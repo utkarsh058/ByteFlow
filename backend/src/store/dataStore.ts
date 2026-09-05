@@ -22,6 +22,7 @@ import {
 } from '../types/govPortal';
 import {
   initialPatient,
+  samplePatientsList,
   initialActivities,
   initialMemories,
   initialDevice,
@@ -62,7 +63,7 @@ class BackendDataStore {
   }
 
   public reset() {
-    this.patients = new Map([[initialPatient.id, { ...initialPatient }]]);
+    this.patients = new Map(samplePatientsList.map((p) => [p.id, { ...p }]));
     this.activities = [...initialActivities];
     this.memories = [...initialMemories];
     this.devices = new Map([[initialDevice.deviceId, { ...initialDevice }]]);

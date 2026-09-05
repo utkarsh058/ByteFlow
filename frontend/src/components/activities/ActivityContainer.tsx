@@ -21,7 +21,7 @@ export const ActivityContainer: React.FC<ActivityContainerProps> = ({
   const { completeSession } = useActivityStore();
 
   const handleSessionComplete = (accuracy: number, attempts: number, responseTimeMs: number) => {
-    completeSession(accuracy, attempts, responseTimeMs);
+    completeSession(accuracy, attempts, responseTimeMs, activeType);
   };
 
   switch (activeType) {
