@@ -120,13 +120,13 @@ export const CaregiverDashboard: React.FC = () => {
             />
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-forest-800">
-                Caregiver Monitoring Portal
+                {t('roles.caregiver', 'Caregiver Monitoring Portal')}
               </span>
               <h2 className="text-3xl md:text-4xl font-serif font-bold text-charcoal-900 mt-0.5">
                 {selectedPatient.name}
               </h2>
               <p className="text-sm text-charcoal-600 font-medium mt-1">
-                Age {selectedPatient.age} · {selectedPatient.hierarchy.district}, {selectedPatient.hierarchy.state}
+                {selectedPatient.age} · {selectedPatient.hierarchy.district}, {selectedPatient.hierarchy.state}
               </p>
             </div>
           </div>
@@ -134,11 +134,11 @@ export const CaregiverDashboard: React.FC = () => {
           <div className="flex flex-wrap items-center gap-3">
             <div className="px-4 py-2 rounded-full bg-white border border-ivory-300 text-xs font-bold text-charcoal-800 flex items-center gap-2">
               <Cpu className="w-4 h-4 text-forest-700" />
-              <span>ESP32 Console: <strong className="uppercase">{device.status}</strong></span>
+              <span>{t('hardware.title', 'ESP32 Console')}: <strong className="uppercase">{device.status}</strong></span>
             </div>
 
             <Button variant="primary" icon={<Plus className="w-4 h-4" />} onClick={() => setIsAddMemoryOpen(true)}>
-              Add Memory
+              {t('memoryGarden.addMemory', 'Add Memory')}
             </Button>
           </div>
         </div>
@@ -148,14 +148,14 @@ export const CaregiverDashboard: React.FC = () => {
       <section className="bg-gradient-to-r from-forest-900 to-forest-800 text-white rounded-3xl p-6 md:p-8 shadow-photo space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-gold-400" />
-          <h3 className="font-serif font-bold text-xl text-ivory-50">AI-assisted Observation — Care Summary</h3>
+          <h3 className="font-serif font-bold text-xl text-ivory-50">{t('reports.aiObservationTitle', 'AI-assisted Observation — Care Summary')}</h3>
         </div>
         <p className="text-ivory-200 text-base leading-relaxed max-w-4xl">
-          Ranjit maintains steady cognitive engagement in visual photo recognition activities featuring Assamese Bihu memories. Response times averaged 3.1s with 88% overall accuracy across the last 6 sessions.
+          {selectedPatient.name} maintains steady cognitive engagement in visual photo recognition activities featuring regional memories. Response times averaged 3.1s with 88% overall accuracy across recent sessions.
         </p>
         <p className="text-xs font-semibold text-gold-300 flex items-center gap-1 pt-1">
           <AlertCircle className="w-4 h-4 text-gold-400" />
-          <span>AI-assisted observation — not a medical diagnosis.</span>
+          <span>{t('reports.aiDisclaimer', 'AI-assisted observation — not a medical diagnosis.')}</span>
         </p>
       </section>
 
@@ -167,7 +167,7 @@ export const CaregiverDashboard: React.FC = () => {
           <div className="flex items-center justify-between flex-wrap gap-2">
             <h3 className="font-serif font-bold text-2xl text-charcoal-900 flex items-center gap-2">
               <ImageIcon className="w-6 h-6 text-terracotta-600" />
-              <span>Recent Family Memories</span>
+              <span>{t('memoryGarden.title', 'Recent Family Memories')}</span>
             </h3>
             <div className="flex items-center gap-2">
               <Button
@@ -176,10 +176,10 @@ export const CaregiverDashboard: React.FC = () => {
                 icon={<Camera className="w-4 h-4" />}
                 onClick={() => setIsAddMemoryOpen(true)}
               >
-                Upload Photo
+                {t('memoryGarden.addMemory', 'Upload Photo')}
               </Button>
               <span className="text-xs font-bold text-forest-800 hidden sm:inline">
-                {memories.length} Total
+                {memories.length} {t('common.all', 'Total')}
               </span>
             </div>
           </div>
@@ -219,10 +219,10 @@ export const CaregiverDashboard: React.FC = () => {
           <div className="flex items-center justify-between">
             <h3 className="font-serif font-bold text-2xl text-charcoal-900 flex items-center gap-2">
               <Clock className="w-6 h-6 text-forest-800" />
-              <span>Daily Reminders</span>
+              <span>{t('reminders.title', 'Daily Reminders')}</span>
             </h3>
             <Button variant="outline" size="sm" icon={<Plus className="w-3.5 h-3.5" />} onClick={() => setIsAddReminderOpen(true)}>
-              Add
+              {t('common.save', 'Add')}
             </Button>
           </div>
 
@@ -242,14 +242,14 @@ export const CaregiverDashboard: React.FC = () => {
                 <div>
                   {rem.state === 'completed' ? (
                     <span className="text-xs font-bold text-forest-700 flex items-center gap-1 bg-forest-50 px-2.5 py-1 rounded-full border border-forest-200">
-                      <CheckCircle2 className="w-3.5 h-3.5" /> Done
+                      <CheckCircle2 className="w-3.5 h-3.5" /> {t('reminders.completed', 'Done')}
                     </span>
                   ) : (
                     <button
                       onClick={() => updateReminderState(rem.id, 'completed')}
                       className="text-xs font-bold text-forest-800 hover:underline px-3 py-1 bg-ivory-100 rounded-full"
                     >
-                      Mark Done
+                      {t('reminders.markComplete', 'Mark Done')}
                     </button>
                   )}
                 </div>

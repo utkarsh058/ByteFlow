@@ -34,19 +34,19 @@ export const FacilityDashboard: React.FC = () => {
       <div className="bg-ivory-100/90 p-6 md:p-8 rounded-4xl border border-ivory-200 shadow-soft flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-forest-800">
-            Healthcare Facility Administration
+            {t('roles.facility_admin', 'Healthcare Facility Administration')}
           </span>
           <h2 className="text-2xl md:text-4xl font-serif font-bold text-charcoal-900 mt-1 flex items-center gap-3">
             <Building2 className="w-8 h-8 text-forest-800" />
             <span>Guwahati Regional Cognitive Care Center</span>
           </h2>
           <p className="text-sm text-charcoal-600 mt-1">
-            North Eastern Region Node #NER-FAC-01 · District: Kamrup Metropolitan, Assam
+            {t('common.region', 'North Eastern Region Node')} #NER-FAC-01 · District: Kamrup Metropolitan, Assam
           </p>
         </div>
 
         <span className="bg-forest-800 text-ivory-50 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-gold-400" /> Facility Telemetry Active
+          <ShieldCheck className="w-4 h-4 text-gold-400" /> {t('hardware.status', 'Facility Telemetry Active')}
         </span>
       </div>
 
@@ -54,16 +54,16 @@ export const FacilityDashboard: React.FC = () => {
       <div className="bg-white p-6 md:p-8 rounded-4xl border border-ivory-200 shadow-soft space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-ivory-200">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500">Stationary Console Unit</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500">{t('hardware.subtitle', 'Stationary Console Unit')}</span>
             <h3 className="text-2xl font-serif font-bold text-charcoal-900 flex items-center gap-2">
               <Cpu className="w-6 h-6 text-forest-800" />
-              <span>ESP32 Cognitive Assistance Console</span>
+              <span>{t('hardware.title', 'ESP32 Cognitive Assistance Console')}</span>
             </h3>
-            <p className="text-xs text-charcoal-500">Device ID: {device.deviceId} ({device.hardwareModel})</p>
+            <p className="text-xs text-charcoal-500">{t('hardware.deviceId', 'Device ID')}: {device.deviceId} ({device.hardwareModel})</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-charcoal-600">Simulate Hardware State:</span>
+            <span className="text-xs font-bold text-charcoal-600">{t('hardware.status', 'Simulate Hardware State')}:</span>
             {(['online', 'offline', 'connecting'] as HardwareStatus[]).map((st) => (
               <button
                 key={st}
@@ -102,7 +102,7 @@ export const FacilityDashboard: React.FC = () => {
             )}
             <div>
               <h4 className="font-bold text-lg">
-                Hardware Connection: {device.status.toUpperCase()}
+                {t('hardware.status', 'Hardware Connection')}: {device.status.toUpperCase()}
               </h4>
               <p className="text-xs font-medium">
                 {device.status === 'online'
@@ -115,7 +115,7 @@ export const FacilityDashboard: React.FC = () => {
           </div>
 
           <span className="text-xs font-bold text-charcoal-800 bg-white px-3 py-1.5 rounded-full border">
-            Last Heartbeat: {formatTime(device.lastHeartbeat)}
+            {t('hardware.lastHeartbeat', 'Last Heartbeat')}: {formatTime(device.lastHeartbeat)}
           </span>
         </div>
 
@@ -125,7 +125,7 @@ export const FacilityDashboard: React.FC = () => {
           <div className="bg-ivory-50 p-6 rounded-3xl border border-ivory-200 space-y-3">
             <h4 className="font-bold text-charcoal-900 text-base flex items-center gap-2">
               <Radio className="w-4 h-4 text-forest-800" />
-              <span>Physical Button Input</span>
+              <span>{t('hardware.triggerButton', 'Physical Button Input')}</span>
             </h4>
             <p className="text-xs text-charcoal-600">Simulate patient pressing the physical assist button on console.</p>
             <Button
@@ -135,16 +135,16 @@ export const FacilityDashboard: React.FC = () => {
               onClick={triggerPhysicalButton}
               className="w-full"
             >
-              Simulate Button Press
+              {t('hardware.triggerButton', 'Simulate Button Press')}
             </Button>
           </div>
 
           <div className="bg-ivory-50 p-6 rounded-3xl border border-ivory-200 space-y-3">
             <h4 className="font-bold text-charcoal-900 text-base flex items-center gap-2">
               <Activity className="w-4 h-4 text-forest-800" />
-              <span>LED Status Indicator</span>
+              <span>{t('hardware.ledState', 'LED Status Indicator')}</span>
             </h4>
-            <p className="text-xs text-charcoal-600">Current Output: <strong className="uppercase">{device.ledColor}</strong></p>
+            <p className="text-xs text-charcoal-600">{t('common.status', 'Current Output')}: <strong className="uppercase">{device.ledColor}</strong></p>
             <div className="flex items-center gap-1.5">
               {(['green', 'yellow', 'red', 'off'] as const).map((clr) => (
                 <button
@@ -166,9 +166,9 @@ export const FacilityDashboard: React.FC = () => {
           <div className="bg-ivory-50 p-6 rounded-3xl border border-ivory-200 space-y-3">
             <h4 className="font-bold text-charcoal-900 text-base flex items-center gap-2">
               <Bell className="w-4 h-4 text-terracotta-600" />
-              <span>Buzzer Audio Alert</span>
+              <span>{t('hardware.buzzerState', 'Buzzer Audio Alert')}</span>
             </h4>
-            <p className="text-xs text-charcoal-600">Audio Alert State: <strong>{device.buzzerActive ? 'ACTIVE (BEEPING)' : 'SILENT'}</strong></p>
+            <p className="text-xs text-charcoal-600">Audio Alert State: <strong>{device.buzzerActive ? 'ACTIVE' : 'SILENT'}</strong></p>
             <Button
               variant={device.buzzerActive ? 'danger' : 'outline'}
               size="md"
@@ -176,7 +176,7 @@ export const FacilityDashboard: React.FC = () => {
               onClick={toggleBuzzer}
               className="w-full"
             >
-              {device.buzzerActive ? 'Silence Buzzer Tone' : 'Trigger Buzzer Alert'}
+              {device.buzzerActive ? t('common.close', 'Silence Tone') : t('hardware.buzzerState', 'Trigger Alert')}
             </Button>
           </div>
 

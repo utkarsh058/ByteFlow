@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Lock, Menu, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AshokaEmblem, DigitalIndiaBadge, HealthHelplineBadge } from '../common/GovEmblem';
 
 interface MainNavigationProps {
@@ -15,6 +16,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
   onSearch,
   onOpenAppAuth,
 }) => {
+  const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -27,13 +29,13 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
   };
 
   const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'services', label: 'Health Services' },
-    { id: 'facilities', label: 'Hospitals & Facilities' },
-    { id: 'network', label: 'NER Health Network' },
-    { id: 'smriti-setu', label: 'Smriti-Setu Care' },
-    { id: 'programs', label: 'Programs & Initiatives' },
-    { id: 'resources', label: 'Health Resources' },
+    { id: 'home', label: t('navigation.home') },
+    { id: 'services', label: t('navigation.healthServices', { defaultValue: 'Health Services' }) },
+    { id: 'facilities', label: t('navigation.hospitalsFacilities', { defaultValue: 'Hospitals & Facilities' }) },
+    { id: 'network', label: t('navigation.nerNetwork', { defaultValue: 'NER Health Network' }) },
+    { id: 'smriti-setu', label: t('navigation.smritiCare', { defaultValue: 'Smriti-Setu Care' }) },
+    { id: 'programs', label: t('navigation.programsInitiatives', { defaultValue: 'Programs & Initiatives' }) },
+    { id: 'resources', label: t('navigation.healthResources', { defaultValue: 'Health Resources' }) },
   ];
 
   return (

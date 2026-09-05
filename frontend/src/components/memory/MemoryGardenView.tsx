@@ -24,12 +24,22 @@ import { MemoryEntry, MemoryCategory } from '../../types';
 export type StoryLanguage = 'en' | 'hi' | 'as' | 'bn' | 'ne' | 'brx';
 
 export const MemoryGardenView: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { memories, selectedCategory, setCategory, addMemory } = useMemoryStore();
   const { selectedPatient } = useAuthStore();
   
-  // 6-Language State for Memory Stories
-  const [storyLang, setStoryLang] = useState<StoryLanguage>('hi');
+  // 6-Language State for Memory Stories (synced with global i18n language)
+  const initialLang = (i18n.language || 'en') as StoryLanguage;
+  const [storyLang, setStoryLang] = useState<StoryLanguage>(
+    ['en', 'hi', 'as', 'bn', 'ne', 'brx'].includes(initialLang) ? initialLang : 'en'
+  );
+
+  React.useEffect(() => {
+    const lang = (i18n.language || 'en') as StoryLanguage;
+    if (['en', 'hi', 'as', 'bn', 'ne', 'brx'].includes(lang)) {
+      setStoryLang(lang);
+    }
+  }, [i18n.language]);
 
   // Modal States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

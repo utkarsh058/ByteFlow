@@ -46,23 +46,23 @@ export const ClinicianDashboard: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-forest-800">
-              Clinical Progress & Engagement Analytics
+              {t('roles.clinician', 'Clinician Analytics')}
             </span>
             <h2 className="text-2xl md:text-4xl font-serif font-bold text-charcoal-900 mt-1 flex items-center gap-3">
               <Stethoscope className="w-8 h-8 text-forest-800" />
-              <span>North Eastern Region Clinical Review</span>
+              <span>{t('reports.title', 'North Eastern Region Clinical Review')}</span>
             </h2>
           </div>
 
           <span className="bg-forest-100 text-forest-900 border border-forest-300 text-xs font-bold px-3.5 py-1.5 rounded-full">
-            Guwahati Regional Cognitive Care Center
+            {t('common.region', 'North-East India')}
           </span>
         </div>
 
         {/* Regional State Selector */}
         <div className="pt-3 flex flex-wrap items-center gap-2 border-t border-ivory-200">
           <span className="text-xs font-bold uppercase tracking-wider text-charcoal-500 flex items-center gap-1">
-            <Filter className="w-3.5 h-3.5" /> Regional State Node:
+            <Filter className="w-3.5 h-3.5" /> {t('reports.regionalHierarchy', 'Regional State Node')}:
           </span>
           {['Assam', 'Meghalaya', 'Manipur', 'Mizoram', 'Nagaland', 'Tripura', 'Arunachal Pradesh', 'Sikkim'].map((st) => (
             <button
@@ -84,14 +84,14 @@ export const ClinicianDashboard: React.FC = () => {
       <div className="bg-gradient-to-r from-forest-900 to-forest-800 text-white rounded-3xl p-6 md:p-8 shadow-photo space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-gold-400" />
-          <h3 className="font-serif font-bold text-xl text-ivory-50">AI-assisted Observation — Patient Profile</h3>
+          <h3 className="font-serif font-bold text-xl text-ivory-50">{t('reports.aiObservationTitle', 'AI-assisted Observation — Patient Profile')}</h3>
         </div>
         <p className="text-ivory-200 text-sm md:text-base leading-relaxed">
-          Patient <strong>{selectedPatient.name}</strong> maintains consistent cognitive performance in visual photo recognition. Response time improved from 4.2s to 3.1s over 6 sessions. Adaptive difficulty automatically raised to medium with smooth accuracy preservation.
+          {selectedPatient.name} maintains consistent cognitive performance in visual photo recognition. Response time improved over recent sessions with smooth accuracy preservation.
         </p>
         <p className="text-xs font-semibold text-gold-300 flex items-center gap-1 pt-1">
           <AlertCircle className="w-4 h-4 text-gold-400" />
-          <span>AI-assisted observation — not a medical diagnosis.</span>
+          <span>{t('reports.aiDisclaimer', 'AI-assisted observation — not a medical diagnosis.')}</span>
         </p>
       </div>
 
@@ -104,12 +104,12 @@ export const ClinicianDashboard: React.FC = () => {
             <div>
               <h3 className="font-serif font-bold text-xl text-charcoal-900 flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-forest-800" />
-                <span>Accuracy & Response Time Trends</span>
+                <span>{t('reports.performanceTrend', 'Performance Trend over Time')}</span>
               </h3>
-              <p className="text-xs text-charcoal-500">Historical performance metrics across completed cognitive sessions</p>
+              <p className="text-xs text-charcoal-500">{t('reports.subtitle', 'Historical performance metrics across completed cognitive sessions')}</p>
             </div>
             <span className="text-xs font-bold text-forest-800 bg-forest-50 px-3 py-1 rounded-full border border-forest-200">
-              Last 6 Sessions
+              {t('common.all', 'Recent Sessions')}
             </span>
           </div>
 
@@ -131,7 +131,7 @@ export const ClinicianDashboard: React.FC = () => {
                 <Area
                   type="monotone"
                   dataKey="accuracy"
-                  name="Accuracy (%)"
+                  name={t('games.score', 'Accuracy Score')}
                   stroke="#1E4925"
                   strokeWidth={3}
                   fillOpacity={1}
@@ -144,19 +144,19 @@ export const ClinicianDashboard: React.FC = () => {
 
         {/* Assigned Patients Summary */}
         <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-ivory-200/80 shadow-soft space-y-4">
-          <h3 className="font-serif font-bold text-xl text-charcoal-900">Assigned Patients</h3>
+          <h3 className="font-serif font-bold text-xl text-charcoal-900">{t('reports.patientList', 'Assigned Patients')}</h3>
 
           <div className="space-y-3">
             <div className="p-4 rounded-2xl bg-forest-50 border-2 border-forest-700/40 space-y-1">
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-charcoal-900 text-base">{selectedPatient.name}</h4>
                 <span className="text-xs font-bold text-forest-800 bg-white px-2.5 py-0.5 rounded-full border border-forest-200">
-                  Stable Engagement
+                  {t('reports.stableEngagement', 'Stable Engagement')}
                 </span>
               </div>
-              <p className="text-xs text-charcoal-600">Age {selectedPatient.age} · Assam</p>
+              <p className="text-xs text-charcoal-600">Assam</p>
               <div className="pt-2 text-xs font-semibold text-forest-900 flex items-center justify-between">
-                <span>Recent Score: 88%</span>
+                <span>{t('games.score', 'Accuracy Score')}: 88%</span>
                 <span>Diff: Easy → Medium</span>
               </div>
             </div>
@@ -165,13 +165,13 @@ export const ClinicianDashboard: React.FC = () => {
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-charcoal-900 text-base">Hemanta Saikia</h4>
                 <span className="text-xs font-bold text-terracotta-700 bg-terracotta-50 px-2.5 py-0.5 rounded-full border border-terracotta-200">
-                  Needs Review
+                  {t('reports.needsReview', 'Needs Review')}
                 </span>
               </div>
-              <p className="text-xs text-charcoal-600">Age 78 · Kamrup Metropolitan</p>
+              <p className="text-xs text-charcoal-600">Kamrup Metropolitan</p>
               <div className="pt-2 text-xs font-semibold text-charcoal-700 flex items-center justify-between">
-                <span>Recent Score: 62%</span>
-                <span>Diff: Simplified to Easy</span>
+                <span>{t('games.score', 'Accuracy Score')}: 62%</span>
+                <span>Diff: Simplified</span>
               </div>
             </div>
           </div>
