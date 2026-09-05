@@ -14,12 +14,19 @@ import {
   Users,
   Heart,
   Play,
+  Pause,
   Square,
   Globe,
   Info,
   Check,
   X,
-  Smile
+  Smile,
+  FileText,
+  Headphones,
+  Send,
+  Edit3,
+  RefreshCw,
+  Radio
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { VoiceButton } from '../common/VoiceButton';
@@ -110,7 +117,7 @@ export const RELATION_LABELS: Record<
   mother: {
     en: { label: 'Mother', fullTitle: 'Beloved Mother', voiceKeywords: ['mother', 'mom', 'maa', 'pratima'] },
     hi: { label: 'माँ (Mother)', fullTitle: 'पूज्य माता जी', voiceKeywords: ['माँ', 'माता', 'मम्मी', 'प्रतिमा', 'maa', 'mother'] },
-    as: { label: 'মা / আই (Mother)', fullTitle: 'মৰমৰ মা', voiceKeywords: ['মা', 'আই', 'প্রতিমা', 'maa', 'mother'] },
+    as: { label: 'মা / আই (Mother)', fullTitle: 'মৰমৰ মা', voiceKeywords: ['মা', 'আই', 'प्रतिमा', 'maa', 'mother'] },
     bn: { label: 'মা (Mother)', fullTitle: 'স্নেহময়ী মা', voiceKeywords: ['মা', 'মাতা', 'প্রতিমা', 'maa', 'mother'] },
     ne: { label: 'आमा (Mother)', fullTitle: 'पूजनीय आमा', voiceKeywords: ['आमा', 'माता', 'प्रतिमा', 'aama', 'mother'] },
     brx: { label: 'आइ (Mother)', fullTitle: 'अनजालु आइ', voiceKeywords: ['आइ', 'मा', 'mother'] },
@@ -264,44 +271,68 @@ const UI_TEXT = {
     brx: 'बे सावगाराव नुजाथिनाय सुबुंनिजों नोंथांनि मा सोमोन्दो दं?',
   },
   subtitle: {
-    en: 'Look closely at the photo and click the correct relation button or record your voice answer below:',
-    hi: 'तस्वीर को ध्यान से देखें और नीचे सही रिश्ते पर क्लिक करें या अपना उत्तर बोलकर बताएं:',
-    as: 'ছবিখন মনোযোগেৰে চাওক আৰু তলত থকা সঠিক সম্বন্ধত ক্লিক কৰক বা মুখেৰে কওক:',
-    bn: 'ছবিটি মনোযোগ দিয়ে দেখুন এবং নিচে সঠিক সম্পর্কে ক্লিক করুন অথবা মুখে বলুন:',
-    ne: 'तस्बिरलाई ध्यान दिएर हेर्नुहोस् र तलको सही सम्बन्धमा क्लिक गर्नुहोस् वा बोल्नुहोस्:',
-    brx: 'सावगारखौ मोजाङै नाय आरो गाहायाव थार सोमोन्दोखौ थु एबा बुंनानै खिन्था:',
+    en: 'Look closely at the photo and choose from the options or use the audio voice/text studio on the right:',
+    hi: 'तस्वीर को ध्यान से देखें और नीचे विकल्पों में से चुनें या दाईं ओर वॉइस/टेक्स्ट स्टूडियो का उपयोग करें:',
+    as: 'ছবিখন মনোযোগেৰে চাওক আৰু বিকল্পসমূহৰ পৰা বাছক বা সোঁফালে থকা অডিঅ’/টেক্সট ষ্টুডিঅ’ ব্যৱহাৰ কৰক:',
+    bn: 'ছবিটি দেখুন এবং বিকল্পগুলি থেকে বেছে নিন অথবা ডানদিকের অডিও/টেক্সট স্টুডিও ব্যবহার করুন:',
+    ne: 'तस्बिर हेर्नुहोस् र विकल्पहरूबाट छान्नुहोस् वा दायाँपट्टिको अडियो/टेक्स्ट स्टुडियो प्रयोग गर्नुहोस्:',
+    brx: 'सावगारखौ नाय आरो सायख\' एबा आगसिथिं थानाय अडिअ\'/टेक्सट स्टुडिअ\'खौ बाहाय:',
   },
   listenQuestion: {
-    en: 'Listen to Question',
+    en: 'Listen Question (Audio)',
     hi: 'प्रश्न सुनें (Audio)',
     as: 'প্ৰশ্নটো শুনক (Audio)',
     bn: 'প্রশ্ন শুনুন (Audio)',
     ne: 'प्रश्न सुन्नुहोस् (Audio)',
     brx: 'सोंनायखौ खोनासन्दों (Audio)',
   },
+  voiceStudioTitle: {
+    en: 'Voice & Text Response Studio',
+    hi: 'वॉइस और टेक्स्ट उत्तर स्टूडियो',
+    as: 'ভইচ আৰু টেক্সট উত্তৰ ষ্টুডিঅ’',
+    bn: 'ভয়েস ও টেক্সট উত্তর স্টুডিও',
+    ne: 'भ्वाइस र टेक्स्ट उत्तर स्टुडियो',
+    brx: 'राव आरो लिरनाय फिन्नाय स्टुडिअ’',
+  },
+  voiceStudioSubtitle: {
+    en: 'Record your voice answer or type it in text format below:',
+    hi: 'अपना उत्तर बोलकर रिकॉर्ड करें या नीचे टेक्स्ट में टाइप करें:',
+    as: 'আপোনাৰ উত্তৰ মুখেৰে ৰেকৰ্ড কৰক বা তলত টেক্সটত লিখক:',
+    bn: 'আপনার উত্তর মুখে রেকর্ড করুন অথবা নিচে লিখে দিন:',
+    ne: 'आफ्नो जवाफ बोलेर रेकर्ड गर्नुहोस् वा तल लेख्नुहोस्:',
+    brx: 'फिन्नायखौ खोनासं हो एबा गाहायाव लिर:',
+  },
   recordAnswer: {
     en: 'Record Voice Answer',
-    hi: 'बोलकर उत्तर दें (Voice Record)',
-    as: 'মুখেৰে কওক (Voice Record)',
-    bn: 'মুখে বলুন (Voice Record)',
-    ne: 'बोलेर जवाफ दिनुहोस् (Voice Record)',
-    brx: 'बुंनानै फिन्नाय हो (Voice Record)',
+    hi: 'बोलकर रिकॉर्ड करें (Mic)',
+    as: 'মুখেৰে ৰেকৰ্ড কৰক (Mic)',
+    bn: 'মুখে রেকর্ড করুন (Mic)',
+    ne: 'बोलेर रेकर्ड गर्नुहोस् (Mic)',
+    brx: 'बुंनानै रेकर्ड खालाम (Mic)',
   },
   recordingActive: {
-    en: 'Listening to your voice... Speak now',
+    en: 'Listening... Speak your answer now',
     hi: 'सुन रहे हैं... कृपया बोलिए...',
     as: 'শুনি আছোঁ... অনুগ্ৰহ কৰি কওক...',
     bn: 'শুনছি... দয়া করে বলুন...',
     ne: 'सुन्दै छौं... कृपया बोल्नुहोस्...',
     brx: 'खोनासंन्दों... अननानै बुं...',
   },
-  voiceRecognized: {
-    en: 'Voice Recognized:',
-    hi: 'पहचाना गया:',
-    as: 'চিনাক্ত কৰা হ’ল:',
-    bn: 'শনাক্ত হয়েছে:',
-    ne: 'पहिचान भयो:',
-    brx: 'सिनजाबाय:',
+  typeAnswerPlaceholder: {
+    en: 'Type your answer here in text (e.g. She is my daughter Ananya)...',
+    hi: 'यहाँ अपना उत्तर टेक्स्ट में लिखें (उदा. यह मेरी बेटी अनन्या है)...',
+    as: 'ইয়াত আপোনাৰ উত্তৰ লিখক (যেনে: এওঁ মোৰ জীয়াৰী অনন্যা)...',
+    bn: 'এখানে আপনার উত্তর লিখুন (যেমন: ইনি আমার মেয়ে অনন্যা)...',
+    ne: 'यहाँ आफ्नो जवाफ लेख्नुहोस् (जस्तै: उहाँ मेरी छोरी अनन्या हुनुहुन्छ)...',
+    brx: 'बेयाव लिर (जेरै: बियो आंनि फिसाजो अनन्या)...',
+  },
+  checkAnswerBtn: {
+    en: 'Check Voice/Text Answer',
+    hi: 'उत्तर जाँचें (Check Answer)',
+    as: 'উত্তৰ পৰীক্ষা কৰক',
+    bn: 'উত্তর যাচাই করুন',
+    ne: 'जवाफ जाँच गर्नुहोस्',
+    brx: 'फिन्नायखौ नायबिजिर',
   },
   voiceSuccess: {
     en: 'Wonderful! You accurately recognized your family member!',
@@ -338,7 +369,7 @@ const UI_TEXT = {
   uploadPrompt: {
     en: 'Add a new family photo to practice recognizing your loved ones:',
     hi: 'अपनों को पहचानने के अभ्यास के लिए नई पारिवारिक तस्वीर जोड़ें:',
-    as: 'আপোনাৰ আপোনজনক চিনাক্ত কৰাৰ বাবে নতুন পারিবারিক ছবি যোগ কৰক:',
+    as: 'আপোনাৰ আপোনজনক চিনাক্ত কৰাৰ বাবে নতুন पारिवारिक ছবি যোগ কৰক:',
     bn: 'প্রিয়জনদের শনাক্ত করার অনুশীলনের জন্য নতুন পারিবারিক ছবি যোগ করুন:',
     ne: 'आफ्ना प्रियजनहरूलाई पहिचान गर्ने अभ्यासका लागि नयाँ तस्बिर थप्नुहोस्:',
     brx: 'नोंथांनि मोजां मोननाय सुबुंफोरखौ सिननो थाखाय गोदान सावगार सोफा:',
@@ -410,16 +441,20 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
   const [startTime] = useState<number>(Date.now());
   const [hintVisible, setHintVisible] = useState(false);
 
-  // Audio & Voice Recognition States
+  // Audio & Voice / Text Recognition States
   const [isRecording, setIsRecording] = useState(false);
+  const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [typedResponseText, setTypedResponseText] = useState('');
   const [speechTranscript, setSpeechTranscript] = useState('');
-  const [voiceFeedbackMsg, setVoiceFeedbackMsg] = useState('');
+  const [voiceFeedbackMsg, setVoiceFeedbackMsg] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
   const [recordedAudioUrl, setRecordedAudioUrl] = useState<string | null>(null);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recognitionRef = useRef<any>(null);
+  const timerIntervalRef = useRef<any>(null);
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
   // Upload Form States
   const [uploadName, setUploadName] = useState('');
@@ -431,15 +466,18 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
   const currentPerson = familyFaces[currentIdx] || familyFaces[0];
 
-  // Speak question automatically when card changes if elderly mode is enabled
+  // Reset states on card transition
   useEffect(() => {
     setSpeechTranscript('');
-    setVoiceFeedbackMsg('');
+    setTypedResponseText('');
+    setVoiceFeedbackMsg(null);
     setRecordedAudioUrl(null);
     setSelectedRelation(null);
     setIsAnswered(false);
     setIsCorrect(false);
     setHintVisible(false);
+    setRecordingSeconds(0);
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
   }, [currentIdx, familyFaces]);
 
   // Handle Question TTS Audio
@@ -448,7 +486,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     speakText(questionText, activeLang);
   };
 
-  // Helper to generate relation buttons choices (including correct one and plausible alternatives)
+  // Helper to generate relation buttons choices
   const candidateOptions: FamilyRelationKey[] = React.useMemo(() => {
     const allRelations: FamilyRelationKey[] = [
       'daughter',
@@ -464,14 +502,13 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     ];
     const correct = currentPerson.relationKey;
     const others = allRelations.filter((r) => r !== correct);
-    // Shuffle and pick 3 others
     const shuffled = others.sort(() => 0.5 - Math.random()).slice(0, 3);
     const combined = [correct, ...shuffled].sort(() => 0.5 - Math.random());
     return combined;
   }, [currentPerson]);
 
-  // Handle User clicking relation button
-  const handleSelectRelation = (relKey: FamilyRelationKey) => {
+  // Handle User selecting a relation option (via Button, Speech, or Text)
+  const handleSelectRelation = (relKey: FamilyRelationKey, viaVoiceOrText = false) => {
     if (isAnswered) return;
 
     const correct = relKey === currentPerson.relationKey;
@@ -485,10 +522,18 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
       const personTitle = RELATION_LABELS[relKey][activeLang].fullTitle;
       const successVoice = `${UI_TEXT.voiceSuccess[activeLang]} ${currentPerson.name} - ${personTitle}.`;
       speakText(successVoice, activeLang);
+      setVoiceFeedbackMsg({
+        type: 'success',
+        text: `✓ ${viaVoiceOrText ? 'Verified from response: ' : ''}${currentPerson.name} (${RELATION_LABELS[relKey][activeLang].label})`,
+      });
     } else {
       setHintVisible(true);
       const gentleVoice = UI_TEXT.incorrectTryAgain[activeLang];
       speakText(gentleVoice, activeLang);
+      setVoiceFeedbackMsg({
+        type: 'error',
+        text: `${UI_TEXT.incorrectTryAgain[activeLang]}`,
+      });
     }
   };
 
@@ -508,21 +553,27 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
   // Start Voice Answer Recording & Speech Recognition
   const startVoiceRecording = async () => {
     try {
-      setVoiceFeedbackMsg('');
+      setVoiceFeedbackMsg(null);
       setSpeechTranscript('');
       setIsRecording(true);
+      setRecordingSeconds(0);
 
-      // 1. Start browser speech recognition if supported
+      // Start timer
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = setInterval(() => {
+        setRecordingSeconds((prev) => prev + 1);
+      }, 1000);
+
+      // 1. Browser Speech Recognition (STT)
       const SpeechRecognition =
         (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
       if (SpeechRecognition) {
         const recognition = new SpeechRecognition();
         recognitionRef.current = recognition;
-        recognition.continuous = false;
+        recognition.continuous = true;
         recognition.interimResults = true;
 
-        // Regional BCP 47 language mapping for speech-to-text
         const sttLangMap: Record<SupportedLanguage, string> = {
           hi: 'hi-IN',
           as: 'as-IN',
@@ -540,24 +591,22 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
             transcriptText += event.results[i][0].transcript;
           }
           setSpeechTranscript(transcriptText);
-
-          // Check if transcript matches current relation keywords
+          setTypedResponseText(transcriptText); // sync with text box
           checkVoiceMatch(transcriptText);
         };
 
         recognition.onerror = (event: any) => {
-          console.warn('Speech recognition error:', event.error);
-          setIsRecording(false);
+          console.warn('Speech recognition notice:', event.error);
         };
 
         recognition.onend = () => {
-          setIsRecording(false);
+          // Keep recording state synced with media recorder
         };
 
         recognition.start();
       }
 
-      // 2. Start audio recording via MediaRecorder for playback
+      // 2. MediaRecorder for Audio File creation & playback
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const mediaRecorder = new MediaRecorder(stream);
@@ -582,13 +631,19 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     } catch (err) {
       console.error('Microphone access failed:', err);
       setIsRecording(false);
-      setVoiceFeedbackMsg('Microphone access is not available. Please allow mic permission or use relation buttons.');
+      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      setVoiceFeedbackMsg({
+        type: 'info',
+        text: 'Microphone permission not granted. You can type your answer in the text box or use the relation buttons.',
+      });
     }
   };
 
   // Stop Voice Recording
   const stopVoiceRecording = () => {
     setIsRecording(false);
+    if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+
     if (recognitionRef.current) {
       try {
         recognitionRef.current.stop();
@@ -599,34 +654,80 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     }
   };
 
-  // Check voice transcript for matching family relation or person name
+  // Check voice or typed transcript against relations & person name
   const checkVoiceMatch = (spokenText: string) => {
     const textLower = spokenText.toLowerCase().trim();
-    if (!textLower) return;
+    if (!textLower) return false;
 
     const correctRel = currentPerson.relationKey;
     const relData = RELATION_LABELS[correctRel][activeLang];
-    const keywords = relData.voiceKeywords || [];
+    const keywords = [
+      ...(relData.voiceKeywords || []),
+      ...(RELATION_LABELS[correctRel].en.voiceKeywords || []),
+      ...(RELATION_LABELS[correctRel].hi.voiceKeywords || []),
+    ];
 
-    // Check if spoken text contains relation keywords or person name
     const matchesRelation = keywords.some((kw) => textLower.includes(kw.toLowerCase()));
-    const matchesName = textLower.includes(currentPerson.name.toLowerCase().split(' ')[0]);
+    const firstName = currentPerson.name.toLowerCase().split(' ')[0];
+    const matchesName = textLower.includes(firstName);
 
     if (matchesRelation || matchesName) {
-      setVoiceFeedbackMsg(`✨ Matched: "${spokenText}" (${relData.label})`);
-      handleSelectRelation(correctRel);
+      handleSelectRelation(correctRel, true);
       stopVoiceRecording();
+      return true;
+    }
+    return false;
+  };
+
+  // Handle Manual Submission from Typed Text Box
+  const handleCheckTextResponse = () => {
+    const text = typedResponseText.trim();
+    if (!text) {
+      setVoiceFeedbackMsg({
+        type: 'info',
+        text: 'Please speak into the mic or type your response in the box first.',
+      });
+      return;
+    }
+
+    const matched = checkVoiceMatch(text);
+    if (!matched) {
+      // Check other candidate relations to see if user typed an incorrect relation
+      const foundOther = candidateOptions.find((opt) => {
+        const keywords = [
+          ...(RELATION_LABELS[opt][activeLang].voiceKeywords || []),
+          ...(RELATION_LABELS[opt].en.voiceKeywords || []),
+          ...(RELATION_LABELS[opt].hi.voiceKeywords || []),
+        ];
+        return keywords.some((kw) => text.toLowerCase().includes(kw.toLowerCase()));
+      });
+
+      if (foundOther) {
+        handleSelectRelation(foundOther, true);
+      } else {
+        setVoiceFeedbackMsg({
+          type: 'info',
+          text: `Could not identify relation from "${text}". Try saying "${RELATION_LABELS[currentPerson.relationKey][activeLang].label}" or click the options.`,
+        });
+      }
     }
   };
 
   // Playback recorded audio
-  const handlePlayRecordedAudio = () => {
+  const handleTogglePlayAudio = () => {
     if (!recordedAudioUrl) return;
-    const audio = new Audio(recordedAudioUrl);
-    setIsAudioPlaying(true);
-    audio.play();
-    audio.onended = () => setIsAudioPlaying(false);
-    audio.onerror = () => setIsAudioPlaying(false);
+
+    if (isAudioPlaying && audioElementRef.current) {
+      audioElementRef.current.pause();
+      setIsAudioPlaying(false);
+    } else {
+      const audio = new Audio(recordedAudioUrl);
+      audioElementRef.current = audio;
+      setIsAudioPlaying(true);
+      audio.play();
+      audio.onended = () => setIsAudioPlaying(false);
+      audio.onerror = () => setIsAudioPlaying(false);
+    }
   };
 
   // Handle Photo File Upload
@@ -691,7 +792,6 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
       console.warn('LocalStorage save failed', e);
     }
 
-    // Reset upload form
     setUploadName('');
     setUploadNote('');
     setUploadPreviewUrl(null);
@@ -701,7 +801,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto py-2">
+    <div className="space-y-6 max-w-6xl mx-auto py-2">
       {/* Top Header & Navigation Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ivory-200 pb-4">
         <button
@@ -758,83 +858,210 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 1: PRACTICE & FAMILY FACE RECOGNITION SECTION                         */}
+      {/* TAB 1: PRACTICE & FAMILY FACE RECOGNITION (TWO-COLUMN PARTITION)          */}
       {/* ========================================================================= */}
       {activeTab === 'practice' && !isFinished && (
         <div className="space-y-6">
-          {/* Progress Tracker */}
-          <div className="flex items-center justify-between text-xs font-bold text-charcoal-600 bg-ivory-50 px-4 py-2 rounded-2xl border border-ivory-200">
-            <span className="flex items-center gap-1.5 text-forest-800 font-extrabold uppercase tracking-wider">
+          {/* Top Progress Tracker */}
+          <div className="flex items-center justify-between text-xs font-bold text-charcoal-600 bg-ivory-50 px-5 py-2.5 rounded-2xl border border-ivory-200">
+            <span className="flex items-center gap-2 text-forest-800 font-extrabold uppercase tracking-wider">
               <Heart className="w-4 h-4 text-terracotta-500 fill-terracotta-500" />
               Family Member {currentIdx + 1} of {familyFaces.length}
             </span>
-            <span className="text-charcoal-500">
-              Accuracy: {correctCount} / {familyFaces.length}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="bg-white px-3 py-1 rounded-full border border-ivory-300 text-charcoal-700 font-bold">
+                Accuracy: {correctCount} / {familyFaces.length}
+              </span>
+            </div>
           </div>
 
-          {/* Main Visual Photo Display Card */}
-          <div className="bg-white rounded-3xl p-4 md:p-6 border-2 border-ivory-200 shadow-soft space-y-6">
-            <div className="relative max-w-md mx-auto rounded-3xl overflow-hidden shadow-photo border-4 border-white bg-ivory-100 group">
-              <img
-                src={currentPerson.imageUrl}
-                alt="Family Member"
-                className="w-full h-64 sm:h-80 md:h-96 object-cover object-center transition-transform duration-500 group-hover:scale-105"
-              />
-              {currentPerson.isCustom && (
-                <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
-                  Custom Upload
+          {/* TWO COLUMN GRID CONTAINER */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            {/* --------------------------------------------------------------------- */}
+            {/* COLUMN 1 (LEFT, 7 COLS): IMAGE, QUESTION, LISTEN BTN & RELATION OPTS   */}
+            {/* --------------------------------------------------------------------- */}
+            <div className="lg:col-span-7 bg-white rounded-3xl p-5 md:p-6 border-2 border-ivory-200 shadow-soft space-y-5">
+              
+              {/* Visual Photo Card */}
+              <div className="relative rounded-3xl overflow-hidden shadow-photo border-4 border-white bg-ivory-100 group max-h-[340px]">
+                <img
+                  src={currentPerson.imageUrl}
+                  alt="Family Member"
+                  className="w-full h-64 sm:h-72 md:h-80 object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                />
+                {currentPerson.isCustom && (
+                  <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
+                    Custom Upload
+                  </div>
+                )}
+                <div className="absolute bottom-3 left-3 bg-charcoal-900/80 backdrop-blur-xs text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                  {currentPerson.name}
+                </div>
+              </div>
+
+              {/* Question Header & Audio Speaker */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                  <h3
+                    className={`font-serif font-extrabold text-charcoal-900 leading-tight ${
+                      elderlyMode ? 'text-2xl' : 'text-lg md:text-xl'
+                    }`}
+                  >
+                    {UI_TEXT.questionTitle[activeLang]}
+                  </h3>
+
+                  {/* Listen Question Button */}
+                  <button
+                    type="button"
+                    onClick={handleSpeakQuestion}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
+                  >
+                    <Volume2 className="w-3.5 h-3.5 text-forest-700" />
+                    {UI_TEXT.listenQuestion[activeLang]}
+                  </button>
+                </div>
+
+                <p className="text-xs font-medium text-charcoal-600">
+                  {UI_TEXT.subtitle[activeLang]}
+                </p>
+              </div>
+
+              {/* Clickable Relationship Options Grid */}
+              <div className="space-y-2 pt-1">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-charcoal-500">
+                  Click Relation:
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {candidateOptions.map((relKey) => {
+                    const relOption = RELATION_LABELS[relKey][activeLang];
+                    const isSelected = selectedRelation === relKey;
+                    const isCorrectChoice = relKey === currentPerson.relationKey;
+
+                    let btnStyle =
+                      'bg-white border-2 border-ivory-300 text-charcoal-900 hover:border-forest-600 hover:bg-forest-50/40 shadow-soft';
+
+                    if (isAnswered) {
+                      if (isCorrectChoice) {
+                        btnStyle = 'bg-forest-800 border-forest-900 text-white font-bold shadow-photo ring-4 ring-forest-300';
+                      } else if (isSelected) {
+                        btnStyle = 'bg-terracotta-600 border-terracotta-700 text-white font-bold';
+                      } else {
+                        btnStyle = 'bg-ivory-100 border-ivory-200 text-charcoal-400 opacity-60';
+                      }
+                    }
+
+                    return (
+                      <button
+                        key={relKey}
+                        type="button"
+                        onClick={() => handleSelectRelation(relKey)}
+                        disabled={isAnswered && isCorrect}
+                        className={`w-full p-3.5 rounded-2xl text-left font-serif font-bold transition-all duration-200 select-none cursor-pointer flex items-center justify-between px-4 ${btnStyle} ${
+                          elderlyMode ? 'py-4 text-lg' : 'text-sm'
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <Heart
+                            className={`w-3.5 h-3.5 ${
+                              isAnswered && isCorrectChoice ? 'fill-white text-white' : 'text-terracotta-500'
+                            }`}
+                          />
+                          {relOption.label}
+                        </span>
+
+                        {isAnswered && isCorrectChoice && <Check className="w-4 h-4 text-white stroke-[3]" />}
+                        {isAnswered && isSelected && !isCorrectChoice && <X className="w-4 h-4 text-white stroke-[3]" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Feedback & Clue Note */}
+              {isAnswered && (
+                <div
+                  className={`p-4 rounded-2xl space-y-2 transition-all animate-fadeIn ${
+                    isCorrect
+                      ? 'bg-forest-50 border-2 border-forest-400 text-forest-950'
+                      : 'bg-amber-50 border-2 border-amber-300 text-amber-950'
+                  }`}
+                >
+                  <div className="flex items-start gap-2.5">
+                    {isCorrect ? (
+                      <CheckCircle2 className="w-5 h-5 text-forest-700 shrink-0 mt-0.5" />
+                    ) : (
+                      <Info className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <h4 className="font-serif font-bold text-sm md:text-base">
+                        {isCorrect
+                          ? `${currentPerson.name} — ${RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle}`
+                          : UI_TEXT.incorrectTryAgain[activeLang]}
+                      </h4>
+                      <p className="text-xs font-medium mt-0.5 text-charcoal-800">
+                        {isCorrect
+                          ? currentPerson.notes?.[activeLang] || currentPerson.notes?.en
+                          : currentPerson.hints?.[activeLang] || currentPerson.hints?.en}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end pt-1">
+                    <button
+                      type="button"
+                      onClick={handleNextPerson}
+                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 transition-all cursor-pointer"
+                    >
+                      <span>
+                        {currentIdx + 1 < familyFaces.length ? 'Next Member →' : 'Complete Activity'}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Multilingual Question Prompt & Audio Playback Button */}
-            <div className="space-y-3 text-center max-w-2xl mx-auto">
-              <h3
-                className={`font-serif font-extrabold text-charcoal-900 leading-tight ${
-                  elderlyMode ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'
-                }`}
-              >
-                {UI_TEXT.questionTitle[activeLang]}
-              </h3>
-
-              <p className="text-sm font-medium text-charcoal-600">
-                {UI_TEXT.subtitle[activeLang]}
-              </p>
-
-              {/* TTS Listen Button */}
-              <div className="flex justify-center items-center gap-3 pt-1">
-                <button
-                  type="button"
-                  onClick={handleSpeakQuestion}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-sm shadow-xs transition-all cursor-pointer focus:ring-4 focus:ring-forest-200"
-                >
-                  <Volume2 className="w-4 h-4 text-forest-700" />
-                  {UI_TEXT.listenQuestion[activeLang]}
-                </button>
+            {/* --------------------------------------------------------------------- */}
+            {/* COLUMN 2 (RIGHT, 5 COLS): DEDICATED AUDIO & TEXT RESPONSE STUDIO      */}
+            {/* --------------------------------------------------------------------- */}
+            <div className="lg:col-span-5 bg-gradient-to-b from-white to-ivory-50 rounded-3xl p-5 md:p-6 border-2 border-forest-200/80 shadow-soft space-y-5">
+              
+              {/* Studio Header */}
+              <div className="border-b border-ivory-200 pb-3">
+                <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-forest-800">
+                  <Headphones className="w-4 h-4 text-forest-700" />
+                  {UI_TEXT.voiceStudioTitle[activeLang]}
+                </div>
+                <p className="text-xs font-medium text-charcoal-600 mt-1">
+                  {UI_TEXT.voiceStudioSubtitle[activeLang]}
+                </p>
               </div>
-            </div>
 
-            {/* ========================================================================= */}
-            {/* USER AUDIO RECORDING SECTION (Record Voice Answer)                       */}
-            {/* ========================================================================= */}
-            <div className="bg-ivory-50/80 border border-ivory-300 rounded-2xl p-4 md:p-5 max-w-2xl mx-auto space-y-3">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-red-500 animate-ping' : 'bg-forest-600'}`} />
-                  <span className="text-sm font-bold text-charcoal-800">
-                    {isRecording ? UI_TEXT.recordingActive[activeLang] : UI_TEXT.recordAnswer[activeLang]}
+              {/* 1. AUDIO RECORDING PANEL */}
+              <div className="bg-white rounded-2xl p-4 border border-ivory-300 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
+                    <Radio className={`w-3.5 h-3.5 ${isRecording ? 'text-red-500 animate-pulse' : 'text-forest-700'}`} />
+                    Audio Record Format
                   </span>
+
+                  {isRecording && (
+                    <span className="text-[11px] font-mono font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full animate-pulse">
+                      00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds}
+                    </span>
+                  )}
                 </div>
 
-                {/* Mic Record Toggle Button */}
-                <div className="flex items-center gap-2">
+                {/* Mic Record Toggle */}
+                <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
                   {!isRecording ? (
                     <button
                       type="button"
                       onClick={startVoiceRecording}
                       disabled={isAnswered && isCorrect}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-terracotta-600 text-white font-bold text-sm shadow-soft hover:bg-terracotta-700 transition-all cursor-pointer disabled:opacity-50"
+                      className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-terracotta-600 text-white font-bold text-xs shadow-soft hover:bg-terracotta-700 transition-all cursor-pointer disabled:opacity-50"
                     >
                       <Mic className="w-4 h-4" />
                       <span>{UI_TEXT.recordAnswer[activeLang]}</span>
@@ -843,141 +1070,125 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                     <button
                       type="button"
                       onClick={stopVoiceRecording}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-600 text-white font-bold text-sm shadow-soft hover:bg-red-700 animate-pulse transition-all cursor-pointer"
+                      className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 text-white font-bold text-xs shadow-soft hover:bg-red-700 animate-pulse transition-all cursor-pointer"
                     >
                       <Square className="w-4 h-4 fill-white" />
-                      <span>Stop Recording</span>
+                      <span>Stop & Transcribe</span>
                     </button>
                   )}
 
-                  {/* Playback Button for Recorded Audio */}
+                  {/* Audio Playback Button */}
                   {recordedAudioUrl && (
                     <button
                       type="button"
-                      onClick={handlePlayRecordedAudio}
-                      disabled={isAudioPlaying}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-forest-900 border border-forest-300 font-bold text-xs shadow-xs hover:bg-forest-50 transition-all cursor-pointer"
+                      onClick={handleTogglePlayAudio}
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-forest-50 text-forest-900 border border-forest-300 font-bold text-xs shadow-xs hover:bg-forest-100 transition-all cursor-pointer"
                     >
-                      <Play className="w-3.5 h-3.5 fill-forest-800" />
-                      <span>Play My Voice</span>
+                      {isAudioPlaying ? (
+                        <>
+                          <Pause className="w-3.5 h-3.5 fill-forest-800" /> Pause Voice
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3.5 h-3.5 fill-forest-800" /> Play Voice Audio
+                        </>
+                      )}
                     </button>
                   )}
                 </div>
+
+                {isRecording && (
+                  <p className="text-[11px] font-bold text-terracotta-700 italic animate-pulse">
+                    {UI_TEXT.recordingActive[activeLang]}
+                  </p>
+                )}
               </div>
 
-              {/* Live Speech Recognition Feedback */}
-              {speechTranscript && (
-                <div className="bg-white p-3 rounded-xl border border-ivory-300 text-xs font-medium text-charcoal-800 flex items-center gap-2">
-                  <span className="font-bold text-forest-800">{UI_TEXT.voiceRecognized[activeLang]}</span>
-                  <span className="italic text-charcoal-900">"{speechTranscript}"</span>
+              {/* 2. TEXT FORMAT / WRITE & TRANSCRIBE INPUT SECTION */}
+              <div className="bg-white rounded-2xl p-4 border border-ivory-300 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-forest-700" />
+                    Text Response Format
+                  </span>
+                  <span className="text-[10px] text-charcoal-400 uppercase font-bold">
+                    Voice & Keyboard
+                  </span>
                 </div>
-              )}
 
-              {voiceFeedbackMsg && (
-                <div className="text-xs font-bold text-forest-800 bg-forest-50 p-2.5 rounded-xl border border-forest-200">
-                  {voiceFeedbackMsg}
-                </div>
-              )}
-            </div>
-
-            {/* ========================================================================= */}
-            {/* CLICKABLE RELATION BUTTONS GRID                                          */}
-            {/* ========================================================================= */}
-            <div className="space-y-3 max-w-2xl mx-auto pt-2">
-              <div className="text-xs font-bold uppercase tracking-wider text-charcoal-500 text-center">
-                Choose Relationship:
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                {candidateOptions.map((relKey) => {
-                  const relOption = RELATION_LABELS[relKey][activeLang];
-                  const isSelected = selectedRelation === relKey;
-                  const isCorrectChoice = relKey === currentPerson.relationKey;
-
-                  let btnStyle =
-                    'bg-white border-2 border-ivory-300 text-charcoal-900 hover:border-forest-600 hover:bg-forest-50/40 shadow-soft';
-
-                  if (isAnswered) {
-                    if (isCorrectChoice) {
-                      btnStyle = 'bg-forest-800 border-forest-900 text-white font-bold shadow-photo ring-4 ring-forest-300';
-                    } else if (isSelected) {
-                      btnStyle = 'bg-terracotta-600 border-terracotta-700 text-white font-bold';
-                    } else {
-                      btnStyle = 'bg-ivory-100 border-ivory-200 text-charcoal-400 opacity-60';
-                    }
-                  }
-
-                  return (
+                {/* Editable Text Area synced with voice transcription */}
+                <div className="relative">
+                  <textarea
+                    value={typedResponseText}
+                    onChange={(e) => setTypedResponseText(e.target.value)}
+                    placeholder={UI_TEXT.typeAnswerPlaceholder[activeLang]}
+                    rows={3}
+                    className="w-full p-3 text-xs md:text-sm font-medium text-charcoal-900 bg-ivory-50/60 border border-ivory-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white resize-none"
+                  />
+                  {typedResponseText && (
                     <button
-                      key={relKey}
                       type="button"
-                      onClick={() => handleSelectRelation(relKey)}
-                      disabled={isAnswered && isCorrect}
-                      className={`w-full p-4 rounded-2xl text-center font-serif font-bold transition-all duration-200 select-none cursor-pointer flex items-center justify-between px-5 ${btnStyle} ${
-                        elderlyMode ? 'py-5 text-xl' : 'text-base'
+                      onClick={() => {
+                        setTypedResponseText('');
+                        setSpeechTranscript('');
+                      }}
+                      className="absolute top-2 right-2 text-charcoal-400 hover:text-charcoal-700 p-1 text-xs"
+                      title="Clear text"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Check / Verify Answer Button */}
+                <button
+                  type="button"
+                  onClick={handleCheckTextResponse}
+                  disabled={isAnswered && isCorrect}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{UI_TEXT.checkAnswerBtn[activeLang]}</span>
+                </button>
+              </div>
+
+              {/* 3. DUAL FORMAT STATUS CARD (Audio & Text feedback) */}
+              {(recordedAudioUrl || speechTranscript || voiceFeedbackMsg) && (
+                <div className="p-3.5 rounded-2xl bg-forest-50/70 border border-forest-200 text-xs space-y-2">
+                  <div className="font-bold text-forest-900 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-forest-700" /> Response Summary
+                  </div>
+
+                  {speechTranscript && (
+                    <div className="text-[11px] text-charcoal-700">
+                      <span className="font-bold text-charcoal-900">Transcribed Text:</span> "{speechTranscript}"
+                    </div>
+                  )}
+
+                  {recordedAudioUrl && (
+                    <div className="text-[11px] text-forest-800 flex items-center gap-1">
+                      <Check className="w-3 h-3 text-forest-700" /> Audio recording saved & ready for playback
+                    </div>
+                  )}
+
+                  {voiceFeedbackMsg && (
+                    <div
+                      className={`text-[11px] font-bold p-2 rounded-lg ${
+                        voiceFeedbackMsg.type === 'success'
+                          ? 'bg-forest-100 text-forest-900'
+                          : voiceFeedbackMsg.type === 'error'
+                          ? 'bg-red-50 text-red-800'
+                          : 'bg-amber-50 text-amber-900'
                       }`}
                     >
-                      <span className="flex items-center gap-2.5">
-                        <Heart
-                          className={`w-4 h-4 ${
-                            isAnswered && isCorrectChoice ? 'fill-white text-white' : 'text-terracotta-500'
-                          }`}
-                        />
-                        {relOption.label}
-                      </span>
+                      {voiceFeedbackMsg.text}
+                    </div>
+                  )}
+                </div>
+              )}
 
-                      {isAnswered && isCorrectChoice && <Check className="w-5 h-5 text-white stroke-[3]" />}
-                      {isAnswered && isSelected && !isCorrectChoice && <X className="w-5 h-5 text-white stroke-[3]" />}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
-            {/* ========================================================================= */}
-            {/* SUCCESS / FEEDBACK CARD & NEXT BUTTON                                     */}
-            {/* ========================================================================= */}
-            {isAnswered && (
-              <div
-                className={`p-5 rounded-2xl max-w-2xl mx-auto space-y-3 transition-all animate-fadeIn ${
-                  isCorrect
-                    ? 'bg-forest-50 border-2 border-forest-400 text-forest-950'
-                    : 'bg-amber-50 border-2 border-amber-300 text-amber-950'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  {isCorrect ? (
-                    <CheckCircle2 className="w-6 h-6 text-forest-700 shrink-0" />
-                  ) : (
-                    <Info className="w-6 h-6 text-amber-700 shrink-0" />
-                  )}
-                  <div>
-                    <h4 className="font-serif font-bold text-base md:text-lg">
-                      {isCorrect
-                        ? `${currentPerson.name} — ${RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle}`
-                        : UI_TEXT.incorrectTryAgain[activeLang]}
-                    </h4>
-                    <p className="text-xs md:text-sm font-medium mt-1">
-                      {isCorrect
-                        ? currentPerson.notes?.[activeLang] || currentPerson.notes?.en
-                        : currentPerson.hints?.[activeLang] || currentPerson.hints?.en}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex justify-end pt-2">
-                  <button
-                    type="button"
-                    onClick={handleNextPerson}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-forest-800 text-white font-bold text-sm shadow-soft hover:bg-forest-900 transition-all cursor-pointer"
-                  >
-                    <span>
-                      {currentIdx + 1 < familyFaces.length ? 'Next Family Member →' : 'View Results & Complete'}
-                    </span>
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
