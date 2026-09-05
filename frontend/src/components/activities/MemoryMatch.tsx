@@ -443,6 +443,9 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
       {/* Top Header & Actions */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-md">
         <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
+          </Button>
           <div className="w-12 h-12 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center font-bold shadow-sm">
             <Sparkles className="w-6 h-6" />
           </div>
@@ -474,10 +477,6 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
             title="Restart round"
           >
             <RotateCcw className="w-4 h-4" />
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
-            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
           </Button>
         </div>
       </div>

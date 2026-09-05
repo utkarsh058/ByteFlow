@@ -18,7 +18,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   const patientNav = [
     { id: 'home', labelKey: 'navigation.home' },
-    { id: 'activities', labelKey: 'navigation.activities' },
     { id: 'memories', labelKey: 'navigation.memories' },
     { id: 'reminders', labelKey: 'navigation.reminders' },
   ];
@@ -32,7 +31,6 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab }) => {
 
   const clinicianNav = [
     { id: 'analytics', labelKey: 'navigation.analytics' },
-    { id: 'activities', labelKey: 'navigation.activities' },
     { id: 'device', labelKey: 'navigation.deviceCenter' },
   ];
 

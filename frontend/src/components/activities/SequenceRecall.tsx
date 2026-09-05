@@ -237,8 +237,12 @@ export const SequenceRecall: React.FC<SequenceRecallProps> = ({ onComplete, onBa
   return (
     <div className="space-y-6 max-w-3xl mx-auto animate-fadeIn">
       {/* Top Header */}
+      {/* Top Navigation Bar */}
       <div className="flex items-center justify-between bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-md">
         <div className="flex items-center gap-3">
+          <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
+            <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
+          </Button>
           <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold shadow-sm">
             <Lightbulb className="w-6 h-6" />
           </div>
@@ -254,9 +258,6 @@ export const SequenceRecall: React.FC<SequenceRecallProps> = ({ onComplete, onBa
             </p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={onBack} className="rounded-xl font-bold">
-          <ArrowLeft className="w-4 h-4 mr-1.5" /> Back
-        </Button>
       </div>
 
       {!isFinished && (
