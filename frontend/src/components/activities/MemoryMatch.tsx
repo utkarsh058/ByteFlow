@@ -168,7 +168,7 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
     });
   }, []);
 
-  // Initialize round: double 6 pairs to make 12 cards, show for 5s, then swap & flip
+  // Initialize round: double 6 pairs to make 12 cards, show for 5s, then flip one by one from start to end
   const initGameRound = useCallback((pairsToUse: CardPairItem[]) => {
     // Take 6 pairs
     const pairs = pairsToUse.slice(0, 6);
@@ -180,7 +180,7 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
         pairId: p.pairId,
         name: p.name,
         imageUrl: p.imageUrl,
-        isFlipped: true, // Initially flipped face-up during 5s memory phase
+        isFlipped: false, // Start face-down for sequential reveal
         isMatched: false,
       });
       doubled.push({
@@ -188,7 +188,7 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
         pairId: p.pairId,
         name: p.name,
         imageUrl: p.imageUrl,
-        isFlipped: true, // Initially flipped face-up during 5s memory phase
+        isFlipped: false, // Start face-down for sequential reveal
         isMatched: false,
       });
     });
@@ -205,30 +205,54 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
 
     if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
 
-    let count = 5;
-    countdownTimerRef.current = setInterval(() => {
-      count -= 1;
-      setCountdown(count);
+    // 1. Cascade-flip all 12 cards face-UP ONE BY ONE from starting (0) to end (11)
+    doubled.forEach((_, idx) => {
+      setTimeout(() => {
+        playTone(350 + idx * 30, 0.12, 'sine', 0.1);
+        setCards((prev) =>
+          prev.map((c, i) => (i === idx ? { ...c, isFlipped: true } : c))
+        );
+      }, idx * 80);
+    });
 
-      if (count === 0) {
-        clearInterval(countdownTimerRef.current);
-        // Start swap & flip face-down
-        setIsSwapping(true);
-        playTone(440, 0.3, 'sine', 0.15); // Audio cue for swap
+    // 2. Start the 5-second memorization countdown after all 12 cards are flipped
+    const initialDelay = 12 * 80 + 300;
+    setTimeout(() => {
+      let count = 5;
+      countdownTimerRef.current = setInterval(() => {
+        count -= 1;
+        setCountdown(count);
 
-        setTimeout(() => {
-          // Shuffle the 12 cards into swapped random positions
-          setCards((prev) =>
-            [...prev]
-              .sort(() => Math.random() - 0.5)
-              .map((c) => ({ ...c, isFlipped: false }))
-          );
-          setIsMemorizingPhase(false);
-          setIsSwapping(false);
-          setStartTime(Date.now());
-        }, 900);
-      }
-    }, 1000);
+        if (count === 0) {
+          clearInterval(countdownTimerRef.current);
+
+          // 3. Cascade-flip all 12 cards face-DOWN ONE BY ONE from starting (0) to end (11) like UNO Flip
+          setIsSwapping(true);
+          playTone(440, 0.25, 'sine', 0.15);
+
+          for (let i = 0; i < 12; i++) {
+            setTimeout(() => {
+              playTone(600 - i * 25, 0.1, 'sine', 0.08); // descending tick
+              setCards((prev) =>
+                prev.map((c, idx) => (idx === i ? { ...c, isFlipped: false } : c))
+              );
+            }, i * 75);
+          }
+
+          // 4. Once all 12 are flipped face-down, shuffle and enable gameplay
+          setTimeout(() => {
+            setCards((prev) =>
+              [...prev]
+                .sort(() => Math.random() - 0.5)
+                .map((c) => ({ ...c, isFlipped: false }))
+            );
+            setIsMemorizingPhase(false);
+            setIsSwapping(false);
+            setStartTime(Date.now());
+          }, 12 * 75 + 400);
+        }
+      }, 1000);
+    }, initialDelay);
   }, []);
 
   useEffect(() => {
