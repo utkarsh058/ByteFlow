@@ -104,8 +104,28 @@ npm start
 ---
 
 ## 🌐 Live Deployments
-* **Live Full-Stack Web App (Cloudflare Single Link)**: [https://hall-tamil-adding-horse.trycloudflare.com](https://hall-tamil-adding-horse.trycloudflare.com)
-* **API Health Status**: [https://hall-tamil-adding-horse.trycloudflare.com/api/health](https://hall-tamil-adding-horse.trycloudflare.com/api/health)
-* **Regional Healthcare Portal**: [https://hall-tamil-adding-horse.trycloudflare.com/api/portal/states](https://hall-tamil-adding-horse.trycloudflare.com/api/portal/states)
-* **Static GitHub Pages Archive**: [https://sawan233423.github.io/smriti-setu/](https://sawan233423.github.io/smriti-setu/)
+* **Live Full-Stack Web App (Cloudflare Single Link)**: [https://rebecca-investigations-omissions-fingers.trycloudflare.com](https://rebecca-investigations-omissions-fingers.trycloudflare.com)
+* **API Health Status**: [https://rebecca-investigations-omissions-fingers.trycloudflare.com/api/health](https://rebecca-investigations-omissions-fingers.trycloudflare.com/api/health)
+* **Regional Healthcare Portal**: [https://rebecca-investigations-omissions-fingers.trycloudflare.com/api/portal/states](https://rebecca-investigations-omissions-fingers.trycloudflare.com/api/portal/states)
+
+---
+
+## 📦 How Anyone Can Clone and Run This Project
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/utkarsh058/ByteFlow.git
+cd ByteFlow
+
+# 2. Install all dependencies
+cd backend && npm install
+cd ../frontend && npm install
+cd ..
+
+# 3. Build & Run Full-Stack (Unified on port 5000)
+npm run build
+npm start
+```
+Open **`http://localhost:5000`** in your browser to play and access all features!
+
 
