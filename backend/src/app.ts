@@ -1,18 +1,19 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 import apiRouter from './routes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
 const app = express();
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:3000';
 
-// CORS configuration matching frontend expectations & custom headers
+// CORS configuration - dynamic origin to support local dev, public tunnels & custom domains
 app.use(
   cors({
-    origin: [CLIENT_ORIGIN, 'http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Platform-Region'],
     credentials: true,
@@ -52,6 +53,32 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Mount all modular domain APIs
 app.use('/api', apiRouter);
+
+// Serve static uploads (puzzles, voice samples, recordings)
+const uploadsDir = path.resolve(__dirname, '../../uploads');
+if (fs.existsSync(uploadsDir)) {
+  app.use('/uploads', express.static(uploadsDir));
+}
+
+// Serve frontend production build (Single Link Full-Stack hosting)
+const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  app.use(express.static(frontendDist));
+  app.use('/smriti-setu', express.static(frontendDist));
+
+  // SPA Catch-all: Route all other GET requests to frontend index.html
+  app.get('*', (req: Request, res: Response, next: NextFunction) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    const indexPath = path.join(frontendDist, 'index.html');
+    if (fs.existsSync(indexPath)) {
+      res.sendFile(indexPath);
+    } else {
+      next();
+    }
+  });
+}
 
 // Centralized error handler
 app.use(errorHandler);

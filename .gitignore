@@ -26,8 +26,7 @@ logs/
 .env.development.local
 .env.production.local
 
-# IDE & OS files
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+# Binaries
+*.exe
+cloudflared.exe
+

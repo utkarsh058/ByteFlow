@@ -92,8 +92,20 @@ npm run dev:frontend
 * Health Check: `http://localhost:5000/api/health`
 * System Status: `http://localhost:5000/api/system/status`
 
+### 4. Single-Link Production Hosting (Frontend + Backend on 1 Port)
+```bash
+# 1. Build unified monorepo bundle
+npm run build
+
+# 2. Run unified server on port 5000 (serves React SPA + 41 API endpoints + uploads)
+npm start
+```
+
 ---
 
-## 🌐 Live GitHub Deployment
-* **Live Web App**: [https://sawan233423.github.io/smriti-setu/](https://sawan233423.github.io/smriti-setu/)
+## 🌐 Live Deployments
+* **Live Full-Stack Web App (Cloudflare Single Link)**: [https://hall-tamil-adding-horse.trycloudflare.com](https://hall-tamil-adding-horse.trycloudflare.com)
+* **API Health Status**: [https://hall-tamil-adding-horse.trycloudflare.com/api/health](https://hall-tamil-adding-horse.trycloudflare.com/api/health)
+* **Regional Healthcare Portal**: [https://hall-tamil-adding-horse.trycloudflare.com/api/portal/states](https://hall-tamil-adding-horse.trycloudflare.com/api/portal/states)
+* **Static GitHub Pages Archive**: [https://sawan233423.github.io/smriti-setu/](https://sawan233423.github.io/smriti-setu/)
 

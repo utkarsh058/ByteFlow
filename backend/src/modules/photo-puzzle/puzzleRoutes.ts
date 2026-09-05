@@ -68,7 +68,7 @@ activePuzzles['puzzle_demo_01'] = {
  */
 router.post('/create', upload.single('photo'), async (req: Request, res: Response) => {
   try {
-    const rows = parseInt(req.body.rows, 10) || 2;
+    const rows = parseInt(req.body.rows, 10) || 4;
     const cols = parseInt(req.body.cols, 10) || 2;
     const patientId = req.body.patientId || 'pat-ner-001';
     const caption = req.body.caption || 'Family Memory Puzzle';

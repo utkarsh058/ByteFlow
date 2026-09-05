@@ -1,21 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import {
-  Upload,
-  Image as ImageIcon,
-  CheckCircle2,
-  RefreshCw,
-  Sparkles,
   ArrowLeft,
-  Eye,
-  EyeOff,
-  Layers,
-  Heart,
-  Trophy,
-  Camera,
-  Play,
+  Lightbulb,
   RotateCcw,
+  Check,
+  Heart,
+  Upload,
+  Trophy,
+  Clock,
+  Sparkles,
 } from 'lucide-react';
-import { photoPuzzleModuleApi } from '../../services/api';
 import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
 
 interface PhotoPuzzleProps {
@@ -23,608 +17,685 @@ interface PhotoPuzzleProps {
   onBack: () => void;
 }
 
-interface Piece {
-  pieceIndex: number;
-  imageUrl: string;
-  placedRow?: number;
-  placedCol?: number;
-  isCorrect?: boolean;
-}
+// Preset regional family & cultural memories
+const DEFAULT_PHOTO =
+  'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80';
 
-// Preset regional & nostalgic memories for immediate play without local photo
 const PRESET_MEMORIES = [
   {
+    id: 'family',
+    title: 'Family Gathering',
+    caption: 'Recognize and remember your loved ones.',
+    url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80',
+  },
+  {
     id: 'bihu',
-    title: 'Bihu Festival Celebration',
-    caption: 'Rongali Bihu Spring Celebration with Family, Assam',
-    url: 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=800&q=80',
+    title: 'Bihu Festival',
+    caption: 'Celebrating springtime traditions together with family.',
+    url: 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'tea-garden',
-    title: 'Upper Assam Tea Estate',
-    caption: 'Peaceful morning walk across emerald tea plantations',
-    url: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=800&q=80',
+    title: 'Tea Estate Walk',
+    caption: 'Peaceful morning stroll in the emerald hills.',
+    url: 'https://images.unsplash.com/photo-1597848212624-a19eb35e2651?auto=format&fit=crop&w=1200&q=80',
   },
   {
     id: 'majuli',
-    title: 'Majuli Island Sunset',
-    caption: 'Sunset reflections on the sacred Brahmaputra River',
-    url: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 'kaziranga',
-    title: 'Kaziranga Wildlife Safari',
-    caption: 'Majestic Greater One-Horned Rhino in Kaziranga National Park',
-    url: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80',
+    title: 'Majuli Sunset',
+    caption: 'Golden river reflections of our hometown heritage.',
+    url: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=1200&q=80',
   },
 ];
+
+const COLS = 4;
+const ROWS = 3;
+const TOTAL_PIECES = COLS * ROWS; // 12 pieces
+
+interface TabConfig {
+  top: number; // 0: flat, 1: tab, -1: blank
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+// Standard jigsaw interlocking tab shapes generator
+const generateJigsawGrid = (cols: number, rows: number): TabConfig[] => {
+  const horizontalTabs: number[][] = [];
+  for (let r = 0; r < rows; r++) {
+    const rowTabs: number[] = [];
+    for (let c = 0; c < cols - 1; c++) {
+      rowTabs.push(Math.random() > 0.5 ? 1 : -1);
+    }
+    horizontalTabs.push(rowTabs);
+  }
+
+  const verticalTabs: number[][] = [];
+  for (let r = 0; r < rows - 1; r++) {
+    const rowTabs: number[] = [];
+    for (let c = 0; c < cols; c++) {
+      rowTabs.push(Math.random() > 0.5 ? 1 : -1);
+    }
+    verticalTabs.push(rowTabs);
+  }
+
+  const grid: TabConfig[] = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const top = r === 0 ? 0 : -verticalTabs[r - 1][c];
+      const right = c === cols - 1 ? 0 : horizontalTabs[r][c];
+      const bottom = r === rows - 1 ? 0 : verticalTabs[r][c];
+      const left = c === 0 ? 0 : -horizontalTabs[r][c - 1];
+      grid.push({ top, right, bottom, left });
+    }
+  }
+  return grid;
+};
+
+// SVG Path builder for a single jigsaw piece
+const buildPiecePath = (
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  tabs: TabConfig
+): string => {
+  const tabW = w * 0.22;
+  const tabH = h * 0.22;
+
+  let path = `M ${x} ${y} `;
+
+  // 1. TOP EDGE: (x, y) -> (x + w, y)
+  if (tabs.top === 0) {
+    path += `L ${x + w} ${y} `;
+  } else {
+    const s = tabs.top;
+    const midX = x + w / 2;
+    path += `L ${midX - tabW} ${y} `;
+    path += `C ${midX - tabW * 0.8} ${y - s * tabH * 0.2}, ${midX - tabW * 1.1} ${y - s * tabH * 0.9}, ${midX - tabW * 0.4} ${y - s * tabH} `;
+    path += `C ${midX - tabW * 0.1} ${y - s * tabH * 1.05}, ${midX + tabW * 0.1} ${y - s * tabH * 1.05}, ${midX + tabW * 0.4} ${y - s * tabH} `;
+    path += `C ${midX + tabW * 1.1} ${y - s * tabH * 0.9}, ${midX + tabW * 0.8} ${y - s * tabH * 0.2}, ${midX + tabW} ${y} `;
+    path += `L ${x + w} ${y} `;
+  }
+
+  // 2. RIGHT EDGE: (x + w, y) -> (x + w, y + h)
+  if (tabs.right === 0) {
+    path += `L ${x + w} ${y + h} `;
+  } else {
+    const s = tabs.right;
+    const midY = y + h / 2;
+    path += `L ${x + w} ${midY - tabH} `;
+    path += `C ${x + w + s * tabW * 0.2} ${midY - tabH * 0.8}, ${x + w + s * tabW * 0.9} ${midY - tabH * 1.1}, ${x + w + s * tabW} ${midY - tabH * 0.4} `;
+    path += `C ${x + w + s * tabW * 1.05} ${midY - tabH * 0.1}, ${x + w + s * tabW * 1.05} ${midY + tabH * 0.1}, ${x + w + s * tabW} ${midY + tabH * 0.4} `;
+    path += `C ${x + w + s * tabW * 0.9} ${midY + tabH * 1.1}, ${x + w + s * tabW * 0.2} ${midY + tabH * 0.8}, ${x + w} ${midY + tabH} `;
+    path += `L ${x + w} ${y + h} `;
+  }
+
+  // 3. BOTTOM EDGE: (x + w, y + h) -> (x, y + h)
+  if (tabs.bottom === 0) {
+    path += `L ${x} ${y + h} `;
+  } else {
+    const s = tabs.bottom;
+    const midX = x + w / 2;
+    path += `L ${midX + tabW} ${y + h} `;
+    path += `C ${midX + tabW * 0.8} ${y + h + s * tabH * 0.2}, ${midX + tabW * 1.1} ${y + h + s * tabH * 0.9}, ${midX + tabW * 0.4} ${y + h + s * tabH} `;
+    path += `C ${midX + tabW * 0.1} ${y + h + s * tabH * 1.05}, ${midX - tabW * 0.1} ${y + h + s * tabH * 1.05}, ${midX - tabW * 0.4} ${y + h + s * tabH} `;
+    path += `C ${midX - tabW * 1.1} ${y + h + s * tabH * 0.9}, ${midX - tabW * 0.8} ${y + h + s * tabH * 0.2}, ${midX - tabW} ${y + h} `;
+    path += `L ${x} ${y + h} `;
+  }
+
+  // 4. LEFT EDGE: (x, y + h) -> (x, y)
+  if (tabs.left === 0) {
+    path += `L ${x} ${y} `;
+  } else {
+    const s = tabs.left;
+    const midY = y + h / 2;
+    path += `L ${x} ${midY + tabH} `;
+    path += `C ${x - s * tabW * 0.2} ${midY + tabH * 0.8}, ${x - s * tabW * 0.9} ${midY + tabH * 1.1}, ${x - s * tabW} ${midY + tabH * 0.4} `;
+    path += `C ${x - s * tabW * 1.05} ${midY + tabH * 0.1}, ${x - s * tabW * 1.05} ${midY - tabH * 0.1}, ${x - s * tabW} ${midY - tabH * 0.4} `;
+    path += `C ${x - s * tabW * 0.9} ${midY - tabH * 1.1}, ${x - s * tabW * 0.2} ${midY - tabH * 0.8}, ${x} ${midY - tabH} `;
+    path += `L ${x} ${y} `;
+  }
+
+  path += 'Z';
+  return path;
+};
 
 export const PhotoPuzzle: React.FC<PhotoPuzzleProps> = ({ onComplete, onBack }) => {
   const { elderlyMode } = useAccessibilityStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
-  // Setup state
-  const [mode, setMode] = useState<'upload_setup' | 'playing' | 'completed'>('upload_setup');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>(PRESET_MEMORIES[0].url);
+  // Puzzle photo state
+  const [photoUrl, setPhotoUrl] = useState<string>(PRESET_MEMORIES[0].url);
   const [caption, setCaption] = useState<string>(PRESET_MEMORIES[0].caption);
-  const [gridSize, setGridSize] = useState<2 | 3>(2); // 2x2 = 4 pieces (default gentle mode for dementia care)
-  const [isSlicing, setIsSlicing] = useState<boolean>(false);
 
-  // Gameplay state
-  const [puzzleId, setPuzzleId] = useState<string>('');
-  const [unplacedPieces, setUnplacedPieces] = useState<Piece[]>([]);
-  const [boardSlots, setBoardSlots] = useState<Record<string, Piece | null>>({});
-  const [selectedPieceIndex, setSelectedPieceIndex] = useState<number | null>(null);
-  const [showHintPeek, setShowHintPeek] = useState<boolean>(true);
-  const [attemptsCount, setAttemptsCount] = useState<number>(0);
-  const [correctCount, setCorrectCount] = useState<number>(0);
+  // Puzzle Board State (Board width 800 x 540)
+  const BOARD_W = 800;
+  const BOARD_H = 540;
+  const PIECE_W = BOARD_W / COLS;
+  const PIECE_H = BOARD_H / ROWS;
+
+  // Generate stable jigsaw tabs
+  const tabConfigs = useMemo(() => generateJigsawGrid(COLS, ROWS), []);
+
+  // Pre-place pieces matching screenshot (5 missing slots: 2, 4, 6, 8, 10)
+  const [placedSlots, setPlacedSlots] = useState<boolean[]>(() => {
+    const initial = Array(TOTAL_PIECES).fill(true);
+    [2, 4, 6, 8, 10].forEach((idx) => {
+      initial[idx] = false;
+    });
+    return initial;
+  });
+
+  // Tray pieces (contains indices of pieces that are currently NOT placed on the board)
+  const [trayPieces, setTrayPieces] = useState<number[]>([2, 4, 6, 8, 10]);
+
+  // Selected piece from tray
+  const [selectedPiece, setSelectedPiece] = useState<number | null>(null);
+  const [draggedPiece, setDraggedPiece] = useState<number | null>(null);
+
+  // Gameplay metrics & Timer
+  const [moveCount, setMoveCount] = useState<number>(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
+  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
+  const [isCompleted, setIsCompleted] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
 
-  // Handle local file selection
+  // Live Timer Effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (!isCompleted) {
+      interval = setInterval(() => {
+        setElapsedSeconds(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isCompleted, startTime]);
+
+  // Format seconds to mm:ss
+  const formatTime = (totalSecs: number) => {
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  // Sound Engine
+  const playSound = (freq = 520, duration = 0.12, type: OscillatorType = 'sine') => {
+    try {
+      if (!audioCtxRef.current) {
+        const AudioCtx =
+          window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        if (AudioCtx) audioCtxRef.current = new AudioCtx();
+      }
+      if (audioCtxRef.current) {
+        const ctx = audioCtxRef.current;
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      }
+    } catch {
+      // Audio fallback
+    }
+  };
+
+  // Kind-hearted harmonious completion chord progression
+  const playKindHeartedMelody = useCallback(() => {
+    const melody = [
+      { freq: 440.0, delay: 0 }, // A4
+      { freq: 554.37, delay: 140 }, // C#5
+      { freq: 659.25, delay: 280 }, // E5
+      { freq: 880.0, delay: 420 }, // A5
+      { freq: 1108.73, delay: 580 }, // C#6
+    ];
+    melody.forEach((note) => {
+      setTimeout(() => playSound(note.freq, 0.4, 'sine'), note.delay);
+    });
+  }, []);
+
+  // Place a piece onto a specific board slot
+  const handlePlacePiece = useCallback(
+    (pieceIdx: number, slotIdx: number) => {
+      setMoveCount((m) => m + 1);
+
+      if (pieceIdx === slotIdx) {
+        // Correct placement!
+        playSound(659.25, 0.2, 'sine');
+        setPlacedSlots((prev) => {
+          const next = [...prev];
+          next[slotIdx] = true;
+          return next;
+        });
+        setTrayPieces((prev) => prev.filter((p) => p !== pieceIdx));
+        setSelectedPiece(null);
+
+        // Check completion
+        const remainingMissing = trayPieces.filter((p) => p !== pieceIdx).length;
+        if (remainingMissing === 0) {
+          playKindHeartedMelody();
+          setIsCompleted(true);
+          const elapsed = Date.now() - startTime;
+          onComplete(100, moveCount + 1, elapsed);
+        }
+      } else {
+        // Wrong slot attempt: gentle reminder
+        playSound(280, 0.18, 'sine');
+        setMessage('That is wrong. Take your time, try another opening! 🌸');
+        setTimeout(() => setMessage(''), 3000);
+        setSelectedPiece(null);
+      }
+    },
+    [moveCount, onComplete, playKindHeartedMelody, startTime, trayPieces]
+  );
+
+  // Handle click on missing slot in the board
+  const handleSlotClick = (slotIdx: number) => {
+    if (placedSlots[slotIdx]) return;
+
+    if (selectedPiece !== null) {
+      handlePlacePiece(selectedPiece, slotIdx);
+    } else {
+      setMessage('Tap a piece on the right tray first, then tap this slot!');
+      setTimeout(() => setMessage(''), 2500);
+    }
+  };
+
+  // Handle Drag & Drop
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (slotIdx: number) => {
+    if (draggedPiece !== null) {
+      handlePlacePiece(draggedPiece, slotIdx);
+      setDraggedPiece(null);
+    }
+  };
+
+  // Restart Puzzle
+  const handleRestart = () => {
+    const missing = [2, 4, 6, 8, 10];
+    const initial = Array(TOTAL_PIECES).fill(true);
+    missing.forEach((idx) => {
+      initial[idx] = false;
+    });
+    setPlacedSlots(initial);
+    setTrayPieces(missing);
+    setSelectedPiece(null);
+    setIsCompleted(false);
+    setMoveCount(0);
+    setStartTime(Date.now());
+    setElapsedSeconds(0);
+    playSound(440, 0.1);
+  };
+
+  // Hint: automatically place one missing piece
+  const handleHint = () => {
+    if (trayPieces.length === 0) return;
+    const hintPiece = trayPieces[0];
+    handlePlacePiece(hintPiece, hintPiece);
+    setMessage(`Hint: Placed piece #${hintPiece + 1}!`);
+    setTimeout(() => setMessage(''), 2500);
+  };
+
+  // Upload custom photo
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setSelectedFile(file);
       const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      setCaption(file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ') || 'My Cherished Photo');
+      setPhotoUrl(url);
+      setCaption(file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ') || 'My Family Photo');
+      handleRestart();
     }
   };
 
-  // Handle preset selection
-  const handleSelectPreset = (preset: (typeof PRESET_MEMORIES)[0]) => {
-    setSelectedFile(null);
-    setPreviewUrl(preset.url);
-    setCaption(preset.caption);
-  };
-
-  // Create & Slice Puzzle on backend
-  const handleStartPuzzle = async () => {
-    setIsSlicing(true);
-    try {
-      const formData = new FormData();
-      formData.append('rows', String(gridSize));
-      formData.append('cols', String(gridSize));
-      formData.append('patientId', 'pat-ner-001');
-      formData.append('caption', caption);
-
-      if (selectedFile) {
-        formData.append('photo', selectedFile);
-      } else {
-        // Fetch preset image as blob to send to multer
-        try {
-          const res = await fetch(previewUrl);
-          const blob = await res.blob();
-          formData.append('photo', blob, 'preset.jpg');
-        } catch {
-          // If CORS prevents fetch, backend has fallback
-        }
-      }
-
-      const puzzleData = await photoPuzzleModuleApi.createPuzzle(formData);
-      setPuzzleId(puzzleData.puzzleId);
-
-      // Initialize pieces
-      const pieces: Piece[] = (puzzleData.pieces || []).map((p: any) => ({
-        pieceIndex: p.pieceIndex,
-        imageUrl: p.imageUrl,
-      }));
-
-      // Shuffle tray
-      setUnplacedPieces([...pieces].sort(() => Math.random() - 0.5));
-
-      // Clear board slots
-      const initialSlots: Record<string, Piece | null> = {};
-      for (let r = 0; r < gridSize; r++) {
-        for (let c = 0; c < gridSize; c++) {
-          initialSlots[`${r}_${c}`] = null;
-        }
-      }
-      setBoardSlots(initialSlots);
-      setSelectedPieceIndex(null);
-      setAttemptsCount(0);
-      setCorrectCount(0);
-      setStartTime(Date.now());
-      setMode('playing');
-    } catch (err) {
-      console.error('Failed to create puzzle:', err);
-      // Fallback local mock puzzle for offline resilience
-      createFallbackPuzzle();
-    } finally {
-      setIsSlicing(false);
-    }
-  };
-
-  const createFallbackPuzzle = () => {
-    const total = gridSize * gridSize;
-    const pieces: Piece[] = [];
-    for (let i = 0; i < total; i++) {
-      pieces.push({ pieceIndex: i, imageUrl: previewUrl });
-    }
-    setPuzzleId(`offline_${Date.now()}`);
-    setUnplacedPieces([...pieces].sort(() => Math.random() - 0.5));
-    const initialSlots: Record<string, Piece | null> = {};
-    for (let r = 0; r < gridSize; r++) {
-      for (let c = 0; c < gridSize; c++) {
-        initialSlots[`${r}_${c}`] = null;
-      }
-    }
-    setBoardSlots(initialSlots);
-    setMode('playing');
-  };
-
-  // Click slot on board
-  const handleSlotClick = async (targetRow: number, targetCol: number) => {
-    const slotKey = `${targetRow}_${targetCol}`;
-    const existingInSlot = boardSlots[slotKey];
-
-    // If slot already occupied and no piece selected, return piece back to tray
-    if (existingInSlot && selectedPieceIndex === null) {
-      setBoardSlots((prev) => ({ ...prev, [slotKey]: null }));
-      setUnplacedPieces((prev) => [...prev, existingInSlot]);
-      if (existingInSlot.isCorrect) {
-        setCorrectCount((c) => Math.max(0, c - 1));
-      }
-      return;
-    }
-
-    if (selectedPieceIndex === null) return;
-
-    // Find the selected piece from tray
-    const piece = unplacedPieces.find((p) => p.pieceIndex === selectedPieceIndex);
-    if (!piece) return;
-
-    setAttemptsCount((a) => a + 1);
-
-    // Calculate expected index for this slot
-    const expectedPieceIndex = targetRow * gridSize + targetCol;
-    const isCorrect = piece.pieceIndex === expectedPieceIndex;
-
-    // Call backend check endpoint to log and verify
-    if (puzzleId && !puzzleId.startsWith('offline_')) {
-      try {
-        await photoPuzzleModuleApi.checkPiece({
-          puzzleId,
-          pieceIndex: piece.pieceIndex,
-          targetRow,
-          targetCol,
-        });
-      } catch (e) {
-        console.error('Check API failed:', e);
-      }
-    }
-
-    // Place piece on board
-    const placedPiece: Piece = {
-      ...piece,
-      placedRow: targetRow,
-      placedCol: targetCol,
-      isCorrect,
-    };
-
-    setBoardSlots((prev) => ({ ...prev, [slotKey]: placedPiece }));
-    setUnplacedPieces((prev) => prev.filter((p) => p.pieceIndex !== selectedPieceIndex));
-    setSelectedPieceIndex(null);
-
-    const newCorrect = isCorrect ? correctCount + 1 : correctCount;
-    if (isCorrect) setCorrectCount(newCorrect);
-
-    // Check completion
-    const totalPieces = gridSize * gridSize;
-    if (newCorrect === totalPieces) {
-      setTimeout(() => {
-        setMode('completed');
-        const elapsed = Date.now() - startTime;
-        const accuracy = Math.round((totalPieces / Math.max(attemptsCount + 1, totalPieces)) * 100);
-        onComplete(accuracy, attemptsCount + 1, elapsed);
-      }, 700);
-    }
-  };
+  // Pre-calculate SVG paths for all 12 pieces
+  const piecePaths = useMemo(() => {
+    return Array.from({ length: TOTAL_PIECES }).map((_, idx) => {
+      const r = Math.floor(idx / COLS);
+      const c = idx % COLS;
+      const x = c * PIECE_W;
+      const y = r * PIECE_H;
+      return buildPiecePath(x, y, PIECE_W, PIECE_H, tabConfigs[idx]);
+    });
+  }, [PIECE_H, PIECE_W, tabConfigs]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white rounded-3xl shadow-xl border border-slate-200">
-      {/* Top Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-sm px-3 py-1.5 rounded-xl hover:bg-slate-100 transition-all"
-        >
-          <ArrowLeft className="w-4 h-4" /> Exit Activity
-        </button>
+    <div className="min-h-[85vh] bg-white p-3 sm:p-6 rounded-3xl font-sans text-[#442818] select-none flex flex-col justify-between max-w-6xl mx-auto shadow-xl border border-slate-200">
+      {/* ── Top Header matching reference image with live timer ────────── */}
+      <div>
+        <div className="flex items-center justify-between px-2 pt-2">
+          {/* Back Button */}
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#794D2C] hover:bg-[#623D21] text-white font-black text-sm shadow-md transition-all active:scale-95 cursor-pointer"
+          >
+            <ArrowLeft className="w-4 h-4 stroke-[3]" /> Back
+          </button>
 
-        <div className="flex items-center gap-2">
-          <span className="p-2 rounded-xl bg-purple-100 text-purple-700">
-            <Layers className="w-5 h-5" />
-          </span>
-          <h2 className="text-xl font-black text-slate-900">Personalized Photo Puzzle</h2>
+          {/* Title & Subtitle */}
+          <div className="text-center">
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-[#442818]">
+              Family Photo Puzzle
+            </h1>
+            <p className="text-xs sm:text-sm font-semibold text-[#7D5B48] mt-0.5">
+              Drag and drop the pieces to complete the family photo.
+            </p>
+          </div>
+
+          {/* Right Area: Timer & Hint Button */}
+          <div className="flex items-center gap-2.5">
+            {/* Live Stopwatch Timer */}
+            <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-slate-50 border border-slate-200 text-[#794D2C] font-black text-xs sm:text-sm shadow-sm">
+              <Clock className="w-4 h-4 text-[#794D2C]" />
+              <span className="tabular-nums">{formatTime(elapsedSeconds)}</span>
+            </div>
+
+            {/* Hint Button */}
+            <button
+              onClick={handleHint}
+              disabled={trayPieces.length === 0}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white hover:bg-slate-50 text-[#794D2C] font-black text-sm border-2 border-[#E5D3C2] shadow-sm transition-all active:scale-95 disabled:opacity-40 cursor-pointer"
+            >
+              <Lightbulb className="w-4 h-4 text-amber-500 fill-amber-400" />
+              <span>Hint</span>
+            </button>
+          </div>
         </div>
 
-        {mode === 'playing' && (
-          <button
-            onClick={() => setShowHintPeek(!showHintPeek)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
-              showHintPeek
-                ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                : 'bg-slate-100 text-slate-600'
-            }`}
-          >
-            {showHintPeek ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-            {showHintPeek ? 'Guide On' : 'Guide Off'}
-          </button>
+        {/* Gentle Reminder feedback message */}
+        {message && (
+          <div className="text-center mt-3 animate-fadeIn">
+            <span
+              className={`inline-block px-5 py-2 rounded-full font-bold text-xs sm:text-sm shadow-md transition-all ${
+                message.includes('wrong')
+                  ? 'bg-rose-50 text-rose-800 border border-rose-200 animate-bounce'
+                  : 'bg-amber-50 text-amber-900 border border-amber-200'
+              }`}
+            >
+              {message}
+            </span>
+          </div>
         )}
       </div>
 
-      {/* ========================================================================= */}
-      {/* MODE 1: UPLOAD & SETUP SCREEN                                            */}
-      {/* ========================================================================= */}
-      {mode === 'upload_setup' && (
-        <div className="py-6 space-y-8 animate-fadeIn">
-          <div className="text-center max-w-xl mx-auto">
-            <h3 className="text-2xl font-black text-slate-800">
-              Upload Any Cherished Photo to Begin
-            </h3>
-            <p className="text-sm text-slate-500 mt-1">
-              Reconstructing familiar family photos, home gardens, or festivals stimulates visual reminiscence and neuroplasticity.
-            </p>
-          </div>
-
-          {/* Upload Dropzone */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            {/* Left: File Uploader Area */}
-            <div className="space-y-4">
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/50 hover:bg-purple-50 p-6 rounded-2xl cursor-pointer text-center transition-all flex flex-col items-center justify-center min-h-[220px]"
+      {/* ── Main Section: Wooden Puzzle Board (Left) + Pieces Tray (Right) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 my-4 items-center justify-center">
+        {/* LEFT: Wooden Framed Puzzle Canvas (8 cols) */}
+        <div className="lg:col-span-8 flex justify-center">
+          <div className="relative p-3.5 sm:p-4 rounded-3xl bg-gradient-to-br from-[#C49B6A] via-[#9B7043] to-[#6E4822] shadow-[0_12px_30px_rgba(75,45,20,0.30)] border-4 border-[#5E3A1A] max-w-[760px] w-full">
+            {/* Inner frame bevel */}
+            <div className="relative rounded-2xl overflow-hidden shadow-inner border-2 border-[#4A2D14] bg-[#F2E5D5] aspect-[800/540]">
+              <svg
+                viewBox={`0 0 ${BOARD_W} ${BOARD_H}`}
+                className="w-full h-full block"
               >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-                <div className="w-14 h-14 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-lg shadow-purple-500/20 mb-3">
-                  <Upload className="w-6 h-6" />
-                </div>
-                <p className="text-base font-bold text-slate-800">
-                  {selectedFile ? selectedFile.name : 'Click to Upload Your Photo'}
-                </p>
-                <p className="text-xs text-slate-500 mt-1">
-                  Supports JPEG, PNG, or WebP (Family portraits, weddings, vacations)
-                </p>
-                <span className="mt-3 px-3 py-1 rounded-full bg-purple-200/60 text-purple-800 text-xs font-bold flex items-center gap-1">
-                  <Camera className="w-3.5 h-3.5" /> Choose from Device
-                </span>
-              </div>
+                <defs>
+                  {/* ClipPaths for all 12 puzzle pieces */}
+                  {piecePaths.map((d, idx) => (
+                    <clipPath key={`clip_${idx}`} id={`jigsaw_clip_${idx}`}>
+                      <path d={d} />
+                    </clipPath>
+                  ))}
+                </defs>
 
-              {/* Caption Input */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
-                  Photo Memory Caption / Story
-                </label>
-                <input
-                  type="text"
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  placeholder="e.g. You and Priya at Kaziranga, Winter 2018"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm font-medium"
-                />
-              </div>
+                {/* 1. Base cream cutout layer with indented puzzle piece outlines */}
+                {Array.from({ length: TOTAL_PIECES }).map((_, idx) => {
+                  const isPlaced = placedSlots[idx];
+                  const isSlotSelected = selectedPiece === idx;
 
-              {/* Grid Size Selector */}
-              <div>
-                <label className="block text-xs font-bold text-slate-600 uppercase mb-1">
-                  Puzzle Difficulty
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setGridSize(2)}
-                    className={`py-2.5 px-4 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                      gridSize === 2
-                        ? 'bg-purple-600 text-white border-purple-600 shadow-md'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  return (
+                    <g
+                      key={`slot_bg_${idx}`}
+                      onClick={() => handleSlotClick(idx)}
+                      onDragOver={handleDragOver}
+                      onDrop={() => handleDrop(idx)}
+                      className="cursor-pointer"
+                    >
+                      {/* Cream cutout shape for missing slots */}
+                      <path
+                        d={piecePaths[idx]}
+                        fill={isPlaced ? 'none' : isSlotSelected ? '#E2C8AD' : '#F5E8D8'}
+                        stroke="#B89B7D"
+                        strokeWidth="1.5"
+                        strokeDasharray={isPlaced ? 'none' : '3 2'}
+                        className="transition-colors"
+                      />
+                    </g>
+                  );
+                })}
+
+                {/* 2. Placed pieces layer with full photographic fidelity */}
+                {Array.from({ length: TOTAL_PIECES }).map((_, idx) => {
+                  const isPlaced = placedSlots[idx];
+                  if (!isPlaced) return null;
+
+                  return (
+                    <g key={`placed_piece_${idx}`}>
+                      {/* Photo Image clipped to piece jigsaw contour */}
+                      <image
+                        href={photoUrl}
+                        x="0"
+                        y="0"
+                        width={BOARD_W}
+                        height={BOARD_H}
+                        preserveAspectRatio="xMidYMid slice"
+                        clipPath={`url(#jigsaw_clip_${idx})`}
+                      />
+
+                      {/* Subtle piece contour seam line */}
+                      <path
+                        d={piecePaths[idx]}
+                        fill="none"
+                        stroke="rgba(0, 0, 0, 0.22)"
+                        strokeWidth="1.2"
+                      />
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT: Available Jigsaw Puzzle Pieces Tray (4 cols) */}
+        <div className="lg:col-span-4 flex flex-col items-center justify-center">
+          <div className="w-full max-w-[340px] bg-slate-50/70 rounded-3xl p-3 border-2 border-dashed border-[#DFC8B4]/80">
+            <div className="grid grid-cols-2 gap-3 justify-items-center">
+              {trayPieces.map((pieceIdx) => {
+                const r = Math.floor(pieceIdx / COLS);
+                const c = pieceIdx % COLS;
+                const isSelected = selectedPiece === pieceIdx;
+
+                // ViewBox bounds with safety padding for tabs
+                const padding = 55;
+                const minX = c * PIECE_W - padding;
+                const minY = r * PIECE_H - padding;
+                const boxW = PIECE_W + padding * 2;
+                const boxH = PIECE_H + padding * 2;
+
+                return (
+                  <div
+                    key={`tray_piece_${pieceIdx}`}
+                    draggable
+                    onDragStart={() => setDraggedPiece(pieceIdx)}
+                    onClick={() =>
+                      setSelectedPiece(isSelected ? null : pieceIdx)
+                    }
+                    className={`relative w-28 sm:w-32 aspect-[200/180] cursor-grab active:cursor-grabbing transition-all duration-200 transform ${
+                      isSelected
+                        ? 'scale-110 -translate-y-1.5 drop-shadow-[0_12px_18px_rgba(121,77,44,0.45)] ring-4 ring-[#794D2C] rounded-2xl z-20'
+                        : 'hover:scale-105 hover:-translate-y-1 drop-shadow-[0_6px_10px_rgba(75,45,20,0.22)]'
                     }`}
                   >
-                    <span>2 × 2 (4 Pieces)</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20">Gentle</span>
-                  </button>
+                    <svg
+                      viewBox={`${minX} ${minY} ${boxW} ${boxH}`}
+                      className="w-full h-full overflow-visible"
+                    >
+                      <defs>
+                        <clipPath id={`tray_clip_${pieceIdx}`}>
+                          <path d={piecePaths[pieceIdx]} />
+                        </clipPath>
+                      </defs>
 
-                  <button
-                    type="button"
-                    onClick={() => setGridSize(3)}
-                    className={`py-2.5 px-4 rounded-xl border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                      gridSize === 3
-                        ? 'bg-purple-600 text-white border-purple-600 shadow-md'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span>3 × 3 (9 Pieces)</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/20">Standard</span>
-                  </button>
-                </div>
-              </div>
+                      {/* Drop shadow shape behind jigsaw piece */}
+                      <path
+                        d={piecePaths[pieceIdx]}
+                        fill="none"
+                        stroke="rgba(0,0,0,0.15)"
+                        strokeWidth="4"
+                      />
+
+                      {/* Image slice clipped to jigsaw shape */}
+                      <image
+                        href={photoUrl}
+                        x="0"
+                        y="0"
+                        width={BOARD_W}
+                        height={BOARD_H}
+                        preserveAspectRatio="xMidYMid slice"
+                        clipPath={`url(#tray_clip_${pieceIdx})`}
+                      />
+
+                      {/* Crisp Jigsaw Edge border */}
+                      <path
+                        d={piecePaths[pieceIdx]}
+                        fill="none"
+                        stroke="#5A3A1F"
+                        strokeWidth="2.2"
+                      />
+                    </svg>
+
+                    {isSelected && (
+                      <span className="absolute top-1 right-1 bg-[#794D2C] text-white text-[9px] font-black px-1.5 py-0.5 rounded-full shadow">
+                        Selected
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Right: Live Preview */}
-            <div className="flex flex-col items-center">
-              <div className="relative w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-2xl bg-slate-100">
-                <img
-                  src={previewUrl}
-                  alt="Puzzle Target Preview"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 border-2 border-dashed border-white/60 pointer-events-none grid grid-cols-2 grid-rows-2">
-                  <div className="border border-white/40" />
-                  <div className="border border-white/40" />
-                  <div className="border border-white/40" />
-                  <div className="border border-white/40" />
-                </div>
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 text-white text-xs font-semibold">
-                  {caption}
-                </div>
+            {trayPieces.length === 0 && (
+              <div className="py-12 text-center text-[#7D5B48] font-bold text-sm flex flex-col items-center gap-2">
+                <Check className="w-8 h-8 text-emerald-600 stroke-[3]" />
+                <span>All pieces placed on the board!</span>
               </div>
+            )}
+          </div>
+        </div>
+      </div>
 
-              {/* Start Button */}
+      {/* ── Bottom Controls Bar matching reference image ──────────────── */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-2 pb-1 pt-2">
+        {/* Restart Button */}
+        <button
+          onClick={handleRestart}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-[#794D2C] font-black text-sm border-2 border-[#E5D3C2] shadow-sm transition-all active:scale-95 cursor-pointer"
+        >
+          <RotateCcw className="w-4 h-4" />
+          <span>Restart</span>
+        </button>
+
+        {/* Center Pill Badge */}
+        <div className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#F5EBE1] border border-[#E9DACD] text-[#794D2C] font-bold text-xs sm:text-sm shadow-sm">
+          <Heart className="w-4 h-4 text-[#794D2C] fill-[#794D2C]" />
+          <span>{caption}</span>
+        </div>
+
+        {/* Check / Complete Button & Photo Upload */}
+        <div className="flex items-center gap-2">
+          {/* Hidden Photo Upload Trigger */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="p-2.5 rounded-2xl bg-white hover:bg-slate-50 text-[#794D2C] font-bold text-xs border border-[#E5D3C2] shadow-sm transition-all"
+            title="Upload custom family photo"
+          >
+            <Upload className="w-4 h-4" />
+          </button>
+
+          <button
+            onClick={() => {
+              if (trayPieces.length === 0) {
+                playKindHeartedMelody();
+                setIsCompleted(true);
+              } else {
+                setMessage(`Place the remaining ${trayPieces.length} pieces to complete!`);
+                setTimeout(() => setMessage(''), 2500);
+              }
+            }}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-white hover:bg-slate-50 text-[#794D2C] font-black text-sm border-2 border-[#E5D3C2] shadow-sm transition-all active:scale-95 cursor-pointer"
+          >
+            <Check className="w-4 h-4 stroke-[3]" />
+            <span>Check</span>
+          </button>
+        </div>
+      </div>
+
+      {/* ── Warm, Kindhearted Completion Celebration Modal ────────────── */}
+      {isCompleted && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
+          <div className="bg-white p-6 sm:p-8 rounded-3xl max-w-lg w-full text-center space-y-5 border-4 border-[#794D2C] shadow-2xl animate-scaleIn">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-[#794D2C] to-[#A06B43] text-white flex items-center justify-center mx-auto shadow-xl">
+              <Trophy className="w-10 h-10" />
+            </div>
+
+            <div className="space-y-1.5">
+              <span className="px-4 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-black uppercase tracking-wider border border-emerald-200">
+                ✨ Splendid Work!
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-[#442818]">
+                Family Memory Restored!
+              </h3>
+              <p className="text-sm sm:text-base font-semibold text-[#7D5B48] max-w-sm mx-auto">
+                You lovingly and patiently pieced together this cherished family photo in{' '}
+                <span className="font-extrabold text-[#442818] underline">
+                  {formatTime(elapsedSeconds)}
+                </span>
+                !
+              </p>
+            </div>
+
+            <div className="rounded-2xl overflow-hidden border-3 border-[#794D2C] shadow-md aspect-[800/540]">
+              <img
+                src={photoUrl}
+                alt="Completed Family Photo"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-2">
               <button
-                onClick={handleStartPuzzle}
-                disabled={isSlicing}
-                className="mt-6 w-full max-w-[320px] py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-black text-base shadow-xl shadow-purple-500/25 flex items-center justify-center gap-2 transition-all hover:scale-105 disabled:opacity-50"
+                onClick={handleRestart}
+                className="flex-1 py-3 rounded-2xl bg-white hover:bg-slate-50 text-[#794D2C] font-black text-sm border-2 border-[#E5D3C2] shadow-sm active:scale-95 transition-all"
               >
-                {isSlicing ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                    <span>Slicing Photo with Sharp...</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-5 h-5 fill-current" />
-                    <span>Start Puzzle ({gridSize * gridSize} Pieces)</span>
-                  </>
-                )}
+                Play Again
+              </button>
+              <button
+                onClick={onBack}
+                className="flex-1 py-3 rounded-2xl bg-[#794D2C] hover:bg-[#623D21] text-white font-black text-sm shadow-md active:scale-95 transition-all"
+              >
+                Done
               </button>
             </div>
-          </div>
-
-          {/* Preset Cultural Memories Strip */}
-          <div className="pt-6 border-t border-slate-100">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">
-              Or Choose from Cultural Heritage Memories:
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {PRESET_MEMORIES.map((preset) => (
-                <div
-                  key={preset.id}
-                  onClick={() => handleSelectPreset(preset)}
-                  className={`p-2 rounded-xl border cursor-pointer transition-all flex flex-col items-center text-center ${
-                    previewUrl === preset.url
-                      ? 'bg-purple-50 border-purple-500 shadow-sm'
-                      : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  <img
-                    src={preset.url}
-                    alt={preset.title}
-                    className="w-full h-18 object-cover rounded-lg mb-1.5"
-                  />
-                  <p className="text-xs font-bold text-slate-800 line-clamp-1">{preset.title}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODE 2: INTERACTIVE PLAYING SCREEN                                       */}
-      {/* ========================================================================= */}
-      {mode === 'playing' && (
-        <div className="py-6 space-y-6 animate-fadeIn">
-          {/* Progress Strip */}
-          <div className="flex items-center justify-between bg-purple-50 p-3 rounded-2xl border border-purple-100">
-            <div>
-              <p className="text-xs text-purple-700 font-bold uppercase">Placed Pieces</p>
-              <p className="text-lg font-black text-purple-900">
-                {correctCount} <span className="text-xs font-semibold">/ {gridSize * gridSize} Correct</span>
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500 font-medium">Memory</p>
-              <p className="text-xs font-bold text-slate-800 line-clamp-1 max-w-[200px]">{caption}</p>
-            </div>
-          </div>
-
-          {/* Main Gameplay Layout: Left Grid Board, Right Pieces Tray */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-            {/* Target Puzzle Board */}
-            <div className="md:col-span-7 flex flex-col items-center">
-              <div
-                className="relative w-full max-w-[360px] aspect-square rounded-2xl overflow-hidden shadow-2xl border-4 border-slate-800 bg-slate-900 grid gap-1 p-1"
-                style={{
-                  gridTemplateColumns: `repeat(${gridSize}, minmax(0, 1fr))`,
-                  gridTemplateRows: `repeat(${gridSize}, minmax(0, 1fr))`,
-                }}
-              >
-                {/* Background faint guide watermark */}
-                {showHintPeek && (
-                  <img
-                    src={previewUrl}
-                    alt="Guide"
-                    className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
-                  />
-                )}
-
-                {/* Slots */}
-                {Array.from({ length: gridSize }).map((_, row) =>
-                  Array.from({ length: gridSize }).map((_, col) => {
-                    const slotKey = `${row}_${col}`;
-                    const placedPiece = boardSlots[slotKey];
-                    const isSelected = selectedPieceIndex !== null;
-
-                    return (
-                      <div
-                        key={slotKey}
-                        onClick={() => handleSlotClick(row, col)}
-                        className={`relative rounded-lg border-2 transition-all flex items-center justify-center cursor-pointer overflow-hidden ${
-                          placedPiece
-                            ? placedPiece.isCorrect
-                              ? 'border-emerald-500 bg-emerald-950/20'
-                              : 'border-rose-500 bg-rose-950/20'
-                            : isSelected
-                            ? 'border-purple-400 border-dashed hover:bg-purple-500/20 animate-pulse'
-                            : 'border-slate-700/60 border-dashed hover:border-slate-500'
-                        }`}
-                      >
-                        {placedPiece ? (
-                          <div className="relative w-full h-full">
-                            {/* Slice preview simulation or backend image */}
-                            <div
-                              className="w-full h-full bg-cover bg-no-repeat"
-                              style={{
-                                backgroundImage: `url(${previewUrl})`,
-                                backgroundSize: `${gridSize * 100}% ${gridSize * 100}%`,
-                                backgroundPosition: `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`,
-                              }}
-                            />
-                            {placedPiece.isCorrect && (
-                              <div className="absolute top-1 right-1 bg-emerald-500 text-white rounded-full p-0.5 shadow">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                              </div>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="text-xs font-bold text-slate-500">
-                            Slot {row + 1},{col + 1}
-                          </span>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-
-              <p className="text-xs text-slate-500 mt-2 text-center">
-                {selectedPieceIndex !== null
-                  ? '👉 Tap an empty slot on the board to place your piece.'
-                  : '👉 Tap a piece from the tray below to select it.'}
-              </p>
-            </div>
-
-            {/* Unplaced Pieces Tray */}
-            <div className="md:col-span-5 bg-slate-50 rounded-2xl p-4 border border-slate-200">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                  <span>Available Pieces</span>
-                  <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-bold">
-                    {unplacedPieces.length}
-                  </span>
-                </h4>
-              </div>
-
-              {unplacedPieces.length === 0 ? (
-                <div className="py-8 text-center text-slate-400 text-xs font-medium">
-                  All pieces are on the board! Check if they are in the correct slots.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-2.5 max-h-[360px] overflow-y-auto pr-1">
-                  {unplacedPieces.map((piece) => {
-                    const isSelected = selectedPieceIndex === piece.pieceIndex;
-                    const pRow = Math.floor(piece.pieceIndex / gridSize);
-                    const pCol = piece.pieceIndex % gridSize;
-
-                    return (
-                      <div
-                        key={piece.pieceIndex}
-                        onClick={() =>
-                          setSelectedPieceIndex(isSelected ? null : piece.pieceIndex)
-                        }
-                        className={`aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all relative ${
-                          isSelected
-                            ? 'border-purple-600 ring-4 ring-purple-300 scale-105 shadow-lg'
-                            : 'border-slate-300 hover:border-purple-400 hover:scale-102'
-                        }`}
-                      >
-                        <div
-                          className="w-full h-full bg-cover bg-no-repeat"
-                          style={{
-                            backgroundImage: `url(${previewUrl})`,
-                            backgroundSize: `${gridSize * 100}% ${gridSize * 100}%`,
-                            backgroundPosition: `${(pCol / (gridSize - 1)) * 100}% ${(pRow / (gridSize - 1)) * 100}%`,
-                          }}
-                        />
-                        <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-black/60 text-[10px] text-white font-bold">
-                          Piece #{piece.pieceIndex + 1}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ========================================================================= */}
-      {/* MODE 3: COMPLETION CELEBRATION                                           */}
-      {/* ========================================================================= */}
-      {mode === 'completed' && (
-        <div className="py-8 text-center space-y-6 animate-fadeIn">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 animate-bounce">
-            <Trophy className="w-8 h-8" />
-          </div>
-
-          <div>
-            <h3 className="text-3xl font-black text-slate-900">
-              Wonderful Job! Memory Reconstructed!
-            </h3>
-            <p className="text-base text-slate-600 max-w-md mx-auto mt-1">
-              "{caption}"
-            </p>
-          </div>
-
-          <div className="relative w-full max-w-md aspect-square rounded-2xl overflow-hidden border-4 border-emerald-400 shadow-2xl mx-auto">
-            <img src={previewUrl} alt="Reconstructed Photo" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4 text-white font-bold">
-              <span>{caption}</span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-            <button
-              onClick={() => setMode('upload_setup')}
-              className="px-6 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-black text-sm shadow-lg shadow-purple-500/25 flex items-center gap-2 transition-all hover:scale-105"
-            >
-              <Upload className="w-4 h-4" />
-              Upload Another Photo
-            </button>
-            <button
-              onClick={onBack}
-              className="px-6 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-sm transition-all"
-            >
-              Return to Activities
-            </button>
           </div>
         </div>
       )}
