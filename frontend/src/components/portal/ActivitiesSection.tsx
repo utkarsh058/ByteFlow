@@ -19,12 +19,12 @@ export const ActivitiesSection: React.FC<ActivitiesSectionProps> = ({ onStartAct
     },
     {
       id: 'picture_recognition' as ActivityType,
-      name: 'Who Is This?',
+      name: 'Family Face & Relation Recognition',
       category: 'Recognition',
       difficulty: 'Easy',
       duration: '4 min',
-      image: 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&w=600&q=80',
-      description: 'Identify family members and regional cultural moments.',
+      image: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=600&q=80',
+      description: 'Upload family photos, recognize relations, and speak answers in regional languages.',
     },
     {
       id: 'sequence_recall' as ActivityType,
