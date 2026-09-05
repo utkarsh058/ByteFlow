@@ -26,7 +26,7 @@
 // =========================================================================
 // CONFIGURATION (UPDATE THESE FOR YOUR NETWORK SETUP)
 // =========================================================================
-const char* WIFI_SSID     = "realme P3 5G";       // Your 2.4GHz Wi-Fi SSID
+const char* WIFI_SSID     = "Realme P3 5G";       // Your 2.4GHz Wi-Fi SSID
 const char* WIFI_PASSWORD = "1234567890-";   // Your Wi-Fi Password
 const char* SERVER_HOST   = "10.187.123.2";        // Backend Server IP Address (e.g. PC local IP)
 const int   SERVER_PORT   = 5000;                   // Backend Server Port

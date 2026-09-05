@@ -1,17 +1,41 @@
-// Multilingual Translation Resources for SMRITI-SETU
-// Languages: English (en), Hindi (hi), Assamese (as), Bengali (bn)
+// Comprehensive Feature-Grouped Multilingual Translation Dictionaries for SMRITI-SETU
+// Supporting North-East India (NER) Languages & Fallback Chains
 
-export const resources = {
+export const resources: Record<string, { translation: Record<string, any> }> = {
   en: {
     translation: {
       appName: 'SMRITI-SETU',
-      tagline: 'Connecting memories, families and care.',
+      tagline: 'Connecting memories, families, and cognitive care across North-East India.',
+      statePortal: 'NER Multilingual Cognitive Platform',
+      
+      common: {
+        appName: 'SMRITI-SETU',
+        back: 'Back',
+        close: 'Close',
+        save: 'Save',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+        loading: 'Loading...',
+        success: 'Success',
+        error: 'Error',
+        search: 'Search',
+        selectLanguage: 'Select Language',
+        currentLanguage: 'Current Language',
+        elderlyFriendly: 'Elderly Friendly Interface',
+        region: 'North-East India',
+        all: 'All',
+        status: 'Status',
+        online: 'Online',
+        offline: 'Offline',
+      },
+
       roles: {
         patient: 'Patient Experience',
         caregiver: 'Caregiver Portal',
         clinician: 'Clinician Analytics',
         facility_admin: 'Facility Administrator',
       },
+
       accessibility: {
         elderlyMode: 'Elderly Mode',
         elderlyModeActive: 'Elderly Mode Active',
@@ -19,7 +43,12 @@ export const resources = {
         highContrast: 'High Contrast',
         reducedMotion: 'Reduced Motion',
         speakPage: 'Listen to Page',
+        fontSize: 'Text Size',
+        normal: 'Normal',
+        large: 'Large',
+        extraLarge: 'Extra Large',
       },
+
       navigation: {
         home: 'Home',
         memories: 'Memory Garden',
@@ -30,18 +59,23 @@ export const resources = {
         facility: 'Facility Overview',
         modulesHub: '11 Full-Stack Modules',
       },
-      patientHome: {
+
+      dashboard: {
         greetingMorning: 'Good Morning',
         greetingAfternoon: 'Good Afternoon',
         greetingEvening: 'Good Evening',
-        feelingQuestion: 'How are you feeling today?',
-        todayActivities: "Today's Activities",
-        upcomingReminder: 'Upcoming Reminder',
+        feelingQuestion: 'How are you feeling today, Ranjit ji?',
+        todayActivities: "Today's Cognitive Activities",
+        upcomingReminder: 'Upcoming Daily Reminder',
         startActivity: 'Start Activity',
         listenPrompt: 'Click any card to hear instructions',
+        dailyProgress: 'Daily Progress',
+        completedToday: 'Activities Completed Today',
       },
-      activities: {
+
+      games: {
         title: 'Cognitive Activities',
+        subtitle: 'Brain exercises tailored for cognitive wellness and memory orientation.',
         difficulty: 'Difficulty',
         easy: 'Easy',
         medium: 'Medium',
@@ -53,13 +87,48 @@ export const resources = {
         responseTime: 'Avg Response Time',
         attempts: 'Total Attempts',
         playAgain: 'Play Again',
-        backToDashboard: 'Back to Today\'s Schedule',
-        memoryMatch: 'Memory Match',
-        sequenceRecall: 'Sequence Recall',
-        pictureRecognition: 'Picture Recognition',
-        familiarSound: 'Familiar Sound',
-        routineRecall: 'Daily Routine Recall',
+        backToDashboard: "Back to Today's Schedule",
+        
+        pictureRecognition: {
+          title: 'Picture Recognition',
+          subtitle: 'Identify familiar regional photos and cultural landmarks.',
+          instructions: 'Look at the photo prompt carefully and choose the correct matching answer.',
+        },
+        familiarSound: {
+          title: 'Familiar Sound',
+          subtitle: 'Listen to regional acoustic sounds and identify the atmosphere.',
+          instructions: 'Click the sound button to listen, then select the matching description.',
+          listenBtn: 'Listen to Regional Sound',
+        },
+        sequenceRecall: {
+          title: 'Sequence Recall',
+          subtitle: 'Watch the pattern lights and repeat the color sequence.',
+          instructions: 'Pay attention as pattern lights up, then tap pads in exact order.',
+          startBtn: 'Start Color Pattern',
+          watching: 'Watching Sequence Pattern...',
+        },
+        routineRecall: {
+          title: 'Daily Routine Recall',
+          subtitle: 'Organize your morning routine steps in chronological order.',
+          instructions: 'Select morning steps in natural order from 1 to 4.',
+          selectedOrder: 'Selected Step Order:',
+          emptyPrompt: 'Click steps below to order them...',
+        },
+        memoryMatch: {
+          title: 'Memory Match',
+          subtitle: 'Flip and match pairs of familiar regional tiles.',
+          instructions: 'Tap cards to flip them over and find matching cultural icons.',
+          matched: 'Pairs Matched',
+          moves: 'Total Moves',
+        },
+        photoPuzzle: {
+          title: 'Photo Puzzle',
+          subtitle: 'Assemble regional tea garden & monument image tiles.',
+          instructions: 'Drag or click image pieces into their correct grid positions.',
+          solved: 'Puzzle Assembled!',
+        },
       },
+
       memoryGarden: {
         title: 'Memory Garden',
         subtitle: 'Personalized family memories and chronological timeline',
@@ -82,6 +151,7 @@ export const resources = {
         location: 'Location',
         listenStory: 'Listen to Memory',
       },
+
       reminders: {
         title: 'Daily Reminders',
         medicine: 'Medicine',
@@ -95,6 +165,39 @@ export const resources = {
         markComplete: 'Mark Done',
         noReminders: 'No upcoming reminders.',
       },
+
+      caregiver: {
+        title: 'Caregiver Portal',
+        subtitle: 'Real-time patient monitoring and engagement logs.',
+        recentActivities: 'Recent Activity History',
+        cognitiveScore: 'Cognitive Score',
+        adherence: 'Medication Adherence',
+        alerts: 'Active Care Alerts',
+        noAlerts: 'All parameters normal.',
+      },
+
+      patient: {
+        profile: 'Patient Profile',
+        name: 'Ranjit Borthakur',
+        age: '74',
+        location: 'Guwahati, Assam',
+        primaryLanguage: 'Assamese',
+        emergencyContact: 'Emergency Contact',
+      },
+
+      reports: {
+        title: 'Clinical Analytics',
+        subtitle: 'Patient cognitive activity history and engagement trends',
+        patientList: 'Patients List',
+        selectPatient: 'Select Patient',
+        performanceTrend: 'Performance Trend over Time',
+        aiObservationTitle: 'AI-assisted observation',
+        aiDisclaimer: 'AI-assisted observation — not a medical diagnosis.',
+        needsReview: 'Needs Review',
+        stableEngagement: 'Stable Engagement',
+        regionalHierarchy: 'Regional Node Filter',
+      },
+
       hardware: {
         title: 'Hardware Device Center',
         subtitle: 'ESP32 Gateway Telemetry & Physical Interaction Log',
@@ -110,35 +213,49 @@ export const resources = {
         buzzerState: 'Buzzer Audio Alert',
         triggerButton: 'Simulate Physical Button Press',
       },
-      clinician: {
-        title: 'Clinician Analytics',
-        subtitle: 'Patient cognitive activity history and engagement trends',
-        patientList: 'Patients List',
-        selectPatient: 'Select Patient',
-        performanceTrend: 'Performance Trend over Time',
-        aiObservationTitle: 'AI-assisted observation',
-        aiDisclaimer: 'AI-assisted observation — not a medical diagnosis.',
-        needsReview: 'Needs Review',
-        stableEngagement: 'Stable Engagement',
-        regionalHierarchy: 'Regional Node Filter',
-      },
+
       sync: {
         offline: 'Offline — Your changes will sync when the connection is restored.',
         syncing: 'Syncing pending records...',
         synced: 'Synced with regional server',
-      }
-    }
+      },
+    },
   },
+
   hi: {
     translation: {
       appName: 'स्मृति-सेतु',
-      tagline: 'यादों, परिवारों और देखभाल को जोड़ना।',
+      tagline: 'उत्तर-पूर्व भारत में यादों, परिवारों और मानसिक देखभाल को जोड़ना।',
+      statePortal: 'उत्तर-पूर्व बहुभाषी संज्ञानात्मक मंच',
+
+      common: {
+        appName: 'स्मृति-सेतु',
+        back: 'पीछे जाएँ',
+        close: 'बंद करें',
+        save: 'सहेजें',
+        cancel: 'रद्द करें',
+        confirm: 'पुष्टि करें',
+        loading: 'लोड हो रहा है...',
+        success: 'सफलता',
+        error: 'त्रुटि',
+        search: 'खोजें',
+        selectLanguage: 'भाषा चुनें',
+        currentLanguage: 'वर्तमान भाषा',
+        elderlyFriendly: 'बुजुर्ग अनुकूल इंटरफेस',
+        region: 'उत्तर-पूर्व भारत',
+        all: 'सभी',
+        status: 'स्थिति',
+        online: 'ऑनलाइन',
+        offline: 'ऑफ़लाइन',
+      },
+
       roles: {
         patient: 'मरीज़ अनुभव',
         caregiver: 'देखभालकर्ता पोर्टल',
         clinician: 'चिकित्सक विश्लेषण',
         facility_admin: 'सुविधा प्रशासक',
       },
+
       accessibility: {
         elderlyMode: 'बुजुर्ग मोड',
         elderlyModeActive: 'बुजुर्ग मोड सक्रिय',
@@ -146,7 +263,12 @@ export const resources = {
         highContrast: 'उच्च कंट्रास्ट',
         reducedMotion: 'कम हलचल',
         speakPage: 'पेज सुनें',
+        fontSize: 'अक्षर आकार',
+        normal: 'सामान्य',
+        large: 'बड़ा',
+        extraLarge: 'अति बड़ा',
       },
+
       navigation: {
         home: 'मुख्य पृष्ठ',
         memories: 'स्मृति उद्यान',
@@ -157,18 +279,23 @@ export const resources = {
         facility: 'सुविधा अवलोकन',
         modulesHub: '11 संपूर्ण मॉड्यूल',
       },
-      patientHome: {
+
+      dashboard: {
         greetingMorning: 'सुप्रभात',
         greetingAfternoon: 'नमस्कार',
         greetingEvening: 'शुभ संध्या',
-        feelingQuestion: 'आज आप कैसा महसूस कर रहे हैं?',
-        todayActivities: 'आज की गतिविधियाँ',
-        upcomingReminder: 'आगामी स्मरण',
+        feelingQuestion: 'आज आप कैसा महसूस कर रहे हैं, रंजीत जी?',
+        todayActivities: 'आज की मानसिक गतिविधियाँ',
+        upcomingReminder: 'आगामी दैनिक स्मरण',
         startActivity: 'गतिविधि शुरू करें',
         listenPrompt: 'निर्देश सुनने के लिए किसी भी कार्ड पर क्लिक करें',
+        dailyProgress: 'दैनिक प्रगति',
+        completedToday: 'आज पूर्ण की गई गतिविधियाँ',
       },
-      activities: {
+
+      games: {
         title: 'मानसिक गतिविधियाँ',
+        subtitle: 'मानसिक स्वास्थ्य और स्मृति सुदृढ़ीकरण के लिए विशेष अभ्यास।',
         difficulty: 'कठिनाई',
         easy: 'सरल',
         medium: 'मध्यम',
@@ -181,15 +308,50 @@ export const resources = {
         attempts: 'कुल प्रयास',
         playAgain: 'पुनः खेलें',
         backToDashboard: 'आज के कार्यक्रम पर लौटें',
-        memoryMatch: 'स्मृति मिलान',
-        sequenceRecall: 'अनुक्रम स्मरण',
-        pictureRecognition: 'चित्र पहचान',
-        familiarSound: 'परिचित ध्वनि',
-        routineRecall: 'दैनिक दिनचर्या स्मरण',
+
+        pictureRecognition: {
+          title: 'चित्र पहचान',
+          subtitle: 'परिचित क्षेत्रीय चित्रों और सांस्कृतिक स्थलों को पहचानें।',
+          instructions: 'चित्र को ध्यान से देखें और सही उत्तर चुनें।',
+        },
+        familiarSound: {
+          title: 'परिचित ध्वनि',
+          subtitle: 'क्षेत्रीय शांत ध्वनियों को सुनें और माहौल पहचानें।',
+          instructions: 'ध्वनि सुनने के लिए बटन दबाएँ, फिर सही विकल्प चुनें।',
+          listenBtn: 'क्षेत्रीय ध्वनि सुनें',
+        },
+        sequenceRecall: {
+          title: 'अनुक्रम स्मरण',
+          subtitle: 'रंग पैटर्न देखें और सही क्रम दोहराएँ।',
+          instructions: 'पैटर्न को ध्यान से देखें और उसी क्रम में बटन दबाएँ।',
+          startBtn: 'रंग पैटर्न शुरू करें',
+          watching: 'पैटर्न देखा जा रहा है...',
+        },
+        routineRecall: {
+          title: 'दैनिक दिनचर्या स्मरण',
+          subtitle: 'अपनी सुबह की दिनचर्या को सही क्रम में व्यवस्थित करें।',
+          instructions: 'सुबह के चरणों को 1 से 4 के प्राकृतिक क्रम में चुनें।',
+          selectedOrder: 'चुना गया क्रम:',
+          emptyPrompt: 'चरणों को क्रमबद्ध करने के लिए नीचे क्लिक करें...',
+        },
+        memoryMatch: {
+          title: 'स्मृति मिलान',
+          subtitle: 'परिचित कार्डों को पलटें और जोड़ियाँ मिलाएँ।',
+          instructions: 'कार्डों को पलटकर एक जैसे सांस्कृतिक चित्र खोजें।',
+          matched: 'मिलाए गए जोड़े',
+          moves: 'कुल चालें',
+        },
+        photoPuzzle: {
+          title: 'चित्र पहेली',
+          subtitle: 'चाय बागान और स्मारकों की पहेली जोड़ें।',
+          instructions: 'चित्र के टुकड़ों को सही स्थान पर रखें।',
+          solved: 'पहेली पूर्ण हुई!',
+        },
       },
+
       memoryGarden: {
         title: 'स्मृति उद्यान',
-        subtitle: 'व्यक्तिगत पारिवारिक यादें और कालानुक्रमिक समयरेखा',
+        subtitle: 'व्यक्तिगत पारिवारिक यादें और समयरेखा',
         addMemory: 'नई याद जोड़ें',
         timeline: 'यादों की समयरेखा',
         categories: {
@@ -209,6 +371,7 @@ export const resources = {
         location: 'स्थान',
         listenStory: 'कहानी सुनें',
       },
+
       reminders: {
         title: 'दैनिक स्मरण',
         medicine: 'दवा',
@@ -222,6 +385,39 @@ export const resources = {
         markComplete: 'पूर्ण चिह्नित करें',
         noReminders: 'कोई आगामी स्मरण नहीं है।',
       },
+
+      caregiver: {
+        title: 'देखभालकर्ता पोर्टल',
+        subtitle: 'वास्तविक समय मरीज़ निगरानी और लॉग।',
+        recentActivities: 'हाल का गतिविधि इतिहास',
+        cognitiveScore: 'मानसिक अंक',
+        adherence: 'दवा पालन',
+        alerts: 'सक्रिय चेतावनी',
+        noAlerts: 'सभी मापदंड सामान्य हैं।',
+      },
+
+      patient: {
+        profile: 'मरीज़ प्रोफ़ाइल',
+        name: 'रंजीत बोरठाकुर',
+        age: '74',
+        location: 'गुवाहाटी, असम',
+        primaryLanguage: 'असमिया',
+        emergencyContact: 'आपातकालीन संपर्क',
+      },
+
+      reports: {
+        title: 'चिकित्सक विश्लेषण',
+        subtitle: 'मरीज़ की मानसिक गतिविधि का इतिहास और रुझान',
+        patientList: 'मरीज़ों की सूची',
+        selectPatient: 'मरीज़ चुनें',
+        performanceTrend: 'समय के साथ प्रदर्शन रुझान',
+        aiObservationTitle: 'एआई-सहायता प्राप्त अवलोकन',
+        aiDisclaimer: 'एआई-सहायता प्राप्त अवलोकन — यह कोई चिकित्सीय निदान नहीं है।',
+        needsReview: 'समीक्षा आवश्यक है',
+        stableEngagement: 'स्थिर भागीदारी',
+        regionalHierarchy: 'क्षेत्रीय पदानुक्रम फ़िल्टर',
+      },
+
       hardware: {
         title: 'हार्डवेयर डिवाइस केंद्र',
         subtitle: 'ESP32 गेटवे स्थिति और भौतिक बटन लॉग',
@@ -237,35 +433,49 @@ export const resources = {
         buzzerState: 'बज़र ध्वनि चेतावनी',
         triggerButton: 'भौतिक बटन दबाने का अनुकरण करें',
       },
-      clinician: {
-        title: 'चिकित्सक विश्लेषण',
-        subtitle: 'मरीज़ की गतिविधि का इतिहास और रुझान',
-        patientList: 'मरीज़ों की सूची',
-        selectPatient: 'मरीज़ चुनें',
-        performanceTrend: 'समय के साथ प्रदर्शन रुझान',
-        aiObservationTitle: 'एआई-सहायता प्राप्त अवलोकन',
-        aiDisclaimer: 'एआई-सहायता प्राप्त अवलोकन — यह कोई चिकित्सीय निदान नहीं है।',
-        needsReview: 'समीक्षा आवश्यक है',
-        stableEngagement: 'स्थिर भागीदारी',
-        regionalHierarchy: 'क्षेत्रीय पदानुक्रम फ़िल्टर',
-      },
+
       sync: {
         offline: 'ऑफ़लाइन — कनेक्शन बहाल होने पर आपके बदलाव सिंक हो जाएंगे।',
         syncing: 'सिंक हो रहा है...',
         synced: 'क्षेत्रीय सर्वर से सिंक हुआ',
-      }
-    }
+      },
+    },
   },
+
   as: {
     translation: {
       appName: 'স্মৃতি-সেতু',
-      tagline: 'স্মৃতি, পৰিয়াল আৰু সেৱাক সংযোগ কৰি।',
+      tagline: 'উত্তৰ-পূব ভাৰতত স্মৃতি, পৰিয়াল আৰু মানসিক সেৱাক সংযোগ কৰি।',
+      statePortal: 'উত্তৰ-পূব বহুভাষিক মানসিক প্লেটফৰ্ম',
+
+      common: {
+        appName: 'স্মৃতি-সেতু',
+        back: 'উভতি যাওক',
+        close: 'বন্ধ কৰক',
+        save: 'সংৰক্ষণ কৰক',
+        cancel: 'বাতিল কৰক',
+        confirm: 'নিশ্চিত কৰক',
+        loading: 'ল’ড হৈ আছে...',
+        success: 'সফল',
+        error: 'ত্ৰুটি',
+        search: 'সন্ধান কৰক',
+        selectLanguage: 'ভাষা বাছক',
+        currentLanguage: 'বৰ্তমান ভাষা',
+        elderlyFriendly: 'জ্যেষ্ঠ নাগৰিক সুচল ব্যৱস্থা',
+        region: 'উত্তৰ-পূব ভাৰত',
+        all: 'সকলো',
+        status: 'স্থিতি',
+        online: 'অনলাইন',
+        offline: 'অফলাইন',
+      },
+
       roles: {
         patient: 'ৰোগীৰ অভিজ্ঞতা',
         caregiver: 'যত্নলোৱা ব্যক্তিৰ প’ৰ্টেল',
         clinician: 'চিকিৎসকৰ বিশ্লেষণ',
         facility_admin: 'স্বাস্থ্য কেন্দ্ৰ প্ৰশাসক',
       },
+
       accessibility: {
         elderlyMode: 'জ্যেষ্ঠ নাগৰিক ম’ড',
         elderlyModeActive: 'জ্যেষ্ঠ ম’ড সক্ৰিয়',
@@ -273,29 +483,39 @@ export const resources = {
         highContrast: 'উচ্চ কণ্ট্ৰাষ্ট',
         reducedMotion: 'হ্ৰাস কৰা গতি',
         speakPage: 'পৃষ্ঠা শুনক',
+        fontSize: 'আখৰৰ আকাৰ',
+        normal: 'সাধাৰণ',
+        large: 'ডাঙৰ',
+        extraLarge: 'অতি ডাঙৰ',
       },
+
       navigation: {
         home: 'মূল পৃষ্ঠা',
         memories: 'স্মৃতি উদ্যান',
         activities: 'মানসিক কাৰ্যসূচী',
         reminders: 'দৈনন্দিন সোঁৱৰণি',
-        deviceCenter: 'যন্ত্রৰ স্থিতি',
+        deviceCenter: 'যন্ত্ৰৰ স্থিতি',
         analytics: 'চিকিৎসা বিশ্লেষণ',
         facility: 'স্বাস্থ্যকেন্দ্ৰৰ পৰিচয়',
         modulesHub: '১১টা সম্পূৰ্ণ মডিউল',
       },
-      patientHome: {
+
+      dashboard: {
         greetingMorning: 'সুপ্রভাত',
         greetingAfternoon: 'নমস্কাৰ',
         greetingEvening: 'শুভ গধূলি',
-        feelingQuestion: 'আজি আপোনাৰ অনুভৱ কেনেকুৱা?',
-        todayActivities: 'আজিৰ কাৰ্যসূচী',
-        upcomingReminder: 'অহা সোঁৱৰণি',
-        startActivity: 'আৰম্ভ কৰক',
+        feelingQuestion: 'আজি আপোনাৰ অনুভৱ কেনেকুৱা, ৰণজিত ডাঙৰীয়া?',
+        todayActivities: 'আজিৰ মানসিক কাৰ্যসূচী',
+        upcomingReminder: 'অহা দৈনন্দিন সোঁৱৰণি',
+        startActivity: 'কাৰ্যসূচী আৰম্ভ কৰক',
         listenPrompt: 'নিৰ্দেশনা শুনিবলৈ কাৰ্ডত ক্লিক কৰক',
+        dailyProgress: 'দৈনন্দিন অগ্ৰগতি',
+        completedToday: 'আজি সম্পূৰ্ণ কৰা কাৰ্যসূচী',
       },
-      activities: {
+
+      games: {
         title: 'মানসিক কাৰ্যসূচী',
+        subtitle: 'মানসিক সুস্বাস্থ্য আৰু স্মৃতি শক্তি বৃদ্ধিৰ বিশেষ অভ্যাস।',
         difficulty: 'কাঠিন্য',
         easy: 'সহজ',
         medium: 'মধ্যম',
@@ -308,23 +528,58 @@ export const resources = {
         attempts: 'মোট চেষ্টা',
         playAgain: 'পুনৰ খেলক',
         backToDashboard: 'আজিৰ সূচীলৈ ঘূৰি যাওক',
-        memoryMatch: 'স্মৃতি মেচিং',
-        sequenceRecall: 'ক্ৰম মনত পেলোৱা',
-        pictureRecognition: 'ছবি চিনাক্তকৰণ',
-        familiarSound: 'পৰিচিত শব্দ',
-        routineRecall: 'দৈনন্দিন ক্ৰম',
+
+        pictureRecognition: {
+          title: 'ছবি চিনাক্তকৰণ',
+          subtitle: 'পৰিচিত আঞ্চলিক ছবি আৰু সাংস্কৃতিক স্থান চিনাক্ত কৰক।',
+          instructions: 'ছবিলৈ মনোযোগেৰে চাওক আৰু শুদ্ধ উত্তৰ বাছক।',
+        },
+        familiarSound: {
+          title: 'পৰিচিত শব্দ',
+          subtitle: 'আঞ্চলিক শব্দ শুনি পৰিবেশ চিনি পাওক।',
+          instructions: 'শব্দ শুনিবলৈ বুটামত টিপক, তাৰ পিছত শুদ্ধ বর্ণনা বাছক।',
+          listenBtn: 'আঞ্চলিক শব্দ শুনক',
+        },
+        sequenceRecall: {
+          title: 'ক্ৰম মনত পেলোৱা',
+          subtitle: 'ৰং প্ৰকাশ পোৱা ক্ৰম চাওক আৰু একেদৰে ধৰি ৰাখক।',
+          instructions: 'ৰঙৰ ক্ৰম মন কৰক আৰু একে ক্ৰমত বুটাম টিপক।',
+          startBtn: 'ৰঙৰ ক্ৰম আৰম্ভ কৰক',
+          watching: 'ক্ৰম মন কৰা হৈছে...',
+        },
+        routineRecall: {
+          title: 'দৈনন্দিন ক্ৰম',
+          subtitle: 'ৰাতিপুৱাৰ সময়সূচী ১ৰ পৰা ৪লৈ শুদ্ধভাৱে সাজক।',
+          instructions: 'ৰাতিপুৱাৰ খোজসমূহ প্ৰাকৃতিক ক্ৰমত বাছক।',
+          selectedOrder: 'বাছনি কৰা ক্ৰম:',
+          emptyPrompt: 'তলৰ খোজসমূহত টিপি ক্ৰম মিলাওক...',
+        },
+        memoryMatch: {
+          title: 'স্মৃতি মেচিং',
+          subtitle: 'কাৰ্ড ওলোটাই মিল থকা যোৰা বিচাৰি উলিয়াওক।',
+          instructions: 'কাৰ্ড ওলোটাই সাংস্কৃতিক ছবিৰ যোৰা মিলোৱাক।',
+          matched: 'মিলা যোৰা',
+          moves: 'মোট চাল',
+        },
+        photoPuzzle: {
+          title: 'ছবি সাঁথৰ',
+          subtitle: 'চা বাগান আৰু মঠ-মন্দিৰৰ ছবি টুকুৰা মিলাওক।',
+          instructions: 'ছবিৰ টুকুৰাবোৰ শুদ্ধ স্থানত সজাওক।',
+          solved: 'সাঁথৰ সম্পূৰ্ণ হ’ল!',
+        },
       },
+
       memoryGarden: {
         title: 'স্মৃতি উদ্যান',
-        subtitle: 'ব্যক্তিগত পাৰিবাৰিক স্মৃতি আৰু সময়ৰেখা',
+        subtitle: 'ব্যক্তিগত পাৰিবাৰিক স্মৃতি আৰু সময়ৰেখা',
         addMemory: 'নতুন স্মৃতি যোগ কৰক',
-        timeline: 'স্মৃতিৰ সময়ৰেখা',
+        timeline: 'স্মৃতিৰ সময়ৰেখা',
         categories: {
           Childhood: 'শৈশৱ',
-          School: 'বিদ্যালয়',
+          School: 'বিদ্যালয়',
           Career: 'কৰ্মজীৱন',
           Marriage: 'বিবাহ',
-          Family: 'পৰিয়াল',
+          Family: 'পৰিয়াল',
           Grandchildren: 'নাতি-নাতিনী',
           ImportantEvents: 'গুৰুত্বপূৰ্ণ ঘটনা',
         },
@@ -336,6 +591,7 @@ export const resources = {
         location: 'স্থান',
         listenStory: 'স্মৃতি শুনক',
       },
+
       reminders: {
         title: 'দৈনন্দিন সোঁৱৰণি',
         medicine: 'দৰব',
@@ -349,6 +605,39 @@ export const resources = {
         markComplete: 'সম্পূৰ্ণ চিহ্নিত কৰক',
         noReminders: 'কোনো সোঁৱৰণি নাই।',
       },
+
+      caregiver: {
+        title: 'যত্নলোৱা ব্যক্তিৰ প’ৰ্টেল',
+        subtitle: 'ৰোগীৰ কাৰ্যসূচী আৰু অগ্ৰগতিৰ প্ৰত্যক্ষ তথ্য।',
+        recentActivities: 'শেহতীয়া কাৰ্যসূচী ইতিহাস',
+        cognitiveScore: 'মানসিক নম্বৰ',
+        adherence: 'দৰব খোৱা স্থিতি',
+        alerts: 'সক্ৰিয় সতৰ্কতা',
+        noAlerts: 'সকলো সূচক স্বাভাৱিক।',
+      },
+
+      patient: {
+        profile: 'ৰোগীৰ পৰিচয়',
+        name: 'ৰণজিত বৰঠাকুৰ',
+        age: '৭৪',
+        location: 'গুৱাহাটী, অসম',
+        primaryLanguage: 'অসমীয়া',
+        emergencyContact: 'জৰুৰীকালীন যোগাযোগ',
+      },
+
+      reports: {
+        title: 'চিকিৎসকৰ বিশ্লেষণ',
+        subtitle: 'ৰোগীৰ মানসিক কাৰ্যসূচীৰ তথ্য আৰু অগ্ৰগতি',
+        patientList: 'ৰোগীৰ তালিকা',
+        selectPatient: 'ৰোগী বাছক',
+        performanceTrend: 'অগ্ৰগতিৰ ৰেখাচিত্ৰ',
+        aiObservationTitle: 'AI-সহায়ক পৰ্যবেক্ষণ',
+        aiDisclaimer: 'AI-সহায়ক পৰ্যবেক্ষণ — ই কোনো চিকিৎসা পৰীক্ষাৰ চূড়ান্ত সিদ্ধান্ত নহয়।',
+        needsReview: 'পুনৰীক্ষণৰ প্ৰয়োজন',
+        stableEngagement: 'স্থিৰ অংশগ্ৰহণ',
+        regionalHierarchy: 'আঞ্চলীক স্থান ফ্ৰেমৱৰ্ক',
+      },
+
       hardware: {
         title: 'হাৰ্ডৱেৰ যন্ত্ৰ কেন্দ্ৰ',
         subtitle: 'ESP32 গেটৱে স্থিতি আৰু বুটাম তথ্য',
@@ -364,35 +653,49 @@ export const resources = {
         buzzerState: 'শব্দ সংকেত',
         triggerButton: 'বুটাম টিপা পৰীক্ষা কৰক',
       },
-      clinician: {
-        title: 'চিকিৎসকৰ বিশ্লেষণ',
-        subtitle: 'ৰোগীৰ মানসিক কাৰ্যসূচীৰ তথ্য আৰু অগ্ৰগতি',
-        patientList: 'ৰোগীৰ তালিকা',
-        selectPatient: 'ৰোগী বাছক',
-        performanceTrend: 'অগ্ৰগতিৰ ৰেখাচিত্ৰ',
-        aiObservationTitle: 'AI-সহায়ক পৰ্যবেক্ষণ',
-        aiDisclaimer: 'AI-সহায়ক পৰ্যবেক্ষণ — ই কোনো চিকিৎসা পৰীক্ষাৰ চূড়ান্ত সিদ্ধান্ত নহয়।',
-        needsReview: 'পুনৰীক্ষণৰ প্ৰয়োজন',
-        stableEngagement: 'স্থিৰ অংশগ্ৰহণ',
-        regionalHierarchy: 'আঞ্চলিক স্থান ফ্ৰেমৱৰ্ক',
-      },
+
       sync: {
         offline: 'অফলাইন — ইন্টাৰনেট সংযোগ হ’লে ফাইল সংৰক্ষিত হ’ব।',
         syncing: 'সংৰক্ষণ কৰা হৈছে...',
         synced: 'আঞ্চলিক চাৰ্ভাৰৰ সৈতে সংৰক্ষিত',
-      }
-    }
+      },
+    },
   },
+
   bn: {
     translation: {
       appName: 'স্মৃতি-সেতু',
-      tagline: 'স্মৃতি, পরিবার এবং সেবাকে যুক্ত করছে।',
+      tagline: 'উত্তর-পূর্ব ভারতে স্মৃতি, পরিবার এবং সেবাকে যুক্ত করছে।',
+      statePortal: 'উত্তর-পূর্ব বহুভাষিক জ্ঞানীয় প্ল্যাটফর্ম',
+
+      common: {
+        appName: 'স্মৃতি-সেতু',
+        back: 'ফিরে যান',
+        close: 'বন্ধ করুন',
+        save: 'সংরক্ষণ করুন',
+        cancel: 'বাতিল করুন',
+        confirm: 'নিশ্চিত করুন',
+        loading: 'লোড হচ্ছে...',
+        success: 'সফল',
+        error: 'ত্রুটি',
+        search: 'অনুসন্ধান করুন',
+        selectLanguage: 'ভাষা নির্বাচন করুন',
+        currentLanguage: 'বর্তমান ভাষা',
+        elderlyFriendly: 'বয়স্কদের জন্য সহজ ইন্টারফেস',
+        region: 'উত্তর-পূর্ব ভারত',
+        all: 'সব',
+        status: 'অবস্থা',
+        online: 'অনলাইন',
+        offline: 'অফলাইন',
+      },
+
       roles: {
         patient: 'রোগীর অভিজ্ঞতা',
         caregiver: 'কেয়ারগিভার পোর্টাল',
         clinician: 'চিকিৎসকের বিশ্লেষণ',
         facility_admin: 'স্বাস্থ্য কেন্দ্র প্রশাসক',
       },
+
       accessibility: {
         elderlyMode: 'বয়স্ক মোড',
         elderlyModeActive: 'বয়স্ক মোড সক্রিয়',
@@ -400,7 +703,12 @@ export const resources = {
         highContrast: 'উচ্চ কনট্রাস্ট',
         reducedMotion: 'হ্রাসকৃত মোশন',
         speakPage: 'পৃষ্ঠা শুনুন',
+        fontSize: 'অক্ষরের আকার',
+        normal: 'সাধারণ',
+        large: 'বড়',
+        extraLarge: 'অত্যন্ত বড়',
       },
+
       navigation: {
         home: 'হোম',
         memories: 'স্মৃতি উদ্যান',
@@ -411,18 +719,23 @@ export const resources = {
         facility: 'স্বাস্থ্যকেন্দ্র পরিচিতি',
         modulesHub: '১১টি সম্পূর্ণ মডিউল',
       },
-      patientHome: {
+
+      dashboard: {
         greetingMorning: 'সুপ্রভাত',
         greetingAfternoon: 'নমস্কার',
         greetingEvening: 'শুভ সন্ধ্যা',
-        feelingQuestion: 'আজ আপনি কেমন বোধ করছেন?',
-        todayActivities: 'আজকের কার্যকলাপ',
-        upcomingReminder: 'আগামী রিমাইন্ডার',
+        feelingQuestion: 'আজ আপনি কেমন বোধ করছেন, রঞ্জিত বাবু?',
+        todayActivities: 'আজকের মানসিক কার্যকলাপ',
+        upcomingReminder: 'আসন্ন দৈনন্দিন রিমাইন্ডার',
         startActivity: 'শুরু করুন',
         listenPrompt: 'নির্দেশ শুনতে যেকোনো কার্ডে ক্লিক করুন',
+        dailyProgress: 'দৈনন্দিন অগ্রগতি',
+        completedToday: 'আজ সম্পন্ন কার্যকলাপ',
       },
-      activities: {
+
+      games: {
         title: 'মানসিক কার্যকলাপ',
+        subtitle: 'মানসিক স্বাস্থ্য ও স্মৃতির উন্নতির জন্য ব্যায়াম।',
         difficulty: 'কঠিনতা',
         easy: 'সহজ',
         medium: 'মাঝারি',
@@ -435,12 +748,47 @@ export const resources = {
         attempts: 'মোট চেষ্টা',
         playAgain: 'আবার খেলুন',
         backToDashboard: 'আজকের তালিকায় ফিরুন',
-        memoryMatch: 'স্মৃতি মেলানো',
-        sequenceRecall: 'ক্রম মনে রাখা',
-        pictureRecognition: 'ছবি শনাক্তকরণ',
-        familiarSound: 'পরিচিত শব্দ',
-        routineRecall: 'দৈনন্দিন রুটিন স্মরণ',
+
+        pictureRecognition: {
+          title: 'ছবি শনাক্তকরণ',
+          subtitle: 'পরিচিত আঞ্চলিক ছবি ও সাংস্কৃতিক স্থান চিনুন।',
+          instructions: 'ছবিটি ভালোভাবে দেখুন এবং সঠিক উত্তর বাছুন।',
+        },
+        familiarSound: {
+          title: 'পরিচিত শব্দ',
+          subtitle: 'আঞ্চলিক শব্দ শুনে পরিবেশ শনাক্ত করুন।',
+          instructions: 'শব্দ শুনতে বোতাম চাপুন, তারপর সঠিক বিবরণ নির্বাচন করুন।',
+          listenBtn: 'আঞ্চলিক শব্দ শুনুন',
+        },
+        sequenceRecall: {
+          title: 'ক্রম মনে রাখা',
+          subtitle: 'রঙের ক্রম দেখুন এবং অনুকরণ করুন।',
+          instructions: 'রঙের ক্রম পর্যবেক্ষণ করুন এবং বোতামগুলো একই ক্রমে চাপুন।',
+          startBtn: 'রঙের ক্রম শুরু করুন',
+          watching: 'ক্রম দেখা হচ্ছে...',
+        },
+        routineRecall: {
+          title: 'দৈনন্দিন রুটিন স্মরণ',
+          subtitle: 'সকালের রুটিন ১ থেকে ৪ ক্রমে সাজান।',
+          instructions: 'সকালের ধাপগুলো প্রাকৃতিক ক্রমে নির্বাচন করুন।',
+          selectedOrder: 'নির্বাচিত ক্রম:',
+          emptyPrompt: 'ধাপগুলো ক্রমানুসারে সাজাতে নিচে ক্লিক করুন...',
+        },
+        memoryMatch: {
+          title: 'স্মৃতি মেলানো',
+          subtitle: 'কার্ড উল্টে জোড়া মেলান।',
+          instructions: 'কার্ড উল্টে সমান ছবিগুলোর জোড়া বিলাই করুন।',
+          matched: 'মেলে যাওয়া জোড়া',
+          moves: 'মোট চাল',
+        },
+        photoPuzzle: {
+          title: 'ছবি পাজল',
+          subtitle: 'চা বাগান এবং স্মৃতিস্তম্ভের ছবি মেলান।',
+          instructions: 'ছবি টুকরোগুলো সঠিক স্থানে বসান।',
+          solved: 'পাজল সম্পূর্ণ হয়েছে!',
+        },
       },
+
       memoryGarden: {
         title: 'স্মৃতি উদ্যান',
         subtitle: 'ব্যক্তিগত পারিবারিক স্মৃতি এবং টাইমলাইন',
@@ -448,7 +796,7 @@ export const resources = {
         timeline: 'স্মৃতির টাইমলাইন',
         categories: {
           Childhood: 'শৈশব',
-          School: 'বিদ্যালয়',
+          School: 'বিদ্যালয়',
           Career: 'ক্যারিয়ার',
           Marriage: 'বিবাহ',
           Family: 'পরিবার',
@@ -463,6 +811,7 @@ export const resources = {
         location: 'স্থান',
         listenStory: 'স্মৃতি শুনুন',
       },
+
       reminders: {
         title: 'দৈনন্দিন রিমাইন্ডার',
         medicine: 'ওষুধ',
@@ -476,6 +825,39 @@ export const resources = {
         markComplete: 'সম্পন্ন চিহ্নিত করুন',
         noReminders: 'কোনো আসন্ন রিমাইন্ডার নেই।',
       },
+
+      caregiver: {
+        title: 'কেয়ারগিভার পোর্টাল',
+        subtitle: 'রোগীর রিয়েল-টাইম পর্যবেক্ষণ এবং বিস্তারিত লগ।',
+        recentActivities: 'সাম্প্রতিক কার্যকলাপের ইতিহাস',
+        cognitiveScore: 'মানসিক স্কোর',
+        adherence: 'ওষুধ গ্রহণে নিয়ম মানা',
+        alerts: 'সক্রিয় অ্যালার্ট',
+        noAlerts: 'সব মান স্বাভাবিক।',
+      },
+
+      patient: {
+        profile: 'রোগীর প্রোফাইল',
+        name: 'রঞ্জিত বরঠাকুর',
+        age: '৭৪',
+        location: 'গুয়াহাটি, আসাম',
+        primaryLanguage: 'বাংলা',
+        emergencyContact: 'জরুরি যোগাযোগ',
+      },
+
+      reports: {
+        title: 'চিকিৎসকের বিশ্লেষণ',
+        subtitle: 'রোগীর কার্যকলাপের ইতিহাস এবং প্রবণতা',
+        patientList: 'রোগীদের তালিকা',
+        selectPatient: 'রোগী নির্বাচন করুন',
+        performanceTrend: 'সময়ের সাথে কার্যক্ষমতার ট্রেন্ড',
+        aiObservationTitle: 'AI-সহায়ক পর্যবেক্ষণ',
+        aiDisclaimer: 'AI-সহায়ক পর্যবেক্ষণ — এটি কোনো মেডিকেল ডায়াগনোসিস নয়।',
+        needsReview: 'পুনর্বিবেচনা প্রয়োজন',
+        stableEngagement: 'স্থিতিশীল অংশগ্রহণ',
+        regionalHierarchy: 'আঞ্চলিক হায়ারার্কি ফিল্টার',
+      },
+
       hardware: {
         title: 'হার্ডওয়্যার ডিভাইস সেন্টার',
         subtitle: 'ESP32 গেটওয়ে স্ট্যাটাস এবং বাটন লগ',
@@ -491,104 +873,131 @@ export const resources = {
         buzzerState: 'শব্দ সংকেত',
         triggerButton: 'বাটন প্রেস পরীক্ষা করুন',
       },
-      clinician: {
-        title: 'চিকিৎসকের বিশ্লেষণ',
-        subtitle: 'রোগীর কার্যকলাপের ইতিহাস এবং প্রবণতা',
-        patientList: 'রোগীদের তালিকা',
-        selectPatient: 'রোগী নির্বাচন করুন',
-        performanceTrend: 'সময়ের সাথে কার্যক্ষমতার ট্রেন্ড',
-        aiObservationTitle: 'AI-সহায়ক পর্যবেক্ষণ',
-        aiDisclaimer: 'AI-সহায়ক পর্যবেক্ষণ — এটি কোনো মেডিকেল ডায়াগনোসিস নয়।',
-        needsReview: 'পুনর্বিবেচনা প্রয়োজন',
-        stableEngagement: 'স্থিতিশীল অংশগ্রহণ',
-        regionalHierarchy: 'আঞ্চলিক হায়ারার্কি ফিল্টার',
-      },
+
       sync: {
         offline: 'অফলাইন — ইন্টারনেট সংযোগ এলে আপনার পরিবর্তনগুলো সিঙ্ক হবে।',
         syncing: 'সিঙ্ক হচ্ছে...',
         synced: 'আঞ্চলিক সার্ভারের সাথে সিঙ্কড',
-      }
-    }
+      },
+    },
   },
+
+  mni: {
+    translation: {
+      appName: 'স্মৃতি-সেতু (Smriti-Setu)',
+      tagline: 'মণিপুর অমসুং নোংপোক্ষেনবগী নীতোলশিং লাইরিক অমসুং নিনি থৌরমশিং শমজিন্নবা।',
+      common: {
+        appName: 'স্মৃতি-সেতু',
+        back: 'হন্থবা',
+        close: 'থিংジンবা',
+        save: 'শেব তৌবা',
+        cancel: 'কাকথোকপা',
+        confirm: 'চেক তৌবা',
+        loading: 'লোদ তৌরি...',
+        selectLanguage: 'লোন খাঙ্কৎপা',
+        currentLanguage: 'হৌজিক লৈরিবা লোন',
+        elderlyFriendly: 'অহলশিংগী অলাইবা পাম্বৈ',
+        region: 'মণিপুর (Manipur)',
+      },
+      dashboard: {
+        greetingMorning: 'নুমিৎথংবা অমসুং অয়াংবা (Good Morning)',
+        greetingAfternoon: 'নুমিৎ কাংবা (Good Afternoon)',
+        greetingEvening: 'নুমিৎ তাথবা (Good Evening)',
+        feelingQuestion: 'ঙসি অদোম কমদৌরি রঞ্জিত জি?',
+      },
+      games: {
+        title: 'অহলশিংগী লুচেৎ থৌরমশিং (Cognitive Activities)',
+        easy: 'লাইবা',
+        medium: 'ময়াই চাবা',
+        challenging: 'লুবা',
+      },
+    },
+  },
+
+  lus: {
+    translation: {
+      appName: 'Smriti-Setu',
+      tagline: 'Mizoram leh Hmarchhak state tan hriatrengna leh enkawlna inzawmna.',
+      common: {
+        appName: 'Smriti-Setu',
+        back: 'Kir leh',
+        close: 'Khupna',
+        save: 'Vawng duhai',
+        cancel: 'Thiat',
+        loading: 'Lo in-load mek...',
+        selectLanguage: 'Tawng Thlang Rual',
+        region: 'Mizoram',
+      },
+      dashboard: {
+        greetingMorning: 'Chibai le tukthuan',
+        greetingAfternoon: 'Chibai sun lam',
+        greetingEvening: 'Chibai tlai lam',
+        feelingQuestion: 'Vawiin i inhria nena eng nge i an, Ranjit ji?',
+      },
+      games: {
+        title: 'Rilru Sen Intihsiakna',
+        easy: 'A awlsam',
+        medium: 'A laihawl',
+        challenging: 'A harsa',
+      },
+    },
+  },
+
+  kha: {
+    translation: {
+      appName: 'Smriti-Setu',
+      tagline: 'Pyniasoh ia ki jingkynmaw bad ka jingsumar ha Meghalaya.',
+      common: {
+        appName: 'Smriti-Setu',
+        back: 'Phai dien',
+        close: 'Khang',
+        save: 'Kynshew',
+        cancel: 'Pyndam',
+        loading: 'Dang pynkhreh...',
+        selectLanguage: 'Jied Ktien',
+        region: 'Meghalaya (Khasi)',
+      },
+      dashboard: {
+        greetingMorning: 'Khublei steiñ',
+        greetingAfternoon: 'Khublei sngi',
+        greetingEvening: 'Khublei janmiet',
+        feelingQuestion: 'Kumno iohi sngew kine ki sngi, Ranjit ji?',
+      },
+      games: {
+        title: 'Ki Jingkyntiew Jingmut',
+        easy: 'Suk',
+        medium: 'Ym dei ba suk',
+        challenging: 'Eh',
+      },
+    },
+  },
+
   ne: {
     translation: {
       appName: 'स्मृति-सेतु',
-      tagline: 'सम्झना, परिवार र हेरचाहलाई जोड्दै।',
-      roles: {
-        patient: 'बिरामी अनुभव',
-        caregiver: 'हेरचाहकर्ता पोर्टल',
-        clinician: 'चिकित्सक विश्लेषण',
-        facility_admin: 'केन्द्र प्रशासक',
+      tagline: 'सिक्किम र उत्तर-पूर्वमा सम्झना, परिवार र हेरचाह जोड्दै।',
+      common: {
+        appName: 'स्मृति-सेतु',
+        back: 'फर्कनुहोस्',
+        close: 'बन्द गर्नुहोस्',
+        save: 'संरक्षण गर्नुहोस्',
+        cancel: 'रद्द गर्नुहोस्',
+        loading: 'लोड हुँदैछ...',
+        selectLanguage: 'भाषा छान्नुहोस्',
+        region: 'सिक्किम (Sikkim)',
       },
-      accessibility: {
-        elderlyMode: 'ज्येष्ठ नागरिक मोड',
-        elderlyModeActive: 'ज्येष्ठ मोड सक्रिय',
-        voiceAssist: 'आवाज सहायता',
-        highContrast: 'उच्च कन्ट्रास्ट',
-        reducedMotion: 'कम हलचल',
-        speakPage: 'पृष्ठ सुन्नुहोस्',
-      },
-      navigation: {
-        home: 'गृहपृष्ठ',
-        memories: 'स्मृति उद्यान',
-        activities: 'मानसिक क्रियाकलाप',
-        reminders: 'दैनिक सम्झना',
-        deviceCenter: 'यन्त्र स्थिति',
-        analytics: 'चिकित्सा विश्लेषण',
-        facility: 'केन्द्र परिचय',
-        modulesHub: '११ पूर्ण मोड्युलहरू',
-      },
-      patientHome: {
+      dashboard: {
         greetingMorning: 'शुभ प्रभात',
         greetingAfternoon: 'शुभ दिन',
         greetingEvening: 'शुभ सन्ध्या',
-        feelingQuestion: 'आज तपाईं कस्तो महसुस गर्दै हुनुहुन्छ?',
-        todayActivities: 'आजका क्रियाकलापहरू',
-        upcomingReminder: 'आगामी सम्झना',
-        startActivity: 'सुरु गर्नुहोस्',
-        listenPrompt: 'सुन्नका लागि कुनै पनि कार्ड थिच्नुहोस्',
+        feelingQuestion: 'आज तपाईं कस्तो महसुस गर्दै हुनुहुन्छ, रणजीत जी?',
       },
-    }
+      games: {
+        title: 'मानसिक क्रियाकलापहरू',
+        easy: 'सजिलो',
+        medium: 'मध्यम',
+        challenging: 'कठिन',
+      },
+    },
   },
-  brx: {
-    translation: {
-      appName: 'स्मृति-सेतु',
-      tagline: 'गोसोखांथि, नखर आरो हेफाजाबनि गेजेर।',
-      roles: {
-        patient: 'साग्लावनि नुथाय',
-        caregiver: 'फाहामग्रा पोर्टल',
-        clinician: 'डक्टरनि नायबिजिरनाय',
-        facility_admin: 'केन्द्र खुंथायगिरि',
-      },
-      accessibility: {
-        elderlyMode: 'बयोसगिरि मड',
-        elderlyModeActive: 'बयोसगिरि मड जागायबाय',
-        voiceAssist: 'राव हेफाजाब',
-        highContrast: 'गोजौ कन्ट्रास्ट',
-        reducedMotion: 'खोमसि महर',
-        speakPage: 'बिलाइ खोनासङ',
-      },
-      navigation: {
-        home: 'गाहाय बिलाइ',
-        memories: 'गोसोखांथि बारग',
-        activities: 'मेन्थेल हाबाफारि',
-        reminders: 'सानफ्रोमबोनि गोसोखांथि',
-        deviceCenter: 'यन्त्र थाथाय',
-        analytics: 'नायबिजिरनाय',
-        facility: 'केन्द्र मिथिसार',
-        modulesHub: '११ आबुं मडियुल',
-      },
-      patientHome: {
-        greetingMorning: 'मोजां फुं',
-        greetingAfternoon: 'मोजां सानजौफु',
-        greetingEvening: 'मोजां बेलासे',
-        feelingQuestion: 'दिनै नोंथाङा माबायदि मोनदों?',
-        todayActivities: 'दिनैनि हाबाफारिफोर',
-        upcomingReminder: 'फैगौ गोसोखांथि',
-        startActivity: 'जागाय',
-        listenPrompt: 'खोनासंनो थाखाय कार्डआव थु',
-      },
-    }
-  }
 };
-

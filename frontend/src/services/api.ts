@@ -20,6 +20,12 @@ export const apiClient = axios.create({
   timeout: 10000,
 });
 
+apiClient.interceptors.request.use((config) => {
+  const activeLang = localStorage.getItem('smriti_setu_language') || 'en';
+  config.headers['X-Platform-Language'] = activeLang;
+  return config;
+});
+
 export const authApi = {
   getProfile: async (): Promise<PatientProfile> => {
     return apiClient.get('/auth/profile').then((res) => res.data);
@@ -230,7 +236,11 @@ export const assistantApi = {
     };
     quickSuggestions: string[];
   }> => {
-    return apiClient.post('/assistant/chat', data).then((res) => res.data);
+    const payload = {
+      ...data,
+      language: data.language || localStorage.getItem('smriti_setu_language') || 'en',
+    };
+    return apiClient.post('/assistant/chat', payload).then((res) => res.data);
   },
 };
 

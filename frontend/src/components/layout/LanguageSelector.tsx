@@ -1,63 +1,67 @@
 import React, { useState } from 'react';
-import { Languages, Volume2, ChevronDown } from 'lucide-react';
-import { useLanguageStore, SupportedLanguage } from '../../stores/useLanguageStore';
+import { useTranslation } from 'react-i18next';
+import { Globe, Volume2, ChevronDown } from 'lucide-react';
+import { languages, getLanguageByCode } from '../../i18n/languages';
 import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
-import { VoiceLanguageModal } from './VoiceLanguageModal';
+import { LanguageSelectorModal } from '../common/LanguageSelectorModal';
 
 export const LanguageSelector: React.FC = () => {
-  const { currentLanguage, availableLanguages, setLanguage } = useLanguageStore();
+  const { i18n } = useTranslation();
   const { elderlyMode } = useAccessibilityStore();
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const currentLangObj =
-    availableLanguages.find((l) => l.code === currentLanguage) || availableLanguages[0];
+  const activeCode = i18n.language || 'en';
+  const currentLangObj = getLanguageByCode(activeCode);
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const code = e.target.value;
+    if (code === 'MORE_MODAL') {
+      setIsModalOpen(true);
+    } else {
+      i18n.changeLanguage(code);
+    }
+  };
 
   return (
     <>
-      <div className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/80 p-1 pl-2.5 rounded-full border border-slate-300 transition-all shadow-xs">
+      <div className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/80 p-1.5 px-3 rounded-full border border-slate-300 transition-all shadow-xs">
         <button
           type="button"
-          onClick={() => setIsVoiceModalOpen(true)}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-800 hover:text-purple-700 transition-colors"
-          title="Change Voice & Regional Languages"
+          onClick={() => setIsModalOpen(true)}
+          className="flex items-center gap-2 text-xs font-bold text-slate-900 hover:text-forest-800 transition-colors cursor-pointer"
+          title="Browse All 8 NER State Languages"
         >
-          <Languages className="w-3.5 h-3.5 text-purple-600" />
-          <span>{currentLangObj.nativeLabel}</span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-100 text-purple-700 font-bold hidden sm:inline">
-            Voice
+          <Globe className="w-4 h-4 text-forest-700" />
+          <span className="font-serif font-bold text-sm text-slate-900">
+            {currentLangObj.nativeName}
+          </span>
+          <span className="text-[10px] px-2 py-0.5 rounded-md bg-forest-100 text-forest-800 font-extrabold hidden sm:inline border border-forest-200">
+            {currentLangObj.state}
           </span>
         </button>
 
-        {/* Quick Language Dropdown */}
         <select
-          value={currentLanguage}
-          onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
-          aria-label="Select Interface Language"
-          className={`bg-transparent font-bold text-slate-700 focus:outline-none cursor-pointer pr-1 border-l border-slate-300 pl-1 ${
+          value={activeCode}
+          onChange={handleSelectChange}
+          aria-label="Select Regional Language"
+          className={`bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer pr-1 border-l border-slate-300 pl-1.5 ${
             elderlyMode ? 'text-sm' : 'text-xs'
           }`}
         >
-          {availableLanguages.map((lang) => (
+          {languages.map((lang) => (
             <option key={lang.code} value={lang.code} className="bg-white text-slate-900 font-medium">
-              {lang.nativeLabel} ({lang.label})
+              {lang.nativeName} ({lang.name})
             </option>
           ))}
+          <option value="MORE_MODAL" className="bg-forest-50 text-forest-900 font-bold">
+            🌐 Browse All NER State Languages...
+          </option>
         </select>
-
-        {/* Voice customization trigger button */}
-        <button
-          type="button"
-          onClick={() => setIsVoiceModalOpen(true)}
-          className="p-1 rounded-full bg-purple-600 hover:bg-purple-700 text-white shadow-xs transition-all"
-          title="Customize Voice Cadence & Accents"
-        >
-          <Volume2 className="w-3 h-3" />
-        </button>
       </div>
 
-      <VoiceLanguageModal
-        isOpen={isVoiceModalOpen}
-        onClose={() => setIsVoiceModalOpen(false)}
+      <LanguageSelectorModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
       />
     </>
   );
