@@ -649,30 +649,66 @@ export const FamiliarSound: React.FC<FamiliarSoundProps> = ({ onComplete, onBack
             </div>
           </div>
 
-          {/* Gentle Style Paddle Clickable Buttons (4 MCQ Options) */}
+          {/* Glowing Neon Style Paddle Clickable Buttons (Red, Green, Blue, Yellow) */}
           <div className="space-y-3 pt-2 max-w-xl mx-auto">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider text-center">
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
               Choose the Matching Person or Sound:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {currentSound.options.map((opt, i) => {
                 const isSelected = selectedOpt === i;
                 const isCorrect = i === currentSound.correctOption;
-                const paddleBadges = ['🌸 A', '🍃 B', '✨ C', '🌿 D'];
 
-                let paddleStyle =
-                  'bg-white border-2 border-slate-200 text-slate-800 hover:border-rose-400 hover:bg-rose-50/50 hover:shadow-lg hover:scale-[1.02]';
+                // 4 Glowing Neon Color Themes: Red, Green, Blue, Yellow
+                const NEON_THEMES = [
+                  {
+                    name: 'Ruby Red',
+                    badge: '🔴 A',
+                    gradient: 'from-rose-500 via-red-600 to-rose-700',
+                    border: 'border-rose-400/80',
+                    neonGlow: 'shadow-[0_0_24px_rgba(244,63,94,0.55)] hover:shadow-[0_0_36px_rgba(244,63,94,0.95)] ring-2 ring-rose-400/50',
+                    badgeBg: 'bg-rose-950/40 border border-rose-300 text-white shadow-[0_0_10px_rgba(244,63,94,0.8)]',
+                  },
+                  {
+                    name: 'Emerald Green',
+                    badge: '🟢 B',
+                    gradient: 'from-emerald-500 via-green-600 to-teal-700',
+                    border: 'border-emerald-400/80',
+                    neonGlow: 'shadow-[0_0_24px_rgba(16,185,129,0.55)] hover:shadow-[0_0_36px_rgba(16,185,129,0.95)] ring-2 ring-emerald-400/50',
+                    badgeBg: 'bg-emerald-950/40 border border-emerald-300 text-white shadow-[0_0_10px_rgba(16,185,129,0.8)]',
+                  },
+                  {
+                    name: 'Brahmaputra Blue',
+                    badge: '🔵 C',
+                    gradient: 'from-sky-500 via-blue-600 to-indigo-700',
+                    border: 'border-sky-400/80',
+                    neonGlow: 'shadow-[0_0_24px_rgba(14,165,233,0.55)] hover:shadow-[0_0_36px_rgba(14,165,233,0.95)] ring-2 ring-sky-400/50',
+                    badgeBg: 'bg-blue-950/40 border border-cyan-300 text-white shadow-[0_0_10px_rgba(14,165,233,0.8)]',
+                  },
+                  {
+                    name: 'Assam Gold / Yellow',
+                    badge: '🟡 D',
+                    gradient: 'from-amber-400 via-amber-500 to-yellow-500',
+                    border: 'border-amber-300/80',
+                    neonGlow: 'shadow-[0_0_24px_rgba(245,158,11,0.55)] hover:shadow-[0_0_36px_rgba(245,158,11,0.95)] ring-2 ring-amber-300/50',
+                    badgeBg: 'bg-amber-950/40 border border-yellow-200 text-white shadow-[0_0_10px_rgba(245,158,11,0.8)]',
+                  },
+                ];
+
+                const theme = NEON_THEMES[i % NEON_THEMES.length];
+
+                let dynamicClasses = `bg-gradient-to-br ${theme.gradient} ${theme.border} ${theme.neonGlow} text-white hover:scale-[1.03] hover:brightness-110`;
 
                 if (selectedOpt !== null) {
                   if (isCorrect) {
-                    paddleStyle =
-                      'bg-gradient-to-r from-emerald-500 to-teal-600 border-2 border-emerald-600 text-white font-black shadow-xl shadow-emerald-500/25 scale-[1.03]';
+                    dynamicClasses =
+                      'bg-gradient-to-r from-emerald-500 via-green-600 to-teal-600 border-4 border-white text-white font-black shadow-[0_0_40px_rgba(16,185,129,1)] scale-[1.05] z-10 brightness-125';
                   } else if (isSelected) {
-                    paddleStyle =
-                      'bg-gradient-to-r from-rose-500 to-pink-600 border-2 border-rose-600 text-white font-black shadow-xl shadow-rose-500/25 animate-shake';
+                    dynamicClasses =
+                      'bg-gradient-to-r from-rose-600 via-red-700 to-rose-800 border-4 border-rose-300 text-white font-black shadow-[0_0_35px_rgba(244,63,94,0.9)] animate-shake';
                   } else {
-                    paddleStyle = 'bg-slate-100 border-slate-200 text-slate-400 opacity-60';
+                    dynamicClasses = 'bg-slate-800/80 border-slate-700 text-slate-400 opacity-40 grayscale';
                   }
                 }
 
@@ -681,25 +717,27 @@ export const FamiliarSound: React.FC<FamiliarSoundProps> = ({ onComplete, onBack
                     key={i}
                     onClick={() => handleSelectOption(i)}
                     disabled={selectedOpt !== null}
-                    className={`relative w-full p-4 sm:p-5 rounded-3xl text-left font-bold text-base sm:text-lg transition-all duration-200 select-none cursor-pointer flex items-center gap-3.5 shadow-sm active:scale-95 ${paddleStyle}`}
+                    className={`relative w-full p-4 sm:p-5 rounded-3xl text-left font-black text-base sm:text-lg transition-all duration-200 select-none cursor-pointer flex items-center gap-3.5 border-3 active:scale-95 ${dynamicClasses}`}
                   >
-                    {/* Paddle Number / Symbol Badge */}
+                    {/* Glowing Paddle Badge */}
                     <span
-                      className={`w-9 h-9 rounded-2xl flex items-center justify-center text-xs font-black shrink-0 transition-colors ${
-                        selectedOpt !== null && (isCorrect || isSelected)
-                          ? 'bg-white/25 text-white'
-                          : 'bg-rose-100 text-rose-700'
+                      className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-black shrink-0 transition-transform ${
+                        selectedOpt !== null && isCorrect
+                          ? 'bg-white text-emerald-800 scale-110'
+                          : theme.badgeBg
                       }`}
                     >
-                      {paddleBadges[i]}
+                      {theme.badge}
                     </span>
 
-                    {/* Paddle Option Text */}
-                    <span className="flex-1 leading-tight">{opt}</span>
+                    {/* Option Text */}
+                    <span className="flex-1 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                      {opt}
+                    </span>
 
-                    {/* Status Icon */}
+                    {/* Status Check Icon */}
                     {selectedOpt !== null && isCorrect && (
-                      <CheckCircle2 className="w-6 h-6 text-white shrink-0 animate-scaleIn" />
+                      <CheckCircle2 className="w-7 h-7 text-white shrink-0 filter drop-shadow-md animate-scaleIn" />
                     )}
                   </button>
                 );
