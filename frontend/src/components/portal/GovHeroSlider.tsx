@@ -12,6 +12,7 @@ import {
   Sparkles,
   Search
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface GovHeroSliderProps {
   onFindFacility?: () => void;
@@ -24,6 +25,7 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
   onExploreServices,
   onAccessSmritiSetu,
 }) => {
+  const { t } = useTranslation();
   const [activeSlide, setActiveSlide] = useState(0);
 
   // Authentic North Eastern Region (India) Dementia & Cognitive Healthcare Featured Banner Stories
@@ -33,24 +35,24 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
       badge: 'AI Dementia Screening & Cognitive Care · NER Mission',
       title: 'Smriti-Setu: Early Dementia Care & Cognitive Assistance for North East India',
       subtitle: 'Addressing the critical gap in early dementia screening, memory care, and geriatric support for elderly citizens across Assam, Arunachal, Manipur, Meghalaya, Mizoram, Nagaland, Sikkim & Tripura.',
-      image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80', // Real Indian Senior Citizen Memory Care
-      ctaText: 'Explore Cognitive Platform',
+      image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80',
+      ctaText: t('portal.findFacility', { defaultValue: 'Explore Cognitive Platform' }),
     },
     {
       id: 2,
       badge: 'Geriatric Memory Care & Multilingual Recall',
       title: 'Culturally Familiar Memory Exercises & Family Memory Gardens',
       subtitle: 'Personalized memory activities, daily medicine reminders, and family story prompt cards in English, Hindi, Assamese (অসমীয়া), and Bengali (বাংলা).',
-      image: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=1200&q=80', // Elderly Senior Woman Memory Stimulation
-      ctaText: 'Access Smriti-Setu Platform',
+      image: 'https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&w=1200&q=80',
+      ctaText: t('portal.accessPlatform', { defaultValue: 'Access Smriti-Setu Platform' }),
     },
     {
       id: 3,
       badge: 'Hilly Terrain Healthcare & Tele-Consultation Node',
       title: 'Bridging Distance in Remote Hilly Districts with Offline-First AI Sync',
       subtitle: 'Immediate connection between primary health centers, family caregivers, district hospital neurologists, and 24x7 Tele-MANAS toll-free mental health support.',
-      image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80', // Doctor Consultation with Senior Patient
-      ctaText: 'View Regional Health Network',
+      image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=1200&q=80',
+      ctaText: t('navigation.nerNetwork', { defaultValue: 'View Regional Health Network' }),
     },
   ];
 
@@ -113,7 +115,7 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end p-4 text-white">
                 <span className="text-xs font-bold text-amber-300 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-amber-300" /> North Eastern Region Healthcare Infrastructure
+                  <MapPin className="w-3.5 h-3.5 text-amber-300" /> {t('portal.nationalHealthMission', { defaultValue: 'North Eastern Region Healthcare Infrastructure' })}
                 </span>
               </div>
             </div>
@@ -134,7 +136,7 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
                   className="bg-govYellow text-slate-950 hover:bg-amber-400 px-6 py-3 rounded-xl font-extrabold text-sm shadow-xs transition-all flex items-center gap-2"
                 >
                   <Heart className="w-4 h-4 text-slate-950 fill-slate-950" />
-                  <span>Access Smriti-Setu Care</span>
+                  <span>{t('portal.smritiCareTitle', { defaultValue: 'Access Smriti-Setu Care' })}</span>
                 </button>
               </div>
 
@@ -165,10 +167,10 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
             <div>
               <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-govNavy-dark flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-govNavy" /> Quick e-Services Portal
+                  <Sparkles className="w-4 h-4 text-govNavy" /> {t('portal.quickServices', { defaultValue: 'Quick e-Services Portal' })}
                 </span>
                 <span className="text-[10px] font-bold text-amber-900 bg-amber-100 px-2 py-0.5 rounded">
-                  24x7 Active
+                  {t('portal.active24x7', { defaultValue: '24x7 Active' })}
                 </span>
               </div>
 
@@ -183,8 +185,8 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
                       <Building2 className="w-5 h-5 text-govYellow" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm group-hover:text-govNavy">Hospitals & Clinics Directory</h4>
-                      <p className="text-[11px] text-slate-500 font-medium">Search facilities by state or district</p>
+                      <h4 className="font-bold text-slate-900 text-sm group-hover:text-govNavy">{t('portal.hospitalsDirectory', { defaultValue: 'Hospitals & Clinics Directory' })}</h4>
+                      <p className="text-[11px] text-slate-500 font-medium">{t('portal.searchByStateDistrict', { defaultValue: 'Search facilities by state or district' })}</p>
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-govNavy group-hover:translate-x-1 transition-all" />
@@ -199,8 +201,8 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
                       <Activity className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-slate-900 text-sm group-hover:text-govNavy">Primary Health Centres (PHC)</h4>
-                      <p className="text-[11px] text-slate-500 font-medium">Community care & outpatient units</p>
+                      <h4 className="font-bold text-slate-900 text-sm group-hover:text-govNavy">{t('portal.phcTitle', { defaultValue: 'Primary Health Centres (PHC)' })}</h4>
+                      <p className="text-[11px] text-slate-500 font-medium">{t('portal.phcSubtitle', { defaultValue: 'Community care & outpatient units' })}</p>
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-govNavy group-hover:translate-x-1 transition-all" />
@@ -215,8 +217,8 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
                       <Heart className="w-5 h-5 fill-slate-950" />
                     </div>
                     <div>
-                      <h4 className="font-bold text-amber-950 text-sm">Smriti-Setu Cognitive Care</h4>
-                      <p className="text-[11px] text-amber-900 font-medium">Memory exercises & caregiver tools</p>
+                      <h4 className="font-bold text-amber-950 text-sm">{t('portal.smritiCareTitle', { defaultValue: 'Smriti-Setu Cognitive Care' })}</h4>
+                      <p className="text-[11px] text-amber-900 font-medium">{t('portal.smritiCareSubtitle', { defaultValue: 'Memory exercises & caregiver tools' })}</p>
                     </div>
                   </div>
                   <ArrowRight className="w-4 h-4 text-amber-900 group-hover:translate-x-1 transition-all" />
@@ -229,12 +231,12 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
             <div className="p-4 bg-govNavy-dark text-white rounded-2xl border border-slate-700 space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-slate-300">
                 <span className="flex items-center gap-1.5">
-                  <PhoneCall className="w-4 h-4 text-amber-400" /> Emergency & Mental Helplines:
+                  <PhoneCall className="w-4 h-4 text-amber-400" /> {t('portal.emergencyMentalHelplines', { defaultValue: 'Emergency & Mental Helplines:' })}
                 </span>
               </div>
               <div className="flex items-center justify-between pt-1 text-sm font-extrabold text-amber-300">
-                <span>Elderly: 14567</span>
-                <span>Tele-MANAS: 14416</span>
+                <span>{t('portal.elderLineLabel', { defaultValue: 'Elderly: 14567' })}</span>
+                <span>{t('portal.teleManasLabel', { defaultValue: 'Tele-MANAS: 14416' })}</span>
               </div>
             </div>
 
@@ -245,20 +247,20 @@ export const GovHeroSlider: React.FC<GovHeroSliderProps> = ({
         {/* Quick Portal Key Infrastructure Counter Strip (Gov Portal Standard) */}
         <div className="bg-white rounded-2xl p-4 border border-slate-300 shadow-xs grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div className="border-r border-slate-200 last:border-r-0">
-            <span className="text-2xl font-extrabold text-govNavy block">8 States</span>
-            <span className="text-xs font-semibold text-slate-600 uppercase">North Eastern Region</span>
+            <span className="text-2xl font-extrabold text-govNavy block">{t('portal.nerStates', { defaultValue: '8 States' })}</span>
+            <span className="text-xs font-semibold text-slate-600 uppercase">{t('portal.nerRegion', { defaultValue: 'North Eastern Region' })}</span>
           </div>
           <div className="border-r border-slate-200 last:border-r-0">
-            <span className="text-2xl font-extrabold text-govNavy block">1,240+</span>
-            <span className="text-xs font-semibold text-slate-600 uppercase">Public Health Units</span>
+            <span className="text-2xl font-extrabold text-govNavy block">{t('portal.healthUnits', { defaultValue: '1,240+' })}</span>
+            <span className="text-xs font-semibold text-slate-600 uppercase">{t('portal.healthUnitsLabel', { defaultValue: 'Public Health Units' })}</span>
           </div>
           <div className="border-r border-slate-200 last:border-r-0">
-            <span className="text-2xl font-extrabold text-amber-900 block">65 Nodes</span>
-            <span className="text-xs font-semibold text-slate-600 uppercase">Cognitive Care Centers</span>
+            <span className="text-2xl font-extrabold text-amber-900 block">{t('portal.careNodes', { defaultValue: '65 Nodes' })}</span>
+            <span className="text-xs font-semibold text-slate-600 uppercase">{t('portal.careNodesLabel', { defaultValue: 'Cognitive Care Centers' })}</span>
           </div>
           <div>
-            <span className="text-2xl font-extrabold text-emerald-700 block">24x7</span>
-            <span className="text-xs font-semibold text-slate-600 uppercase">Toll-Free Helplines</span>
+            <span className="text-2xl font-extrabold text-emerald-700 block">{t('portal.tollFree24x7', { defaultValue: '24x7' })}</span>
+            <span className="text-xs font-semibold text-slate-600 uppercase">{t('portal.tollFreeLabel', { defaultValue: 'Toll-Free Helplines' })}</span>
           </div>
         </div>
 

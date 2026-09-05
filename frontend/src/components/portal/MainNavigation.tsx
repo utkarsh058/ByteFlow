@@ -49,13 +49,13 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
           <AshokaEmblem className="w-10 h-14 md:w-12 md:h-16 shrink-0" />
           <div className="flex flex-col">
             <span className="text-[10px] md:text-xs font-extrabold uppercase tracking-wider text-[#004085]">
-              Ministry of Health & Family Welfare · Government of India
+              {t('portal.ministryHeader', { defaultValue: 'Ministry of Health & Family Welfare · Government of India' })}
             </span>
             <h1 className="text-lg md:text-2xl font-serif font-extrabold text-slate-900 leading-tight">
-              North Eastern Region Cognitive Health Portal
+              {t('portal.portalTitle', { defaultValue: 'North Eastern Region Cognitive Health Portal' })}
             </h1>
             <p className="text-[11px] md:text-xs font-bold text-slate-600">
-              North Eastern Council (NEC) & National Health Mission Partnership
+              {t('portal.portalSubtitle', { defaultValue: 'North Eastern Council (NEC) & National Health Mission Partnership' })}
             </p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             className="bg-amber-400 text-slate-950 hover:bg-amber-300 px-4 py-2 rounded-xl font-extrabold text-xs shadow-md flex items-center gap-1.5 transition-all transform hover:scale-105"
           >
             <Lock className="w-4 h-4 text-slate-950 shrink-0" />
-            <span>Access Smriti-Setu Platform</span>
+            <span>{t('portal.accessPlatform', { defaultValue: 'Access Smriti-Setu Platform' })}</span>
           </button>
         </div>
 
@@ -116,7 +116,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             <form onSubmit={handleSearchSubmit} className="flex items-center">
               <input
                 type="text"
-                placeholder="Search hospitals, services..."
+                placeholder={t('portal.searchByStateDistrict', { defaultValue: 'Search hospitals, services...' })}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="px-3.5 py-1.5 text-xs text-slate-900 font-bold bg-white rounded-l-md border-y border-l border-slate-400 focus:outline-none w-44 md:w-64 shadow-xs"

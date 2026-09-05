@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, Building2, MapPin, Phone, Heart, X, ShieldAlert } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { HealthFacility, FacilityType, GovPortalFilters } from '../../types/govPortal';
 import { portalService } from '../../services/portalService';
 import { FacilityCard } from './FacilityCard';
@@ -14,6 +15,7 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
   initialStateFilter = 'All',
   initialSearchQuery = '',
 }) => {
+  const { t } = useTranslation();
   const [facilities, setFacilities] = useState<HealthFacility[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFacility, setSelectedFacility] = useState<HealthFacility | null>(null);
@@ -83,20 +85,20 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 pb-4">
           <div>
             <span className="text-xs font-extrabold uppercase tracking-wider text-govNavy-dark flex items-center gap-1">
-              <Building2 className="w-4 h-4 text-govNavy" /> Official Health Directory
+              <Building2 className="w-4 h-4 text-govNavy" /> {t('portal.officialDirectory', { defaultValue: 'Official Health Directory' })}
             </span>
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mt-1">
-              Find a Healthcare Facility
+              {t('portal.findFacility', { defaultValue: 'Find a Healthcare Facility' })}
             </h2>
             <p className="text-slate-600 text-sm md:text-base mt-1">
-              Search hospitals, primary health centers, and cognitive care nodes across North East India.
+              {t('portal.searchFacilitySubtitle', { defaultValue: 'Search hospitals, primary health centers, and cognitive care nodes across North East India.' })}
             </p>
           </div>
 
           {/* Development Sample Data Indicator Badge */}
           <span className="text-xs font-bold text-amber-900 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-300 flex items-center gap-1.5">
             <ShieldAlert className="w-4 h-4 text-amber-600" />
-            <span>Development Sample Data Layer</span>
+            <span>{t('portal.sampleDataBadge', { defaultValue: 'Development Sample Data Layer' })}</span>
           </span>
         </div>
 
@@ -109,7 +111,7 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
               <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Search by facility name or district..."
+                placeholder={t('portal.searchByNameOrDistrict', { defaultValue: 'Search by facility name or district...' })}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 text-sm text-slate-900 bg-white rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-govNavy font-medium"
@@ -125,7 +127,7 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
               >
                 {statesList.map((st) => (
                   <option key={st} value={st}>
-                    State: {st}
+                    {t('portal.filterState', { defaultValue: 'State' })}: {st === 'All' ? t('common.all', { defaultValue: 'All' }) : st}
                   </option>
                 ))}
               </select>
@@ -138,9 +140,9 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
                 onChange={(e) => setSelectedType(e.target.value)}
                 className="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-govNavy font-semibold"
               >
-                {facilityTypes.map((t) => (
-                  <option key={t} value={t}>
-                    Type: {t}
+                {facilityTypes.map((tItem) => (
+                  <option key={tItem} value={tItem}>
+                    {t('portal.filterType', { defaultValue: 'Type' })}: {tItem === 'All' ? t('common.all', { defaultValue: 'All' }) : tItem}
                   </option>
                 ))}
               </select>
@@ -157,7 +159,7 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
                 onChange={(e) => setHasCognitiveOnly(e.target.checked)}
                 className="w-4 h-4 rounded text-govNavy focus:ring-govNavy"
               />
-              <span>Show Cognitive Care & Memory Nodes Only</span>
+              <span>{t('portal.cognitiveCareOnly', { defaultValue: 'Show Cognitive Care & Memory Nodes Only' })}</span>
             </label>
 
             {(selectedState !== 'All' || selectedType !== 'All' || searchQuery || hasCognitiveOnly) && (
@@ -170,7 +172,7 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
                 }}
                 className="text-red-600 hover:underline font-bold text-xs flex items-center gap-1 ml-auto"
               >
-                <X className="w-3.5 h-3.5" /> Clear Filters
+                <X className="w-3.5 h-3.5" /> {t('portal.clearFilters', { defaultValue: 'Clear Filters' })}
               </button>
             )}
           </div>
@@ -179,13 +181,13 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
         {/* Results Grid */}
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-slate-500 font-semibold text-sm">Searching health directory...</p>
+            <p className="text-slate-500 font-semibold text-sm">{t('portal.searchingDirectory', { defaultValue: 'Searching health directory...' })}</p>
           </div>
         ) : facilities.length === 0 ? (
           <div className="text-center py-12 bg-slate-50 rounded-3xl border border-slate-200">
             <Building2 className="w-12 h-12 text-slate-400 mx-auto mb-2" />
-            <h4 className="font-serif font-bold text-lg text-slate-800">No Facilities Found</h4>
-            <p className="text-slate-500 text-sm">Try adjusting your state filter or search terms.</p>
+            <h4 className="font-serif font-bold text-lg text-slate-800">{t('portal.noFacilitiesFound', { defaultValue: 'No Facilities Found' })}</h4>
+            <p className="text-slate-500 text-sm">{t('portal.noFacilitiesDesc', { defaultValue: 'Try adjusting your state filter or search terms.' })}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -215,23 +217,23 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
             </div>
 
             <div>
-              <h4 className="font-bold text-slate-900 mb-1">Facility Address & Location</h4>
+              <h4 className="font-bold text-slate-900 mb-1">{t('portal.facilityAddressLocation', { defaultValue: 'Facility Address & Location' })}</h4>
               <p className="text-slate-700">{selectedFacility.address}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
               <div>
-                <span className="text-xs font-bold text-slate-500 block">Contact Phone</span>
+                <span className="text-xs font-bold text-slate-500 block">{t('portal.contactPhone', { defaultValue: 'Contact Phone' })}</span>
                 <span className="font-bold text-govNavy">{selectedFacility.contactNumber}</span>
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-500 block">Emergency Line</span>
+                <span className="text-xs font-bold text-slate-500 block">{t('portal.emergencyLine', { defaultValue: 'Emergency Line' })}</span>
                 <span className="font-bold text-red-600">{selectedFacility.emergencyNumber || '108'}</span>
               </div>
             </div>
 
             <div>
-              <h4 className="font-bold text-slate-900 mb-2">Available Healthcare Services</h4>
+              <h4 className="font-bold text-slate-900 mb-2">{t('portal.availableServices', { defaultValue: 'Available Healthcare Services' })}</h4>
               <div className="flex flex-wrap items-center gap-2">
                 {selectedFacility.services.map((s) => (
                   <span key={s} className="px-3 py-1 bg-slate-100 text-slate-800 rounded-lg text-xs font-semibold border border-slate-200">
@@ -244,7 +246,7 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
             {selectedFacility.hasCognitiveCare && (
               <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-xs font-bold flex items-center gap-2">
                 <Heart className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>Integrated Smriti-Setu Stationary ESP32 Gateway Node Available</span>
+                <span>{t('portal.esp32NodeAvailable', { defaultValue: 'Integrated Smriti-Setu Stationary ESP32 Gateway Node Available' })}</span>
               </div>
             )}
           </div>
@@ -254,3 +256,4 @@ export const FacilitySearch: React.FC<FacilitySearchProps> = ({
     </section>
   );
 };
+

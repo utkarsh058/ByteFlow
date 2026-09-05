@@ -1,10 +1,12 @@
 import React from 'react';
 import { PhoneCall, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAccessibilityStore } from '../../stores/useAccessibilityStore';
 import { useLanguageStore, SupportedLanguage } from '../../stores/useLanguageStore';
 import { IndianFlagBadge } from '../common/GovEmblem';
 
 export const UtilityBar: React.FC = () => {
+  const { t } = useTranslation();
   const { currentLanguage, availableLanguages, setLanguage } = useLanguageStore();
   const { fontSizeScale, setFontSizeScale } = useAccessibilityStore();
 
@@ -16,7 +18,7 @@ export const UtilityBar: React.FC = () => {
         <div className="flex items-center gap-3">
           <IndianFlagBadge />
           <span className="hidden md:inline text-slate-200 font-extrabold text-[11px] border-l border-slate-500 pl-3">
-            National Health Mission — North Eastern Region Cognitive Health Ecosystem
+            {t('portal.nationalHealthMission', { defaultValue: 'National Health Mission — North Eastern Region Cognitive Health Ecosystem' })}
           </span>
         </div>
 
@@ -26,7 +28,7 @@ export const UtilityBar: React.FC = () => {
           {/* Toll-Free Helplines */}
           <div className="hidden lg:flex items-center gap-2 text-amber-300 font-extrabold text-xs bg-[#004085] px-2.5 py-1 rounded-md border border-slate-500">
             <PhoneCall className="w-3.5 h-3.5 text-amber-300" />
-            <span>Healthcare Helpline: 14567 / 14416 (Toll Free 24x7)</span>
+            <span>{t('portal.healthHelpline', { defaultValue: 'Healthcare Helpline: 14567 / 14416 (Toll Free 24x7)' })}</span>
           </div>
 
           {/* Official Language Selector Dropdown */}
@@ -36,7 +38,7 @@ export const UtilityBar: React.FC = () => {
               value={currentLanguage}
               onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
               className="bg-transparent text-white focus:outline-none cursor-pointer font-bold text-xs pr-1"
-              aria-label="Select Language"
+              aria-label={t('common.selectLanguage', { defaultValue: 'Select Language' })}
             >
               {availableLanguages.map((l) => (
                 <option key={l.code} value={l.code} className="text-slate-900 bg-white font-bold">

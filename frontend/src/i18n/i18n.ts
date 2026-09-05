@@ -15,6 +15,10 @@ i18n
     interpolation: {
       escapeValue: false, // React escapes values automatically
     },
+    saveMissing: true,
+    missingKeyHandler: (lngs, ns, key) => {
+      console.warn(`[MISSING TRANSLATION] ${lngs.join(',')}.${key}`);
+    },
     react: {
       useSuspense: false,
     },
