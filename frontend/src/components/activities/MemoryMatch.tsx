@@ -463,7 +463,7 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
             )}
           </div>
 
-          {/* 12 Cards Grid (4 Columns on Tablet/Desktop, 3 Columns on Mobile) */}
+          {/* 12 Cards Grid (3D UNO Card Flip with Glowing Neon Animation) */}
           <div
             className={`grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 max-w-3xl mx-auto transition-all duration-500 ${
               isSwapping ? 'scale-95 opacity-60 rotate-1' : 'scale-100 opacity-100'
@@ -472,55 +472,67 @@ export const MemoryMatch: React.FC<MemoryMatchProps> = ({ onComplete, onBack }) 
             {cards.map((card, idx) => {
               const isRevealed = card.isFlipped || card.isMatched;
 
-              // Glowing Neon Clickable Styles
-              const neonBorderClasses = card.isMatched
-                ? 'border-4 border-emerald-400 ring-4 ring-emerald-300 shadow-[0_0_28px_rgba(16,185,129,0.9)] scale-[1.02] bg-emerald-950/90'
+              // Glowing Neon Shadow while flipping and when active
+              const neonCardGlow = card.isMatched
+                ? 'shadow-[0_0_35px_rgba(16,185,129,0.95)] ring-4 ring-emerald-400'
                 : card.isFlipped
-                ? 'border-4 border-cyan-300 ring-4 ring-cyan-400 shadow-[0_0_32px_rgba(6,182,212,0.95)] scale-[1.03] bg-cyan-950/90'
-                : 'border-3 border-slate-700 hover:border-cyan-400 hover:shadow-[0_0_24px_rgba(6,182,212,0.85)] hover:scale-105 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white';
+                ? 'shadow-[0_0_40px_rgba(6,182,212,1)] ring-4 ring-cyan-300 animate-neon-flip-glow scale-[1.03]'
+                : 'hover:shadow-[0_0_26px_rgba(6,182,212,0.85)] hover:scale-[1.04]';
 
               return (
-                <button
+                <div
                   key={card.uniqueId}
+                  className="perspective-1000 aspect-square select-none cursor-pointer"
                   onClick={() => handleCardClick(idx)}
-                  disabled={isMemorizingPhase || isSwapping || card.isMatched}
-                  aria-label={isRevealed ? card.name : `Card ${idx + 1}`}
-                  className={`group relative aspect-square rounded-3xl cursor-pointer transition-all duration-300 transform select-none overflow-hidden p-1.5 sm:p-2 flex flex-col items-center justify-center text-center shadow-lg active:scale-95 ${neonBorderClasses}`}
                 >
-                  {/* Neon Glow Ambient Layer */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 via-transparent to-pink-500/10 pointer-events-none" />
+                  {/* 3D Flip Inner Container */}
+                  <div
+                    className={`relative w-full h-full rounded-3xl transform-style-3d transition-transform duration-500 ease-out ${neonCardGlow} ${
+                      isRevealed ? 'rotate-y-180' : 'rotate-y-0'
+                    }`}
+                  >
+                    {/* ===== 1. CARD BACK (Face-Down: Sleek UNO Cyber Design) ===== */}
+                    <div className="backface-hidden absolute inset-0 w-full h-full rounded-3xl p-2 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-3 border-slate-700 hover:border-cyan-400 flex flex-col items-center justify-center text-center shadow-lg transition-colors overflow-hidden">
+                      {/* Neon Ambient Oval Layer */}
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-cyan-500/15 border border-cyan-400/40 flex items-center justify-center shadow-[0_0_16px_rgba(6,182,212,0.5)] transform -rotate-12">
+                        <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 text-cyan-300 animate-pulse" />
+                      </div>
 
-                  {isRevealed ? (
-                    <div className="w-full h-full flex flex-col items-center justify-between rounded-2xl bg-white p-1 shadow-inner relative overflow-hidden animate-scaleIn">
-                      <img
-                        src={card.imageUrl}
-                        alt={card.name}
-                        className="w-full h-[72%] object-cover rounded-xl shadow-xs"
-                      />
-                      <div className="w-full py-0.5 px-1 bg-slate-900 text-white rounded-lg text-center">
-                        <span className="font-black text-[10px] sm:text-xs block truncate leading-tight">
-                          {card.name}
+                      <div className="pt-2">
+                        <span className="font-black text-[10px] sm:text-xs tracking-widest text-cyan-300 uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.9)]">
+                          SMRITI
                         </span>
                       </div>
 
-                      {/* Matched Neon Badge */}
-                      {card.isMatched && (
-                        <div className="absolute top-1 right-1 bg-emerald-500 text-white p-1 rounded-full shadow-lg animate-scaleIn">
-                          <CheckCircle2 className="w-4 h-4" />
+                      {/* Small Corner Decorative Dots */}
+                      <div className="absolute top-2 left-2 w-2 h-2 rounded-full bg-cyan-400/60 shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
+                      <div className="absolute bottom-2 right-2 w-2 h-2 rounded-full bg-cyan-400/60 shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
+                    </div>
+
+                    {/* ===== 2. CARD FRONT (Face-Up: Photo & Name with Neon Frame) ===== */}
+                    <div className="backface-hidden rotate-y-180 absolute inset-0 w-full h-full rounded-3xl p-1.5 sm:p-2 bg-white border-3 border-cyan-400 flex flex-col items-center justify-between text-center shadow-inner overflow-hidden">
+                      <div className="w-full h-full flex flex-col items-center justify-between rounded-2xl bg-slate-50 p-1 relative overflow-hidden">
+                        <img
+                          src={card.imageUrl}
+                          alt={card.name}
+                          className="w-full h-[72%] object-cover rounded-xl shadow-xs"
+                        />
+                        <div className="w-full py-0.5 px-1 bg-slate-900 text-white rounded-lg text-center">
+                          <span className="font-black text-[10px] sm:text-xs block truncate leading-tight">
+                            {card.name}
+                          </span>
                         </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="space-y-1 sm:space-y-2 text-center text-cyan-200">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cyan-950/80 border border-cyan-400/50 flex items-center justify-center mx-auto shadow-[0_0_12px_rgba(6,182,212,0.6)] group-hover:scale-110 transition-transform">
-                        <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-300 animate-pulse" />
+
+                        {/* Matched Checkmark Badge */}
+                        {card.isMatched && (
+                          <div className="absolute top-1 right-1 bg-emerald-500 text-white p-1 rounded-full shadow-lg animate-scaleIn ring-2 ring-white">
+                            <CheckCircle2 className="w-4 h-4" />
+                          </div>
+                        )}
                       </div>
-                      <span className="font-black text-[10px] sm:text-xs block tracking-widest text-cyan-300 uppercase drop-shadow-[0_0_8px_rgba(6,182,212,0.9)]">
-                        SMRITI
-                      </span>
                     </div>
-                  )}
-                </button>
+                  </div>
+                </div>
               );
             })}
           </div>

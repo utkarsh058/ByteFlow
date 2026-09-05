@@ -68,8 +68,34 @@ html.elderly-mode body {
   line-height: 1.6;
 }
 
-html.elderly-mode button,
-html.elderly-mode a,
-html.elderly-mode input {
-  min-height: 44px;
+/* 3D Perspective and UNO-style Card Flip */
+.perspective-1000 {
+  perspective: 1000px;
 }
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+@keyframes neon-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.7), 0 0 50px rgba(6, 182, 212, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(6, 182, 212, 1), 0 0 70px rgba(6, 182, 212, 0.7);
+  }
+}
+
+.animate-neon-flip-glow {
+  animation: neon-pulse-glow 1.5s infinite ease-in-out;
+}
+
