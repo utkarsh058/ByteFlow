@@ -439,6 +439,11 @@ const UI_TEXT = {
   },
 };
 
+const getLangString = (mapObj: any, lang: string): any => {
+  if (!mapObj) return '';
+  return mapObj[lang] || mapObj['en'] || mapObj['as'] || Object.values(mapObj)[0] || '';
+};
+
 export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComplete, onBack }) => {
   const { elderlyMode } = useAccessibilityStore();
   const { currentLanguage, setLanguage, availableLanguages } = useLanguageStore();
@@ -536,7 +541,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
   // Handle Question TTS Audio
   const handleSpeakQuestion = () => {
-    const questionText = UI_TEXT.questionTitle[activeLang];
+    const questionText = getLangString(UI_TEXT.questionTitle, activeLang);
     speakText(questionText, activeLang);
   };
 
@@ -573,20 +578,20 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
     if (correct) {
       setCorrectCount((prev) => prev + 1);
-      const personTitle = RELATION_LABELS[relKey][activeLang].fullTitle;
-      const successVoice = `${UI_TEXT.voiceSuccess[activeLang]} ${currentPerson.name} - ${personTitle}.`;
+      const personTitle = getLangString(RELATION_LABELS[relKey], activeLang).fullTitle;
+      const successVoice = `${getLangString(UI_TEXT.voiceSuccess, activeLang)} ${currentPerson.name} - ${personTitle}.`;
       speakText(successVoice, activeLang);
       setVoiceFeedbackMsg({
         type: 'success',
-        text: `✓ ${currentPerson.name} (${RELATION_LABELS[relKey][activeLang].label})`,
+        text: `✓ ${currentPerson.name} (${getLangString(RELATION_LABELS[relKey], activeLang).label})`,
       });
     } else {
       setHintVisible(true);
-      const gentleVoice = UI_TEXT.incorrectTryAgain[activeLang];
+      const gentleVoice = getLangString(UI_TEXT.incorrectTryAgain, activeLang);
       speakText(gentleVoice, activeLang);
       setVoiceFeedbackMsg({
         type: 'error',
-        text: `${UI_TEXT.incorrectTryAgain[activeLang]}`,
+        text: `${getLangString(UI_TEXT.incorrectTryAgain, activeLang)}`,
       });
     }
   };
@@ -1050,7 +1055,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 : 'text-charcoal-700 hover:text-forest-800'
             }`}
           >
-            <Users className="w-3.5 h-3.5" /> {UI_TEXT.practiceTab[activeLang]}
+            <Users className="w-3.5 h-3.5" /> {getLangString(UI_TEXT.practiceTab, activeLang)}
           </button>
           <button
             onClick={() => setActiveTab('upload')}
@@ -1060,7 +1065,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 : 'text-charcoal-700 hover:text-forest-800'
             }`}
           >
-            <Upload className="w-3.5 h-3.5" /> {UI_TEXT.uploadTab[activeLang]}
+            <Upload className="w-3.5 h-3.5" /> {getLangString(UI_TEXT.uploadTab, activeLang)}
           </button>
         </div>
       </div>
@@ -1117,7 +1122,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                         elderlyMode ? 'text-2xl' : 'text-lg md:text-xl'
                       }`}
                     >
-                      {UI_TEXT.questionTitle[activeLang]}
+                      {getLangString(UI_TEXT.questionTitle, activeLang)}
                     </h3>
 
                     {/* Listen Question Button */}
@@ -1127,12 +1132,12 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                       className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
                     >
                       <Volume2 className="w-4 h-4 text-forest-700" />
-                      {UI_TEXT.listenQuestion[activeLang]}
+                      {getLangString(UI_TEXT.listenQuestion, activeLang)}
                     </button>
                   </div>
 
                   <p className="text-xs md:text-sm font-medium text-charcoal-600">
-                    {UI_TEXT.subtitle[activeLang]}
+                    {getLangString(UI_TEXT.subtitle, activeLang)}
                   </p>
                 </div>
 
@@ -1145,7 +1150,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                     {candidateOptions.map((relKey, index) => {
-                      const relOption = RELATION_LABELS[relKey][activeLang];
+                      const relOption = getLangString(RELATION_LABELS[relKey], activeLang);
                       const isSelected = selectedRelation === relKey;
                       const isCorrectChoice = relKey === currentPerson.relationKey;
                       const theme = GLOWING_BUTTON_THEMES[index % GLOWING_BUTTON_THEMES.length];
@@ -1219,7 +1224,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                       <h4 className="font-serif font-bold text-sm md:text-base">
                         {isCorrect
                           ? `${currentPerson.name} — ${RELATION_LABELS[currentPerson.relationKey][activeLang].fullTitle}`
-                          : UI_TEXT.incorrectTryAgain[activeLang]}
+                          : getLangString(UI_TEXT.incorrectTryAgain, activeLang)}
                       </h4>
                       <p className="text-xs font-medium mt-0.5 text-charcoal-800">
                         {isCorrect
@@ -1255,7 +1260,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-blue-200/80 pb-3">
                   <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-blue-950">
                     <Mic className="w-4 h-4 text-blue-700 animate-pulse" />
-                    <span>{UI_TEXT.voiceStudioTitle[activeLang]}</span>
+                    <span>{getLangString(UI_TEXT.voiceStudioTitle, activeLang)}</span>
                   </div>
                   
                   {/* Regional Language Switcher */}
@@ -1289,7 +1294,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 </div>
 
                 <p className="text-xs font-medium text-blue-950">
-                  {UI_TEXT.voiceStudioSubtitle[activeLang]}
+                  {getLangString(UI_TEXT.voiceStudioSubtitle, activeLang)}
                 </p>
 
                 {/* Add Audio & Convert Button */}
@@ -1305,7 +1310,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                         <span className="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,1)] animate-pulse" />
                         <span className="text-[10px] uppercase tracking-wider text-white font-bold">REC</span>
                       </span>
-                      <span>{UI_TEXT.recordAnswer[activeLang]}</span>
+                      <span>{getLangString(UI_TEXT.recordAnswer, activeLang)}</span>
                     </button>
                   ) : (
                     <button
@@ -1336,7 +1341,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                       />
                     </div>
                     <div className="text-[11px] text-center font-bold text-blue-950 pt-0.5">
-                      {UI_TEXT.recordingActive[activeLang]}
+                      {getLangString(UI_TEXT.recordingActive, activeLang)}
                     </div>
                   </div>
                 )}
@@ -1405,7 +1410,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                         setTypedResponseText(e.target.value);
                         setSpeechTranscript(e.target.value);
                       }}
-                      placeholder={UI_TEXT.typeAnswerPlaceholder[activeLang]}
+                      placeholder={getLangString(UI_TEXT.typeAnswerPlaceholder, activeLang)}
                       rows={3}
                       className="w-full p-3 text-xs md:text-sm font-medium text-charcoal-900 bg-ivory-50/70 border border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600 focus:bg-white resize-none shadow-inner"
                     />
@@ -1535,7 +1540,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                     <Sparkles className="w-4 h-4 text-emerald-700" />
                     <span>Detected Relation:</span>
                     <span className="bg-emerald-200 text-emerald-950 px-2 py-0.5 rounded-full font-extrabold text-[11px]">
-                      {RELATION_LABELS[detectedRelationMatch][activeLang].fullTitle}
+                      {getLangString(RELATION_LABELS[detectedRelationMatch], activeLang).fullTitle}
                     </span>
                   </div>
                   <p className="text-[11px] text-emerald-900 font-medium">
@@ -1567,10 +1572,10 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
               <PlusCircle className="w-4 h-4" /> Personal Family Memory Setup
             </span>
             <h3 className="text-2xl font-serif font-bold text-charcoal-900 mt-1">
-              {UI_TEXT.uploadTab[activeLang]}
+              {getLangString(UI_TEXT.uploadTab, activeLang)}
             </h3>
             <p className="text-sm font-medium text-charcoal-600 mt-1">
-              {UI_TEXT.uploadPrompt[activeLang]}
+              {getLangString(UI_TEXT.uploadPrompt, activeLang)}
             </p>
           </div>
 
@@ -1625,7 +1630,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 type="text"
                 value={uploadName}
                 onChange={(e) => setUploadName(e.target.value)}
-                placeholder={UI_TEXT.namePlaceholder[activeLang]}
+                placeholder={getLangString(UI_TEXT.namePlaceholder, activeLang)}
                 className="w-full px-4 py-3 rounded-2xl border border-ivory-300 bg-ivory-50/50 font-medium text-charcoal-900 focus:outline-none focus:ring-2 focus:ring-forest-600 text-sm"
               />
             </div>
@@ -1642,7 +1647,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
               >
                 {(Object.keys(RELATION_LABELS) as FamilyRelationKey[]).map((relKey) => (
                   <option key={relKey} value={relKey}>
-                    {RELATION_LABELS[relKey][activeLang].label} ({RELATION_LABELS[relKey].en.label})
+                    {getLangString(RELATION_LABELS[relKey], activeLang).label} ({RELATION_LABELS[relKey].en.label})
                   </option>
                 ))}
               </select>
@@ -1670,7 +1675,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
             <div className="flex justify-end gap-3 pt-2">
               <Button type="submit" variant="primary" size="lg">
-                {UI_TEXT.saveAndPractice[activeLang]}
+                {getLangString(UI_TEXT.saveAndPractice, activeLang)}
               </Button>
             </div>
           </form>
@@ -1688,7 +1693,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
           <div className="space-y-2">
             <h3 className="text-3xl md:text-4xl font-serif font-bold text-charcoal-900">
-              {UI_TEXT.congratsTitle[activeLang]}
+              {getLangString(UI_TEXT.congratsTitle, activeLang)}
             </h3>
             <p className="text-charcoal-700 font-medium text-lg">
               You recognized <span className="font-bold text-forest-800">{correctCount}</span> out of{' '}
