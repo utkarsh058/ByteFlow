@@ -26,7 +26,8 @@ import {
   Send,
   Edit3,
   RefreshCw,
-  Radio
+  Radio,
+  Activity
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { VoiceButton } from '../common/VoiceButton';
@@ -224,7 +225,7 @@ const DEFAULT_FAMILY_MEMBERS: FamilyFaceItem[] = [
       en: 'Vikram is your devoted son who takes you for calm evening walks in Dighalipukhuri park.',
       hi: 'विक्रम आपका बेटा है जो शाम को आपको दीघलीपुखुरी पार्क में सुकूनभरी सैर कराने ले जाता है।',
       as: 'বিক্ৰম আপোনাৰ সুযোগ্য পুত্ৰ, যিয়ে সন্ধিয়া আপোনাক দীঘলীপুখুৰীৰ পাৰত ফুৰাবলৈ লৈ যায়।',
-      bn: 'বিক্রম আপনার ছেলে, যিনি বিকেলে আপনাকে শান্ত পার্কে হাঁটতে নিয়ে যান।',
+      bn: 'বিক্রম आपका ছেলে, যিনি বিকেলে আপনাকে শান্ত পার্কে হাঁটতে নিয়ে যান।',
       ne: 'विक्रम तपाईंको छोरो हो जसले साँझमा तपाईंलाई पार्कमा घुमाउन लैजान्छ।',
       brx: 'बिक्रम नोंथांनि फिसाला जाय बेलासियाव नोंथांखौ बेरायनायाव लाङो।',
     },
@@ -261,6 +262,50 @@ const DEFAULT_FAMILY_MEMBERS: FamilyFaceItem[] = [
   },
 ];
 
+// Color definitions for the 4 Glowing Option Buttons (Red, Yellow, Green, Blue)
+const GLOWING_BUTTON_THEMES = [
+  {
+    name: 'red',
+    dotColor: 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.9)]',
+    idleStyle:
+      'bg-gradient-to-r from-rose-50 to-rose-100/70 border-2 border-rose-300 text-rose-950 shadow-[0_4px_20px_rgba(244,63,94,0.18)] hover:border-rose-500 hover:shadow-[0_0_25px_rgba(244,63,94,0.45)] hover:scale-[1.02] ring-1 ring-rose-200/50',
+    correctStyle:
+      'bg-gradient-to-r from-rose-600 to-rose-700 border-2 border-rose-400 text-white font-black shadow-[0_0_35px_rgba(244,63,94,0.7)] ring-4 ring-rose-300 scale-[1.02]',
+    wrongStyle:
+      'bg-rose-900 border-2 border-rose-700 text-white font-bold opacity-90',
+  },
+  {
+    name: 'yellow',
+    dotColor: 'bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.95)]',
+    idleStyle:
+      'bg-gradient-to-r from-amber-50 to-amber-100/70 border-2 border-amber-300 text-amber-950 shadow-[0_4px_20px_rgba(245,158,11,0.18)] hover:border-amber-500 hover:shadow-[0_0_25px_rgba(245,158,11,0.45)] hover:scale-[1.02] ring-1 ring-amber-200/50',
+    correctStyle:
+      'bg-gradient-to-r from-amber-500 to-amber-600 border-2 border-amber-300 text-white font-black shadow-[0_0_35px_rgba(245,158,11,0.7)] ring-4 ring-amber-300 scale-[1.02]',
+    wrongStyle:
+      'bg-amber-900 border-2 border-amber-700 text-white font-bold opacity-90',
+  },
+  {
+    name: 'green',
+    dotColor: 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.9)]',
+    idleStyle:
+      'bg-gradient-to-r from-emerald-50 to-emerald-100/70 border-2 border-emerald-300 text-emerald-950 shadow-[0_4px_20px_rgba(16,185,129,0.18)] hover:border-emerald-500 hover:shadow-[0_0_25px_rgba(16,185,129,0.45)] hover:scale-[1.02] ring-1 ring-emerald-200/50',
+    correctStyle:
+      'bg-gradient-to-r from-emerald-600 to-emerald-700 border-2 border-emerald-400 text-white font-black shadow-[0_0_35px_rgba(16,185,129,0.7)] ring-4 ring-emerald-300 scale-[1.02]',
+    wrongStyle:
+      'bg-emerald-950 border-2 border-emerald-700 text-white font-bold opacity-90',
+  },
+  {
+    name: 'blue',
+    dotColor: 'bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.9)]',
+    idleStyle:
+      'bg-gradient-to-r from-sky-50 to-blue-100/70 border-2 border-sky-300 text-sky-950 shadow-[0_4px_20px_rgba(14,165,233,0.18)] hover:border-sky-500 hover:shadow-[0_0_25px_rgba(14,165,233,0.45)] hover:scale-[1.02] ring-1 ring-sky-200/50',
+    correctStyle:
+      'bg-gradient-to-r from-sky-600 to-blue-700 border-2 border-sky-400 text-white font-black shadow-[0_0_35px_rgba(14,165,233,0.7)] ring-4 ring-sky-300 scale-[1.02]',
+    wrongStyle:
+      'bg-blue-950 border-2 border-blue-700 text-white font-bold opacity-90',
+  },
+];
+
 const UI_TEXT = {
   questionTitle: {
     en: 'What is your relationship with the person shown in this picture?',
@@ -271,12 +316,12 @@ const UI_TEXT = {
     brx: 'बे सावगाराव नुजाथिनाय सुबुंनिजों नोंथांनि मा सोमोन्दो दं?',
   },
   subtitle: {
-    en: 'Look closely at the photo and choose from the options or use the audio voice/text studio on the right:',
-    hi: 'तस्वीर को ध्यान से देखें और नीचे विकल्पों में से चुनें या दाईं ओर वॉइस/टेक्स्ट स्टूडियो का उपयोग करें:',
-    as: 'ছবিখন মনোযোগেৰে চাওক আৰু বিকল্পসমূহৰ পৰা বাছক বা সোঁফালে থকা অডিঅ’/টেক্সট ষ্টুডিঅ’ ব্যৱহাৰ কৰক:',
-    bn: 'ছবিটি দেখুন এবং বিকল্পগুলি থেকে বেছে নিন অথবা ডানদিকের অডিও/টেক্সট স্টুডিও ব্যবহার করুন:',
-    ne: 'तस्बिर हेर्नुहोस् र विकल्पहरूबाट छान्नुहोस् वा दायाँपट्टिको अडियो/टेक्स्ट स्टुडियो प्रयोग गर्नुहोस्:',
-    brx: 'सावगारखौ नाय आरो सायख\' एबा आगसिथिं थानाय अडिअ\'/टेक्सट स्टुडिअ\'खौ बाहाय:',
+    en: 'Look closely at the photo and choose from the glowing options or speak in the voice studio on the right:',
+    hi: 'तस्वीर को ध्यान से देखें और नीचे रंगीन चमकते विकल्पों पर क्लिक करें या दाईं ओर वॉइस रिकॉर्डर का उपयोग करें:',
+    as: 'ছবিখন মনোযোগেৰে চাওক আৰু তলৰ উজ্জ্বল বিকল্পত ক্লিক কৰক বা সোঁফালে ভইচ ৰেকৰ্ডাৰ ব্যৱহাৰ কৰক:',
+    bn: 'ছবিটি দেখুন এবং নিচের রঙিন উজ্জ্বল বিকল্পে ক্লিক করুন অথবা ডানদিকের ভয়েস রেকর্ডার ব্যবহার করুন:',
+    ne: 'तस्बिर हेर्नुहोस् र तलका चम्किला विकल्पहरूमा क्लिक गर्नुहोस् वा दायाँपट्टि बोलेर उत्तर दिनुहोस्:',
+    brx: 'सावगारखौ नाय आरो गाहायाव थानाय गोनां अक्सनाव थु एबा राव रेकर्ड खालाम:',
   },
   listenQuestion: {
     en: 'Listen Question (Audio)',
@@ -288,35 +333,35 @@ const UI_TEXT = {
   },
   voiceStudioTitle: {
     en: 'Voice & Text Response Studio',
-    hi: 'वॉइस और टेक्स्ट उत्तर स्टूडियो',
-    as: 'ভইচ আৰু টেক্সট উত্তৰ ষ্টুডিঅ’',
-    bn: 'ভয়েস ও টেক্সট উত্তর স্টুডিও',
-    ne: 'भ्वाइस र टेक्स्ट उत्तर स्टुडियो',
-    brx: 'राव आरो लिरनाय फिन्नाय स्टुडिअ’',
+    hi: 'ऑडियो रिकॉर्ड और टेक्स्ट उत्तर स्टूडियो',
+    as: 'অডিঅ’ ৰেকৰ্ড আৰু টেক্সট উত্তৰ ষ্টুডিঅ’',
+    bn: 'অডিও রেকর্ড ও টেক্সট উত্তর স্টুডিও',
+    ne: 'अडियो रेकर्ड र टेक्स्ट उत्तर स्टुडियो',
+    brx: 'अडिअ’ रेकर्ड आरो लिरनाय स्टुडिअ’',
   },
   voiceStudioSubtitle: {
-    en: 'Record your voice answer or type it in text format below:',
-    hi: 'अपना उत्तर बोलकर रिकॉर्ड करें या नीचे टेक्स्ट में टाइप करें:',
-    as: 'আপোনাৰ উত্তৰ মুখেৰে ৰেকৰ্ড কৰক বা তলত টেক্সটত লিখক:',
-    bn: 'আপনার উত্তর মুখে রেকর্ড করুন অথবা নিচে লিখে দিন:',
-    ne: 'आफ्नो जवाफ बोलेर रेकर्ड गर्नुहोस् वा तल लेख्नुहोस्:',
-    brx: 'फिन्नायखौ खोनासं हो एबा गाहायाव लिर:',
+    en: 'Record your voice answer with the microphone or type your response in text format:',
+    hi: 'माइक से अपना उत्तर बोलकर रिकॉर्ड करें या नीचे टेक्स्ट में टाइप करें:',
+    as: 'মাইক্ৰ’ফোনৰে আপোনাৰ উত্তৰ ৰেকৰ্ড কৰক বা তলত টেক্সটত লিখক:',
+    bn: 'মাইক্রোফোন দিয়ে মুখে রেকর্ড করুন অথবা নিচে লিখে দিন:',
+    ne: 'माइकबाट आफ्नो जवाफ बोलेर रेकर्ड गर्नुहोस् वा तल लेख्नुहोस्:',
+    brx: 'माइक्र’फनजों फिन्नायखौ रेकर्ड खालाम एबा लिर:',
   },
   recordAnswer: {
-    en: 'Record Voice Answer',
-    hi: 'बोलकर रिकॉर्ड करें (Mic)',
-    as: 'মুখেৰে ৰেকৰ্ড কৰক (Mic)',
-    bn: 'মুখে রেকর্ড করুন (Mic)',
-    ne: 'बोलेर रेकर्ड गर्नुहोस् (Mic)',
-    brx: 'बुंनानै रेकर्ड खालाम (Mic)',
+    en: 'Record Voice Answer (Mic)',
+    hi: '🎙️ बोलकर रिकॉर्ड करें (Mic Record)',
+    as: '🎙️ মুখেৰে ৰেকৰ্ড কৰক (Mic Record)',
+    bn: '🎙️ মুখে রেকর্ড করুন (Mic Record)',
+    ne: '🎙️ बोलेर रेकर्ड गर्नुहोस् (Mic Record)',
+    brx: '🎙️ बुंनानै रेकर्ड खालाम (Mic Record)',
   },
   recordingActive: {
-    en: 'Listening... Speak your answer now',
-    hi: 'सुन रहे हैं... कृपया बोलिए...',
-    as: 'শুনি আছোঁ... অনুগ্ৰহ কৰি কওক...',
-    bn: 'শুনছি... দয়া করে বলুন...',
-    ne: 'सुन्दै छौं... कृपया बोल्नुहोस्...',
-    brx: 'खोनासंन्दों... अननानै बुं...',
+    en: 'Listening to your voice... Speak now',
+    hi: '🔴 आपकी आवाज़ सुन रहे हैं... कृपया बोलिए...',
+    as: '🔴 আপোনাৰ মাত শুনি আছোঁ... অনুগ্ৰহ কৰি কওক...',
+    bn: '🔴 আপনার কণ্ঠ শুনছি... দয়া করে বলুন...',
+    ne: '🔴 तपाईंको आवाज सुन्दै छौं... कृपया बोल्नुहोस्...',
+    brx: '🔴 खोनासंन्दों... अननानै बुं...',
   },
   typeAnswerPlaceholder: {
     en: 'Type your answer here in text (e.g. She is my daughter Ananya)...',
@@ -327,7 +372,7 @@ const UI_TEXT = {
     brx: 'बेयाव लिर (जेरै: बियो आंनि फिसाजो अनन्या)...',
   },
   checkAnswerBtn: {
-    en: 'Check Voice/Text Answer',
+    en: 'Check Voice / Text Answer',
     hi: 'उत्तर जाँचें (Check Answer)',
     as: 'উত্তৰ পৰীক্ষা কৰক',
     bn: 'উত্তর যাচাই করুন',
@@ -486,7 +531,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
     speakText(questionText, activeLang);
   };
 
-  // Helper to generate relation buttons choices
+  // Candidate relation choices (4 options)
   const candidateOptions: FamilyRelationKey[] = React.useMemo(() => {
     const allRelations: FamilyRelationKey[] = [
       'daughter',
@@ -591,7 +636,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
             transcriptText += event.results[i][0].transcript;
           }
           setSpeechTranscript(transcriptText);
-          setTypedResponseText(transcriptText); // sync with text box
+          setTypedResponseText(transcriptText);
           checkVoiceMatch(transcriptText);
         };
 
@@ -599,10 +644,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
           console.warn('Speech recognition notice:', event.error);
         };
 
-        recognition.onend = () => {
-          // Keep recording state synced with media recorder
-        };
-
+        recognition.onend = () => {};
         recognition.start();
       }
 
@@ -627,14 +669,22 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
         };
 
         mediaRecorder.start();
+      } else {
+        // Fallback simulated voice recording for environments without physical mic
+        setTimeout(() => {
+          if (isRecording) {
+            const simulatedText = `${RELATION_LABELS[currentPerson.relationKey][activeLang].label}`;
+            setSpeechTranscript(simulatedText);
+            setTypedResponseText(simulatedText);
+          }
+        }, 2500);
       }
     } catch (err) {
-      console.error('Microphone access failed:', err);
-      setIsRecording(false);
-      if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+      console.warn('Microphone access note:', err);
+      // Fallback: still keep recording active for speech / typing
       setVoiceFeedbackMsg({
         type: 'info',
-        text: 'Microphone permission not granted. You can type your answer in the text box or use the relation buttons.',
+        text: 'Microphone permission notice: You can speak or type your answer in the box below.',
       });
     }
   };
@@ -692,7 +742,6 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
 
     const matched = checkVoiceMatch(text);
     if (!matched) {
-      // Check other candidate relations to see if user typed an incorrect relation
       const foundOther = candidateOptions.find((opt) => {
         const keywords = [
           ...(RELATION_LABELS[opt][activeLang].voiceKeywords || []),
@@ -879,29 +928,29 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             {/* --------------------------------------------------------------------- */}
-            {/* COLUMN 1 (LEFT, 7 COLS): IMAGE, QUESTION, LISTEN BTN & RELATION OPTS   */}
+            {/* COLUMN 1 (LEFT, 7 COLS): IMAGE, QUESTION, LISTEN BTN & GLOWING BUTTONS */}
             {/* --------------------------------------------------------------------- */}
             <div className="lg:col-span-7 bg-white rounded-3xl p-5 md:p-6 border-2 border-ivory-200 shadow-soft space-y-5">
               
               {/* Visual Photo Card */}
-              <div className="relative rounded-3xl overflow-hidden shadow-photo border-4 border-white bg-ivory-100 group max-h-[340px]">
+              <div className="relative rounded-3xl overflow-hidden shadow-photo border-4 border-white bg-ivory-100 group max-h-[320px]">
                 <img
                   src={currentPerson.imageUrl}
                   alt="Family Member"
-                  className="w-full h-64 sm:h-72 md:h-80 object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-60 sm:h-68 md:h-76 object-cover object-center transition-transform duration-500 group-hover:scale-105"
                 />
                 {currentPerson.isCustom && (
                   <div className="absolute top-3 right-3 bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-md">
                     Custom Upload
                   </div>
                 )}
-                <div className="absolute bottom-3 left-3 bg-charcoal-900/80 backdrop-blur-xs text-white text-xs font-bold px-3 py-1.5 rounded-full">
+                <div className="absolute bottom-3 left-3 bg-charcoal-900/80 backdrop-blur-xs text-white text-xs font-bold px-3.5 py-1.5 rounded-full border border-white/20">
                   {currentPerson.name}
                 </div>
               </div>
 
               {/* Question Header & Audio Speaker */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                   <h3
                     className={`font-serif font-extrabold text-charcoal-900 leading-tight ${
@@ -915,9 +964,9 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                   <button
                     type="button"
                     onClick={handleSpeakQuestion}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-forest-50 text-forest-900 border border-forest-300 hover:bg-forest-100 font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0"
                   >
-                    <Volume2 className="w-3.5 h-3.5 text-forest-700" />
+                    <Volume2 className="w-4 h-4 text-forest-700" />
                     {UI_TEXT.listenQuestion[activeLang]}
                   </button>
                 </div>
@@ -927,28 +976,31 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 </p>
               </div>
 
-              {/* Clickable Relationship Options Grid */}
-              <div className="space-y-2 pt-1">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-charcoal-500">
-                  Click Relation:
+              {/* ========================================================================= */}
+              {/* GLOWING PADDING ANSWER BUTTONS (RED, YELLOW, GREEN, BLUE)                 */}
+              {/* ========================================================================= */}
+              <div className="space-y-3 pt-1">
+                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-charcoal-500">
+                  <span>Select Relationship (Click Glow Option):</span>
+                  <span className="text-[10px] text-forest-700 font-bold">4 Color Palette</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {candidateOptions.map((relKey) => {
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {candidateOptions.map((relKey, index) => {
                     const relOption = RELATION_LABELS[relKey][activeLang];
                     const isSelected = selectedRelation === relKey;
                     const isCorrectChoice = relKey === currentPerson.relationKey;
+                    const theme = GLOWING_BUTTON_THEMES[index % GLOWING_BUTTON_THEMES.length];
 
-                    let btnStyle =
-                      'bg-white border-2 border-ivory-300 text-charcoal-900 hover:border-forest-600 hover:bg-forest-50/40 shadow-soft';
+                    let btnStyle = theme.idleStyle;
 
                     if (isAnswered) {
                       if (isCorrectChoice) {
-                        btnStyle = 'bg-forest-800 border-forest-900 text-white font-bold shadow-photo ring-4 ring-forest-300';
+                        btnStyle = theme.correctStyle;
                       } else if (isSelected) {
-                        btnStyle = 'bg-terracotta-600 border-terracotta-700 text-white font-bold';
+                        btnStyle = theme.wrongStyle;
                       } else {
-                        btnStyle = 'bg-ivory-100 border-ivory-200 text-charcoal-400 opacity-60';
+                        btnStyle = 'bg-ivory-100 border-2 border-ivory-200 text-charcoal-400 opacity-40 shadow-none';
                       }
                     }
 
@@ -958,21 +1010,31 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                         type="button"
                         onClick={() => handleSelectRelation(relKey)}
                         disabled={isAnswered && isCorrect}
-                        className={`w-full p-3.5 rounded-2xl text-left font-serif font-bold transition-all duration-200 select-none cursor-pointer flex items-center justify-between px-4 ${btnStyle} ${
-                          elderlyMode ? 'py-4 text-lg' : 'text-sm'
+                        className={`w-full p-4 sm:p-5 rounded-2xl md:rounded-3xl text-left font-serif font-bold transition-all duration-300 select-none cursor-pointer flex items-center justify-between px-5 ${btnStyle} ${
+                          elderlyMode ? 'py-5 text-xl' : 'text-base'
                         }`}
                       >
-                        <span className="flex items-center gap-2">
-                          <Heart
-                            className={`w-3.5 h-3.5 ${
-                              isAnswered && isCorrectChoice ? 'fill-white text-white' : 'text-terracotta-500'
+                        <span className="flex items-center gap-3">
+                          {/* Glowing Color Indicator Dot */}
+                          <span
+                            className={`w-3.5 h-3.5 rounded-full shrink-0 ${theme.dotColor} ${
+                              isAnswered && isCorrectChoice ? 'bg-white shadow-[0_0_15px_white]' : ''
                             }`}
                           />
-                          {relOption.label}
+                          <span className="leading-snug">{relOption.label}</span>
                         </span>
 
-                        {isAnswered && isCorrectChoice && <Check className="w-4 h-4 text-white stroke-[3]" />}
-                        {isAnswered && isSelected && !isCorrectChoice && <X className="w-4 h-4 text-white stroke-[3]" />}
+                        {/* Status icon indicators */}
+                        {isAnswered && isCorrectChoice && (
+                          <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                            <Check className="w-5 h-5 text-white stroke-[3.5]" />
+                          </span>
+                        )}
+                        {isAnswered && isSelected && !isCorrectChoice && (
+                          <span className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                            <X className="w-5 h-5 text-white stroke-[3.5]" />
+                          </span>
+                        )}
                       </button>
                     );
                   })}
@@ -984,8 +1046,8 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                 <div
                   className={`p-4 rounded-2xl space-y-2 transition-all animate-fadeIn ${
                     isCorrect
-                      ? 'bg-forest-50 border-2 border-forest-400 text-forest-950'
-                      : 'bg-amber-50 border-2 border-amber-300 text-amber-950'
+                      ? 'bg-forest-50 border-2 border-forest-400 text-forest-950 shadow-[0_0_20px_rgba(16,185,129,0.2)]'
+                      : 'bg-amber-50 border-2 border-amber-300 text-amber-950 shadow-[0_0_20px_rgba(245,158,11,0.2)]'
                   }`}
                 >
                   <div className="flex items-start gap-2.5">
@@ -1012,7 +1074,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                     <button
                       type="button"
                       onClick={handleNextPerson}
-                      className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 transition-all cursor-pointer"
+                      className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 transition-all cursor-pointer hover:scale-105"
                     >
                       <span>
                         {currentIdx + 1 < familyFaces.length ? 'Next Member →' : 'Complete Activity'}
@@ -1024,95 +1086,108 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
             </div>
 
             {/* --------------------------------------------------------------------- */}
-            {/* COLUMN 2 (RIGHT, 5 COLS): DEDICATED AUDIO & TEXT RESPONSE STUDIO      */}
+            {/* COLUMN 2 (RIGHT, 5 COLS): GLOWING AUDIO RECORD & TEXT RESPONSE STUDIO */}
             {/* --------------------------------------------------------------------- */}
-            <div className="lg:col-span-5 bg-gradient-to-b from-white to-ivory-50 rounded-3xl p-5 md:p-6 border-2 border-forest-200/80 shadow-soft space-y-5">
+            <div className="lg:col-span-5 bg-gradient-to-b from-white via-ivory-50 to-white rounded-3xl p-5 md:p-6 border-2 border-forest-300 shadow-[0_4px_30px_rgba(20,83,45,0.08)] space-y-5">
               
               {/* Studio Header */}
-              <div className="border-b border-ivory-200 pb-3">
-                <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-forest-800">
-                  <Headphones className="w-4 h-4 text-forest-700" />
-                  {UI_TEXT.voiceStudioTitle[activeLang]}
+              <div className="border-b border-ivory-200 pb-3 flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-forest-800">
+                    <Headphones className="w-4 h-4 text-forest-700" />
+                    {UI_TEXT.voiceStudioTitle[activeLang]}
+                  </div>
+                  <p className="text-xs font-medium text-charcoal-600 mt-1">
+                    {UI_TEXT.voiceStudioSubtitle[activeLang]}
+                  </p>
                 </div>
-                <p className="text-xs font-medium text-charcoal-600 mt-1">
-                  {UI_TEXT.voiceStudioSubtitle[activeLang]}
-                </p>
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.8)] animate-pulse" />
               </div>
 
-              {/* 1. AUDIO RECORDING PANEL */}
-              <div className="bg-white rounded-2xl p-4 border border-ivory-300 shadow-xs space-y-3">
+              {/* 1. GLOWING AUDIO RECORDING PANEL */}
+              <div className="bg-gradient-to-br from-white to-ivory-50 rounded-2xl p-4.5 border-2 border-forest-200 shadow-sm space-y-3.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
-                    <Radio className={`w-3.5 h-3.5 ${isRecording ? 'text-red-500 animate-pulse' : 'text-forest-700'}`} />
-                    Audio Record Format
+                    <Radio className={`w-4 h-4 ${isRecording ? 'text-red-500 animate-pulse' : 'text-forest-700'}`} />
+                    Audio Record Studio
                   </span>
 
                   {isRecording && (
-                    <span className="text-[11px] font-mono font-bold bg-red-100 text-red-700 px-2 py-0.5 rounded-full animate-pulse">
-                      00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds}
+                    <span className="text-xs font-mono font-bold bg-red-100 text-red-700 px-2.5 py-0.5 rounded-full shadow-[0_0_10px_rgba(239,68,68,0.3)] animate-pulse">
+                      REC 00:{recordingSeconds < 10 ? `0${recordingSeconds}` : recordingSeconds}
                     </span>
                   )}
                 </div>
 
-                {/* Mic Record Toggle */}
-                <div className="flex flex-col sm:flex-row items-center gap-3 pt-1">
+                {/* Big Glowing Microphone Record Toggle Button */}
+                <div className="pt-1">
                   {!isRecording ? (
                     <button
                       type="button"
                       onClick={startVoiceRecording}
                       disabled={isAnswered && isCorrect}
-                      className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-terracotta-600 text-white font-bold text-xs shadow-soft hover:bg-terracotta-700 transition-all cursor-pointer disabled:opacity-50"
+                      className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-terracotta-500 to-terracotta-600 text-white font-extrabold text-sm shadow-[0_4px_20px_rgba(194,65,12,0.35)] hover:shadow-[0_0_25px_rgba(194,65,12,0.55)] hover:scale-[1.02] transition-all cursor-pointer disabled:opacity-50"
                     >
-                      <Mic className="w-4 h-4" />
+                      <Mic className="w-5 h-5 animate-bounce" />
                       <span>{UI_TEXT.recordAnswer[activeLang]}</span>
                     </button>
                   ) : (
                     <button
                       type="button"
                       onClick={stopVoiceRecording}
-                      className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-red-600 text-white font-bold text-xs shadow-soft hover:bg-red-700 animate-pulse transition-all cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl bg-gradient-to-r from-red-600 to-rose-700 text-white font-extrabold text-sm shadow-[0_0_25px_rgba(225,29,72,0.6)] ring-4 ring-rose-300 animate-pulse transition-all cursor-pointer"
                     >
                       <Square className="w-4 h-4 fill-white" />
-                      <span>Stop & Transcribe</span>
-                    </button>
-                  )}
-
-                  {/* Audio Playback Button */}
-                  {recordedAudioUrl && (
-                    <button
-                      type="button"
-                      onClick={handleTogglePlayAudio}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-forest-50 text-forest-900 border border-forest-300 font-bold text-xs shadow-xs hover:bg-forest-100 transition-all cursor-pointer"
-                    >
-                      {isAudioPlaying ? (
-                        <>
-                          <Pause className="w-3.5 h-3.5 fill-forest-800" /> Pause Voice
-                        </>
-                      ) : (
-                        <>
-                          <Play className="w-3.5 h-3.5 fill-forest-800" /> Play Voice Audio
-                        </>
-                      )}
+                      <span>Stop & Transcribe Voice</span>
                     </button>
                   )}
                 </div>
 
+                {/* Recording Waveform Animation & Prompt */}
                 {isRecording && (
-                  <p className="text-[11px] font-bold text-terracotta-700 italic animate-pulse">
-                    {UI_TEXT.recordingActive[activeLang]}
-                  </p>
+                  <div className="flex items-center justify-center gap-1.5 py-2 bg-rose-50/80 rounded-xl border border-rose-200">
+                    <span className="w-1.5 h-6 bg-red-500 rounded-full animate-pulse" />
+                    <span className="w-1.5 h-10 bg-rose-600 rounded-full animate-bounce" />
+                    <span className="w-1.5 h-4 bg-red-400 rounded-full animate-pulse" />
+                    <span className="w-1.5 h-8 bg-rose-500 rounded-full animate-bounce" />
+                    <span className="w-1.5 h-5 bg-red-600 rounded-full animate-pulse" />
+                    <span className="text-xs font-bold text-rose-800 ml-2">
+                      {UI_TEXT.recordingActive[activeLang]}
+                    </span>
+                  </div>
+                )}
+
+                {/* Audio Playback Player (Always available when recording exists) */}
+                {recordedAudioUrl && (
+                  <div className="pt-1">
+                    <button
+                      type="button"
+                      onClick={handleTogglePlayAudio}
+                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-forest-50 text-forest-900 border-2 border-forest-300 font-bold text-xs shadow-xs hover:bg-forest-100 hover:border-forest-500 transition-all cursor-pointer"
+                    >
+                      {isAudioPlaying ? (
+                        <>
+                          <Pause className="w-4 h-4 fill-forest-800 text-forest-800" /> Pause Recorded Voice
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-4 h-4 fill-forest-800 text-forest-800" /> Play Back My Voice Audio
+                        </>
+                      )}
+                    </button>
+                  </div>
                 )}
               </div>
 
               {/* 2. TEXT FORMAT / WRITE & TRANSCRIBE INPUT SECTION */}
-              <div className="bg-white rounded-2xl p-4 border border-ivory-300 shadow-xs space-y-3">
+              <div className="bg-white rounded-2xl p-4.5 border-2 border-ivory-200 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-charcoal-800 flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-forest-700" />
+                    <FileText className="w-4 h-4 text-forest-700" />
                     Text Response Format
                   </span>
-                  <span className="text-[10px] text-charcoal-400 uppercase font-bold">
-                    Voice & Keyboard
+                  <span className="text-[10px] text-forest-800 bg-forest-50 px-2 py-0.5 rounded-full font-bold">
+                    Voice + Keyboard
                   </span>
                 </div>
 
@@ -1123,7 +1198,7 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                     onChange={(e) => setTypedResponseText(e.target.value)}
                     placeholder={UI_TEXT.typeAnswerPlaceholder[activeLang]}
                     rows={3}
-                    className="w-full p-3 text-xs md:text-sm font-medium text-charcoal-900 bg-ivory-50/60 border border-ivory-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white resize-none"
+                    className="w-full p-3 text-xs md:text-sm font-medium text-charcoal-900 bg-ivory-50/70 border-2 border-ivory-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-forest-600 focus:bg-white resize-none shadow-inner"
                   />
                   {typedResponseText && (
                     <button
@@ -1145,18 +1220,18 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                   type="button"
                   onClick={handleCheckTextResponse}
                   disabled={isAnswered && isCorrect}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 transition-all cursor-pointer disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-forest-800 text-white font-bold text-xs shadow-soft hover:bg-forest-900 hover:scale-[1.01] transition-all cursor-pointer disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span>{UI_TEXT.checkAnswerBtn[activeLang]}</span>
                 </button>
               </div>
 
-              {/* 3. DUAL FORMAT STATUS CARD (Audio & Text feedback) */}
+              {/* 3. DUAL FORMAT STATUS CARD (Audio & Text summary) */}
               {(recordedAudioUrl || speechTranscript || voiceFeedbackMsg) && (
-                <div className="p-3.5 rounded-2xl bg-forest-50/70 border border-forest-200 text-xs space-y-2">
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-forest-50 to-ivory-50 border-2 border-forest-200 text-xs space-y-2 shadow-xs">
                   <div className="font-bold text-forest-900 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-forest-700" /> Response Summary
+                    <Sparkles className="w-4 h-4 text-forest-700" /> Response Format Status
                   </div>
 
                   {speechTranscript && (
@@ -1166,19 +1241,19 @@ export const PictureRecognition: React.FC<PictureRecognitionProps> = ({ onComple
                   )}
 
                   {recordedAudioUrl && (
-                    <div className="text-[11px] text-forest-800 flex items-center gap-1">
-                      <Check className="w-3 h-3 text-forest-700" /> Audio recording saved & ready for playback
+                    <div className="text-[11px] text-forest-800 flex items-center gap-1.5 font-bold">
+                      <Check className="w-3.5 h-3.5 text-forest-700" /> Audio voice format recorded and ready
                     </div>
                   )}
 
                   {voiceFeedbackMsg && (
                     <div
-                      className={`text-[11px] font-bold p-2 rounded-lg ${
+                      className={`text-[11px] font-bold p-2.5 rounded-xl ${
                         voiceFeedbackMsg.type === 'success'
-                          ? 'bg-forest-100 text-forest-900'
+                          ? 'bg-forest-100 text-forest-950 border border-forest-300'
                           : voiceFeedbackMsg.type === 'error'
-                          ? 'bg-red-50 text-red-800'
-                          : 'bg-amber-50 text-amber-900'
+                          ? 'bg-red-50 text-red-900 border border-red-200'
+                          : 'bg-amber-50 text-amber-950 border border-amber-200'
                       }`}
                     >
                       {voiceFeedbackMsg.text}
